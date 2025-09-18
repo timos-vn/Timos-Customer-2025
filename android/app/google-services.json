@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "865525923832",
+    "project_id": "timos-customer-2025",
+    "storage_bucket": "timos-customer-2025.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:865525923832:android:137dac66884b206e1aa00d",
+        "android_client_info": {
+          "package_name": "com.example.timos_customer_2025"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTs58mO0KlQ1z9a3eKJlAqQYyz2yAl21M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
