@@ -34,7 +34,7 @@ class TouchableWidget extends StatelessWidget {
           const BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(4)),
           ),
-      child: Stack(children: <Widget>[
+      child: Stack(children: [
         Container(
           padding: padding ?? const EdgeInsets.all(10),
           child: Center(
@@ -48,8 +48,9 @@ class TouchableWidget extends StatelessWidget {
               highlightColor: const Color.fromRGBO(204, 223, 242, 0.2),
               splashColor: const Color.fromRGBO(204, 223, 242, 0.4),
               customBorder: RoundedRectangleBorder(
-                  borderRadius:
-                      borderRadiusEffect ?? decoration?.borderRadius ?? const BorderRadius.all(Radius.circular(6))),
+                  borderRadius: borderRadiusEffect ??
+                      decoration?.borderRadius ??
+                      const BorderRadius.all(Radius.circular(6))),
               onTap: onPressed,
               onLongPress: onLongPressed,
             ),

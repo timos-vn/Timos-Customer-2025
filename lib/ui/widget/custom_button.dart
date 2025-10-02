@@ -27,7 +27,7 @@ Widget buttonAnimationFindLocation(
   final child = Row(
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.center,
-    children: <Widget>[
+    children: [
       icon,
       const SizedBox(width: 8),
       text,

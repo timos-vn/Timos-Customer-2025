@@ -21,7 +21,7 @@
 //   @override
 //   Widget build(BuildContext context) {
 //     return Stack(
-//       children: <Widget>[
+//       children: [
 //         Shimmer.fromColors(
 //           baseColor: Colors.grey[200],
 //           highlightColor: Colors.grey[100],

@@ -25,7 +25,7 @@
 
 //   void navigationPage() {
 //     if (_token != null) {
-//       NavigatorUtils.pushReplacementNamed(context, RouterGenerator.mainScreen,);
+//       NavigatorUtils.pushReplacementNamed(context, RouterGenerator.DashboardScreen,);
 //     } else {
 //       NavigatorUtils.pushReplacementNamed(
 //           context, RouterGenerator.routeIntro);//routeLoginScreen
@@ -145,6 +145,3 @@
 //     );
 //   }
 // }
-
-
-

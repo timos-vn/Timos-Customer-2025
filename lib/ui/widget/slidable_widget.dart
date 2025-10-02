@@ -23,7 +23,7 @@
 //         child: child,
 //
 //         /// left side
-//        // actions: <Widget>[
+//        // actions: [
 //           // IconSlideAction(
 //           //   caption: 'Archive',
 //           //   color: Colors.blue,
@@ -39,7 +39,7 @@
 //        // ],
 //
 //         /// right side
-//         secondaryActions: <Widget>[
+//         secondaryActions: [
 //           Visibility(
 //             visible: showActionMore == true,
 //             child: IconSlideAction(
