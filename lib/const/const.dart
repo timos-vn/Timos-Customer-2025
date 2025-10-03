@@ -1,4 +1,4 @@
-import 'package:timos_customer_2025/models/network/response/promotion_models.dart';
+// import 'package:timos_customer_2025/models/network/response/promotion_models.dart';
 
 class Const {
   /// DF server
@@ -7,7 +7,7 @@ class Const {
 
   /// dev: https://devapicus.trungchuyenhn.com
   // ignore: non_constant_identifier_names
-  static String HOST_URL = "https://devapicus.trungchuyenhn.com";
+  static String HOST_URL = "https://dev.api.quanly.timos.vn";
   // static  String HOST_URL = "https://apicus.trungchuyenhn.com";
   // ignore: non_constant_identifier_names
   static int PORT_URL = 0;
@@ -72,10 +72,11 @@ class Const {
 
   static const String CODE_PROMOTION = "CODE";
 
-  static PromotionsEffectiveResponseData promotionsEffectiveResponseData =
-      const PromotionsEffectiveResponseData();
-  static FindPromotionsResponseData findPromotionsResponseData =
-      const FindPromotionsResponseData();
+  // TODO: Add promotion models later
+  // static PromotionsEffectiveResponseData promotionsEffectiveResponseData =
+  //     const PromotionsEffectiveResponseData();
+  // static FindPromotionsResponseData findPromotionsResponseData =
+  //     const FindPromotionsResponseData();
 
   // ignore: non_constant_identifier_names
   static int ID_NHA_XE = 0;

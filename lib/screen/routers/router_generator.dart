@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:timos_customer_2025/ui/login/login_screen.dart';
-import 'package:timos_customer_2025/ui/dashboard/dashboard_screen.dart';
-import 'package:timos_customer_2025/ui/trip/trip_detail_screen.dart';
+import 'package:timos_customer_2025/screen/login/ui/login_screen.dart';
+import 'package:timos_customer_2025/screen/dashboard/dashboard_screen.dart';
+import 'package:timos_customer_2025/screen/trip/trip_detail_screen.dart';
 import 'package:timos_customer_2025/enum/enum_request_method.dart';
 
 import '404.dart';

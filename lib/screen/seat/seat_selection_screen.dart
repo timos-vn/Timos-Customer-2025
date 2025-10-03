@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:timos_customer_2025/ui/utils/widget/utils_widget.dart';
+import 'package:timos_customer_2025/screen/utils/widget/utils_widget.dart';
 import 'package:timos_customer_2025/themes/colors.dart';
 
 class SeatSelectionScreen extends StatefulWidget {
@@ -17,7 +17,6 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
     {"id": 2, "name": "Tầng 2", "total": 20, "booked": 12, "reserved": 1},
   ];
 
-  // fake danh sách ghế với trạng thái
   final List<Map<String, dynamic>> allSeats = [
     {
       "id": 1,

@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:timos_customer_2025/enum/enum_request_method.dart';
 import 'package:timos_customer_2025/themes/colors.dart';
-import 'package:timos_customer_2025/ui/routers/router_generator.dart';
-import 'package:timos_customer_2025/services/fake_auth_service.dart';
+import 'package:timos_customer_2025/screen/routers/router_generator.dart';
+import 'package:timos_customer_2025/services/auth_service.dart';
+import 'package:timos_customer_2025/models/response/auth/auth_response.dart';
 
 class TripScreen extends StatefulWidget {
   const TripScreen({super.key});
@@ -40,8 +41,8 @@ class _TripScreenState extends State<TripScreen> {
   @override
   void initState() {
     super.initState();
-    final user = FakeAuthService.currentUser;
-    isManager = user?.isManager() ?? true;
+    final user = AuthService.currentUser;
+    isManager = user?.isAdmin() ?? true;
   }
 
   List<TripSummary> buildTrips() {

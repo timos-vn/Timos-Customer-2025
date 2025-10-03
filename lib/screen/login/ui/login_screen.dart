@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:timos_customer_2025/ui/routers/router_generator.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:timos_customer_2025/screen/routers/router_generator.dart';
 import 'package:timos_customer_2025/themes/colors.dart';
-import 'package:timos_customer_2025/services/fake_auth_service.dart';
+import 'package:timos_customer_2025/screen/login/bloc/bloc.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,10 +18,52 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isObscured = true;
   bool rememberMe = true;
 
+  void _handleLogin() {
+    final username = phoneController.text.trim();
+    final password = passwordController.text.trim();
+
+    if (username.isEmpty || password.isEmpty) {
+      _showErrorMessage('Vui lòng nhập đầy đủ thông tin đăng nhập');
+      return;
+    }
+
+    context.read<AuthBloc>().add(AuthEvent.loginRequested(
+      username: username,
+      password: password,
+    ));
+  }
+
+  void _showErrorMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 4),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        state.when(
+          initial: () {},
+          loading: () {},
+          authenticated: (user, token) {
+            Navigator.of(context).pushReplacementNamed(
+              RouterGenerator.routeDashboardScreen,
+            );
+          },
+          unauthenticated: () {},
+          error: (message) {
+            _showErrorMessage(message);
+          },
+        );
+      },
+      child: Scaffold(
+        body: Stack(
         children: [
           Container(
             decoration: BoxDecoration(
@@ -119,32 +162,33 @@ class _LoginScreenState extends State<LoginScreen> {
                             ],
                           ),
                           const SizedBox(height: 8),
-                          SizedBox(
-                            height: 52,
-                            child: FilledButton(
-                              onPressed: () async {
-                                final user = await FakeAuthService.signIn(
-                                  username: phoneController.text.trim(),
-                                  password: passwordController.text,
-                                );
-                                if (!mounted) return;
-                                if (user != null) {
-                                  Navigator.of(context).pushReplacementNamed(
-                                      RouterGenerator.routeDashboardScreen);
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                          'Đăng nhập thất bại. Thử: manager@timos.vn / 123456 hoặc driver@timos.vn / 123456'),
-                                    ),
-                                  );
-                                }
-                              },
-                              child: const Text('Đăng nhập',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
-                            ),
+                          BlocBuilder<AuthBloc, AuthState>(
+                            builder: (context, state) {
+                              final isLoading = state.maybeWhen(
+                                loading: () => true,
+                                orElse: () => false,
+                              );
+                              
+                              return SizedBox(
+                                height: 52,
+                                child: FilledButton(
+                                  onPressed: isLoading ? null : _handleLogin,
+                                  child: isLoading
+                                      ? const SizedBox(
+                                          height: 20,
+                                          width: 20,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                          ),
+                                        )
+                                      : const Text('Đăng nhập',
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600)),
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),
@@ -161,8 +205,9 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ],
+        ),
+        backgroundColor: const Color(0xFFF7F9FC),
       ),
-      backgroundColor: const Color(0xFFF7F9FC),
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:timos_customer_2025/enum/enum_request_method.dart';
 import 'package:timos_customer_2025/themes/colors.dart';
-import 'package:timos_customer_2025/ui/utils/widget/utils_widget.dart';
+import 'package:timos_customer_2025/screen/utils/widget/utils_widget.dart';
 
 class TripDetailScreen extends StatefulWidget {
   final TripSummary trip;

@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:timos_customer_2025/ui/routers/router_generator.dart';
-import 'package:timos_customer_2025/ui/splash/splash_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:timos_customer_2025/screen/routers/router_generator.dart';
+import 'package:timos_customer_2025/screen/splash/splash_screen.dart';
 import 'package:timos_customer_2025/themes/colors.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:timos_customer_2025/services/auth_service.dart';
+import 'package:timos_customer_2025/screen/login/bloc/bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
     await Firebase.initializeApp();
   } catch (_) {}
+  
+  await AuthService.init();
+  
   runApp(const MyApp());
 }
 
@@ -41,12 +47,15 @@ class MyApp extends StatelessWidget {
           contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 6)),
       fontFamily: 'Montserrat',
     );
-    return MaterialApp(
-      title: 'Quản lý Timos',
-      theme: theme,
-      home: const SplashScreen(),
-      onGenerateRoute: RouterGenerator.generateRouter,
-      debugShowCheckedModeBanner: false,
+    return BlocProvider(
+      create: (context) => AuthBloc()..add(const AuthEvent.checkAuthStatus()),
+      child: MaterialApp(
+        title: 'Quản lý Timos',
+        theme: theme,
+        home: const SplashScreen(),
+        onGenerateRoute: RouterGenerator.generateRouter,
+        debugShowCheckedModeBanner: false,
+      ),
     );
   }
 }
