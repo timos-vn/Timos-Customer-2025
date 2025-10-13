@@ -1,0 +1,2 @@
+/Volumes/ExtremeSSD/Freelancer/timos_customer_2025/android/app/.cxx/RelWithDebInfo/38414ju6/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Volumes/ExtremeSSD/Freelancer/timos_customer_2025/android/app/.cxx/RelWithDebInfo/38414ju6/armeabi-v7a/CMakeFiles/rebuild_cache.dir
