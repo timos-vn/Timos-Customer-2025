@@ -5,6 +5,7 @@ import 'package:timos_customer_2025/screen/routers/router_generator.dart';
 import 'package:timos_customer_2025/themes/colors.dart';
 import 'package:timos_customer_2025/services/services.dart';
 import 'package:timos_customer_2025/models/response/response.dart';
+import 'package:timos_customer_2025/utils/date_utils.dart';
 
 class CoachPane extends StatefulWidget {
   const CoachPane({super.key});
@@ -122,37 +123,37 @@ class _CoachPaneState extends State<CoachPane> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Date Range Picker Button
-              InkWell(
-                onTap: _pickDateRange,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.blue[50],
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.blue),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.calendar_today,
-                          size: 18, color: Colors.blue),
-                      const SizedBox(width: 8),
-                      Text(
-                        '${intl.DateFormat('dd/MM/yyyy').format(_startDate)} - ${intl.DateFormat('dd/MM/yyyy').format(_endDate)}',
-                        style: const TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      const Icon(Icons.arrow_drop_down,
-                          size: 22, color: Colors.blue),
-                    ],
-                  ),
-                ),
-              ),
+              // InkWell(
+              //   onTap: _pickDateRange,
+              //   child: Container(
+              //     padding:
+              //         const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              //     decoration: BoxDecoration(
+              //       color: Colors.blue[50],
+              //       borderRadius: BorderRadius.circular(8),
+              //       border: Border.all(color: Colors.blue),
+              //     ),
+              //     child: Row(
+              //       mainAxisSize: MainAxisSize.min,
+              //       children: [
+              //         const Icon(Icons.calendar_today,
+              //             size: 18, color: Colors.blue),
+              //         const SizedBox(width: 8),
+              //         Text(
+              //           '${intl.DateFormat('dd/MM/yyyy').format(_startDate)} - ${intl.DateFormat('dd/MM/yyyy').format(_endDate)}',
+              //           style: const TextStyle(
+              //             color: Colors.blue,
+              //             fontWeight: FontWeight.w500,
+              //             fontSize: 14,
+              //           ),
+              //         ),
+              //         const SizedBox(width: 4),
+              //         const Icon(Icons.arrow_drop_down,
+              //             size: 22, color: Colors.blue),
+              //       ],
+              //     ),
+              //   ),
+              // ),
               const SizedBox(height: 12),
               // Time slot selector
               SizedBox(
@@ -277,14 +278,14 @@ class _CoachPaneState extends State<CoachPane> {
                               RouterGenerator.routeTripDetail,
                               arguments: TripSummary(
                                 tripId: 'ti',
-                                routeName: '$vehicleType ${(':00', '')}',
+                                routeName: trip.tenTuyenDuong,
                                 departureTime: DateTime.now()
                                     .add(Duration(hours: 72 + index * 3)),
                                 bookedSeats: 10,
                                 totalSeats: 28,
                                 licensePlate:
-                                    '29B-12${1.toString().padLeft(3, '0')}',
-                                driverName: 'Tài xế ${1 + 1}',
+                                trip.bienSoXe,
+                                driverName: trip.tenTaiXe,
                                 driverPhone:
                                     '0900${1.toString().padLeft(6, '0')}',
                               ),

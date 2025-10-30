@@ -21,7 +21,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   List<Widget> buildTabs() {
     return [
       const _DashboardTab(),
-      const CustomerScreen(),
+      // const CustomerScreen(),
       const TripScreen(),
       _ProfileTab(onRolePicked: (UserRole r) => setState(() => role = r)),
     ];
@@ -41,8 +41,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         items: const [
           BottomNavigationBarItem(
               icon: Icon(Icons.dashboard), label: 'Dashboard'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.people), label: 'Khách hàng'),
+          // BottomNavigationBarItem(
+          //     icon: Icon(Icons.people), label: 'Khách hàng'),
           BottomNavigationBarItem(
               icon: Icon(Icons.directions_bus), label: 'Chuyến đi'),
           BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'Menu'),

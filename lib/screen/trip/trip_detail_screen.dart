@@ -380,30 +380,30 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
             const SizedBox(height: 16),
 
             // Management Actions
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.download, size: 16),
-                    label: const Text('Xuất báo cáo'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: mainColor,
-                      side: BorderSide(color: mainColor),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: FilledButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.phone, size: 16),
-                    label: const Text('Gọi tài xế'),
-                    style: FilledButton.styleFrom(backgroundColor: mainColor),
-                  ),
-                ),
-              ],
-            ),
+            // Row(
+            //   children: [
+            //     Expanded(
+            //       child: OutlinedButton.icon(
+            //         onPressed: () {},
+            //         icon: const Icon(Icons.download, size: 16),
+            //         label: const Text('Xuất báo cáo'),
+            //         style: OutlinedButton.styleFrom(
+            //           foregroundColor: mainColor,
+            //           side: BorderSide(color: mainColor),
+            //         ),
+            //       ),
+            //     ),
+            //     const SizedBox(width: 12),
+            //     Expanded(
+            //       child: FilledButton.icon(
+            //         onPressed: () {},
+            //         icon: const Icon(Icons.phone, size: 16),
+            //         label: const Text('Gọi tài xế'),
+            //         style: FilledButton.styleFrom(backgroundColor: mainColor),
+            //       ),
+            //     ),
+            //   ],
+            // ),
           ],
         ),
       ),

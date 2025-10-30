@@ -24,51 +24,27 @@ class ManagerTabView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Quản lý nhà xe'),
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(48),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: TabBar(
-                isScrollable: true,
-                tabAlignment: TabAlignment.start,
-                tabs: const <Tab>[
-                  Tab(text: 'Xe ghép/Sân bay'),
-                  Tab(text: 'Trung chuyển'),
-                  Tab(text: 'Limo/Xe khách/Giường nằm'),
-                ],
-              ),
-            ),
-          ),
-          actions: [
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.search),
-            ),
-          ],
-        ),
-        body: TabBarView(
-          children: <Widget>[
-            BlocBuilder<TripBloc, TripState>(
-              builder: (context, state) {
-                return ShareAirportPane(
-                  internalGroups: internalGroups,
-                  publicGroups: publicGroups,
-                  isLoadingGroups: isLoadingGroups,
-                  trips: state.trips,
-                  isLoadingTrips: state.isLoadingTrips,
-                );
-              },
-            ),
-            const TransferManagerPane(),
-            const CoachPane(),
-          ],
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Quản lý nhà xe'),
+        // bottom: PreferredSize(
+        //   preferredSize: const Size.fromHeight(48),
+        //   child: Align(
+        //     alignment: Alignment.centerLeft,
+        //     child: TabBar(
+        //       isScrollable: true,
+        //       tabAlignment: TabAlignment.start,
+        //       tabs: const <Tab>[
+        //         Tab(text: 'Xe ghép/Sân bay'),
+        //         Tab(text: 'Trung chuyển'),
+        //         Tab(text: 'Limo/Xe khách/Giường nằm'),
+        //       ],
+        //     ),
+        //   ),
+        // ),
+        // v
       ),
+      body: CoachPane(),
     );
   }
 }
