@@ -1,0 +1,141 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'trip_response.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+_$TripListResponseImpl _$$TripListResponseImplFromJson(
+        Map<String, dynamic> json) =>
+    _$TripListResponseImpl(
+      totalDonKhach: (json['totalDonKhach'] as num?)?.toInt() ?? 0,
+      totalTraKhach: (json['totalTraKhach'] as num?)?.toInt() ?? 0,
+      data: (json['data'] as List<dynamic>?)
+          ?.map((e) => TripItem.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      statusCode: (json['statusCode'] as num?)?.toInt() ?? 0,
+      message: json['message'] as String?,
+      pageIndex: (json['pageIndex'] as num?)?.toInt() ?? 0,
+      pageSize: (json['pageSize'] as num?)?.toInt() ?? 0,
+      totalRecords: (json['totalRecords'] as num?)?.toInt() ?? 0,
+      pageCount: (json['pageCount'] as num?)?.toInt() ?? 0,
+    );
+
+Map<String, dynamic> _$$TripListResponseImplToJson(
+        _$TripListResponseImpl instance) =>
+    <String, dynamic>{
+      'totalDonKhach': instance.totalDonKhach,
+      'totalTraKhach': instance.totalTraKhach,
+      'data': instance.data,
+      'statusCode': instance.statusCode,
+      'message': instance.message,
+      'pageIndex': instance.pageIndex,
+      'pageSize': instance.pageSize,
+      'totalRecords': instance.totalRecords,
+      'pageCount': instance.pageCount,
+    };
+
+_$TripItemImpl _$$TripItemImplFromJson(Map<String, dynamic> json) =>
+    _$TripItemImpl(
+      idDatVe: json['idDatVe'] as String? ?? '',
+      idYeuCauDatVe: json['idYeuCauDatVe'] as String? ?? '',
+      idTaiXeTC: json['idTaiXeTC'] as String? ?? '',
+      maVe: json['maVe'] as String? ?? '',
+      idDatVeTotal: json['idDatVeTotal'] as String? ?? '',
+      soGhe: json['soGhe'] as String? ?? '',
+      hoTenTaiXeTrungChuyen: json['hoTenTaiXeTrungChuyen'] as String?,
+      dienThoaiTaiXeTrungChuyen: json['dienThoaiTaiXeTrungChuyen'] as String?,
+      tenXeTrungChuyen: json['tenXeTrungChuyen'] as String?,
+      bienSoXeTrungChuyen: json['bienSoXeTrungChuyen'] as String?,
+      tenKhachHang: json['tenKhachHang'] as String? ?? '',
+      soDienThoaiKhach: json['soDienThoaiKhach'] as String? ?? '',
+      diaChiKhachDi: json['diaChiKhachDi'] as String? ?? '',
+      toaDoDiaChiKhachDi: json['toaDoDiaChiKhachDi'] as String?,
+      diaChiKhachDen: json['diaChiKhachDen'] as String? ?? '',
+      toaDoDiaChiKhachDen: json['toaDoDiaChiKhachDen'] as String?,
+      diaChiLimoDi: json['diaChiLimoDi'] as String?,
+      toaDoLimoDi: json['toaDoLimoDi'] as String?,
+      vanPhongDen: json['vanPhongDen'] as String? ?? '',
+      diaChiLimoDen: json['diaChiLimoDen'] as String? ?? '',
+      toaDoLimoDen: json['toaDoLimoDen'] as String?,
+      ghiChu: json['ghiChu'] as String?,
+      ngayChay: json['ngayChay'] as String?,
+      thoiGianDi: json['thoiGianDi'] as String?,
+      idNhaXeLimo: (json['idNhaXeLimo'] as num?)?.toInt() ?? 0,
+      loaiKhach: (json['loaiKhach'] as num?)?.toInt() ?? 0,
+      khachTrungChuyen: json['khachTrungChuyen'] as String?,
+      trangThaiVe: (json['trangThaiVe'] as num?)?.toInt() ?? 0,
+      trangThaiTC: (json['trangThaiTC'] as num?)?.toInt() ?? 0,
+      daThanhToan: (json['daThanhToan'] as num?)?.toInt() ?? 0,
+      tienVe: (json['tienVe'] as num?)?.toDouble() ?? 0.0,
+      chietKhau: (json['chietKhau'] as num?)?.toDouble() ?? 0.0,
+      soTienCoc: (json['soTienCoc'] as num?)?.toDouble() ?? 0.0,
+      hoTenKhachDatHo: json['hoTenKhachDatHo'] as String?,
+      soDienThoaiKhachDatHo: json['soDienThoaiKhachDatHo'] as String?,
+      tenNhom: json['tenNhom'] as String?,
+      diemBanVe: (json['diemBanVe'] as num?)?.toInt() ?? 0,
+      diemQuanLy: (json['diemQuanLy'] as num?)?.toInt() ?? 0,
+      soKhach: (json['soKhach'] as num?)?.toInt() ?? 0,
+      tenHinhThuc: json['tenHinhThuc'] as String?,
+      ngayChayList: json['ngayChayList'] as String?,
+      thoiGianList: json['thoiGianList'] as String?,
+      idHinhThucDiChuyen: (json['idHinhThucDiChuyen'] as num?)?.toInt() ?? 0,
+      loaVe: json['loaVe'] as String?,
+      hoTenTaiXe: json['hoTenTaiXe'] as String?,
+      dienThoaiTaiXe: json['dienThoaiTaiXe'] as String?,
+      nguoiTao: json['nguoiTao'] as String?,
+      khuHoiYn: (json['khuHoiYn'] as num?)?.toInt() ?? 0,
+    );
+
+Map<String, dynamic> _$$TripItemImplToJson(_$TripItemImpl instance) =>
+    <String, dynamic>{
+      'idDatVe': instance.idDatVe,
+      'idYeuCauDatVe': instance.idYeuCauDatVe,
+      'idTaiXeTC': instance.idTaiXeTC,
+      'maVe': instance.maVe,
+      'idDatVeTotal': instance.idDatVeTotal,
+      'soGhe': instance.soGhe,
+      'hoTenTaiXeTrungChuyen': instance.hoTenTaiXeTrungChuyen,
+      'dienThoaiTaiXeTrungChuyen': instance.dienThoaiTaiXeTrungChuyen,
+      'tenXeTrungChuyen': instance.tenXeTrungChuyen,
+      'bienSoXeTrungChuyen': instance.bienSoXeTrungChuyen,
+      'tenKhachHang': instance.tenKhachHang,
+      'soDienThoaiKhach': instance.soDienThoaiKhach,
+      'diaChiKhachDi': instance.diaChiKhachDi,
+      'toaDoDiaChiKhachDi': instance.toaDoDiaChiKhachDi,
+      'diaChiKhachDen': instance.diaChiKhachDen,
+      'toaDoDiaChiKhachDen': instance.toaDoDiaChiKhachDen,
+      'diaChiLimoDi': instance.diaChiLimoDi,
+      'toaDoLimoDi': instance.toaDoLimoDi,
+      'vanPhongDen': instance.vanPhongDen,
+      'diaChiLimoDen': instance.diaChiLimoDen,
+      'toaDoLimoDen': instance.toaDoLimoDen,
+      'ghiChu': instance.ghiChu,
+      'ngayChay': instance.ngayChay,
+      'thoiGianDi': instance.thoiGianDi,
+      'idNhaXeLimo': instance.idNhaXeLimo,
+      'loaiKhach': instance.loaiKhach,
+      'khachTrungChuyen': instance.khachTrungChuyen,
+      'trangThaiVe': instance.trangThaiVe,
+      'trangThaiTC': instance.trangThaiTC,
+      'daThanhToan': instance.daThanhToan,
+      'tienVe': instance.tienVe,
+      'chietKhau': instance.chietKhau,
+      'soTienCoc': instance.soTienCoc,
+      'hoTenKhachDatHo': instance.hoTenKhachDatHo,
+      'soDienThoaiKhachDatHo': instance.soDienThoaiKhachDatHo,
+      'tenNhom': instance.tenNhom,
+      'diemBanVe': instance.diemBanVe,
+      'diemQuanLy': instance.diemQuanLy,
+      'soKhach': instance.soKhach,
+      'tenHinhThuc': instance.tenHinhThuc,
+      'ngayChayList': instance.ngayChayList,
+      'thoiGianList': instance.thoiGianList,
+      'idHinhThucDiChuyen': instance.idHinhThucDiChuyen,
+      'loaVe': instance.loaVe,
+      'hoTenTaiXe': instance.hoTenTaiXe,
+      'dienThoaiTaiXe': instance.dienThoaiTaiXe,
+      'nguoiTao': instance.nguoiTao,
+      'khuHoiYn': instance.khuHoiYn,
+    };

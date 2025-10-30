@@ -131,6 +131,8 @@ class BaseApi {
       return e.response.data;
     }
     // onErrorCallBack(e);
+    // Re-throw the exception if we can't handle it
+    throw e;
   }
 
   Future<Map<String, String>> getBaseHeader() async {

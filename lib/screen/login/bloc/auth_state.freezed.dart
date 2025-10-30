@@ -351,6 +351,8 @@ abstract class _$$AuthStateAuthenticatedImplCopyWith<$Res> {
       __$$AuthStateAuthenticatedImplCopyWithImpl<$Res>;
   @useResult
   $Res call({UserAccount user, String accessToken});
+
+  $UserAccountCopyWith<$Res> get user;
 }
 
 /// @nodoc
@@ -367,11 +369,11 @@ class __$$AuthStateAuthenticatedImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? user = freezed,
+    Object? user = null,
     Object? accessToken = null,
   }) {
     return _then(_$AuthStateAuthenticatedImpl(
-      user: freezed == user
+      user: null == user
           ? _value.user
           : user // ignore: cast_nullable_to_non_nullable
               as UserAccount,
@@ -380,6 +382,16 @@ class __$$AuthStateAuthenticatedImplCopyWithImpl<$Res>
           : accessToken // ignore: cast_nullable_to_non_nullable
               as String,
     ));
+  }
+
+  /// Create a copy of AuthState
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $UserAccountCopyWith<$Res> get user {
+    return $UserAccountCopyWith<$Res>(_value.user, (value) {
+      return _then(_value.copyWith(user: value));
+    });
   }
 }
 
@@ -404,14 +416,13 @@ class _$AuthStateAuthenticatedImpl implements AuthStateAuthenticated {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$AuthStateAuthenticatedImpl &&
-            const DeepCollectionEquality().equals(other.user, user) &&
+            (identical(other.user, user) || other.user == user) &&
             (identical(other.accessToken, accessToken) ||
                 other.accessToken == accessToken));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, const DeepCollectionEquality().hash(user), accessToken);
+  int get hashCode => Object.hash(runtimeType, user, accessToken);
 
   /// Create a copy of AuthState
   /// with the given fields replaced by the non-null parameter values.
