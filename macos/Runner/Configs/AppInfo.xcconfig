@@ -8,7 +8,7 @@
 PRODUCT_NAME = Quản lý Timos
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.timosCustomer2025
+PRODUCT_BUNDLE_IDENTIFIER = com.takecare.timoscustomer2025
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2025 com.example. All rights reserved.

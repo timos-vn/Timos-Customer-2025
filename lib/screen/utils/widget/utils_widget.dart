@@ -64,6 +64,34 @@ class UtilsWidget {
           Row(
             children: [
               Expanded(
+                child: Builder(
+                  builder: (context) {
+                    return SizedBox(
+                      width: double.infinity,
+                      height: 45,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: textColorSecondary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(AppDimens.radius8),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: UtilsWidget.buildText(
+                            text: "Huỷ",
+                            textColor: white,
+                            fontWeight: FontWeight.w700),
+                      ),
+                    );
+                  }
+                ),
+              ),
+              SizedBox(
+                width: 12,
+              ),
+              Expanded(
                 child: SizedBox(
                   width: double.infinity,
                   height: 45,
