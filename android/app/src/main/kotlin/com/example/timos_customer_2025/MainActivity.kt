@@ -1,4 +1,4 @@
-package com.example.timos_customer_2025
+package com.takecare.timoscustomer2025
 
 import io.flutter.embedding.android.FlutterActivity
 

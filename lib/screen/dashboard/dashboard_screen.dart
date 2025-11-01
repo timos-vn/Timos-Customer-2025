@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:timos_customer_2025/enum/enum_request_method.dart';
+import 'package:timos_customer_2025/screen/utils/widget/utils_widget.dart';
 import 'package:timos_customer_2025/themes/colors.dart';
 import 'package:timos_customer_2025/screen/customer/customer_sceen.dart';
 import 'package:timos_customer_2025/screen/trip/trip_screen.dart';
 import 'package:timos_customer_2025/services/auth_service.dart';
 import 'package:timos_customer_2025/screen/routers/router_generator.dart';
 import 'package:timos_customer_2025/models/response/auth/auth_response.dart';
+import 'package:timos_customer_2025/utils/utils.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -206,6 +208,55 @@ class _ProfileTab extends StatelessWidget {
                         ),
                       ],
                     ),
+                    const Divider(height: 32),
+                    InkWell(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return UtilsWidget.dialogUpdateShorebird(
+                              contentNotification: "Bạn có chắc muốn xoá tài khoản, hành động này sẽ xoá toàn bộ dữ liệu và không thể khôi phục.",
+                              fuc: () async {
+                                await AuthService.signOut();
+                                if (context.mounted) {
+                                  Navigator.of(context).pushNamedAndRemoveUntil(
+                                    RouterGenerator.routeLoginScreen,
+                                        (Route<dynamic> route) => false,
+                                  );
+                                }
+                              },
+                            );
+                          },
+                        );
+                      },
+                      child: Row(
+                        children: [
+                          const Icon(Icons.delete, color: Colors.grey),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Xoá tài khoản',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                Text(
+                                  "Xoá tài khoản sẽ mất toàn bộ dữ liệu và không thể khôi phục",
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -234,6 +285,63 @@ class _ProfileTab extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget dialogUpdateShorebird({
+    required String contentNotification,
+    required Function() fuc,
+  }) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(
+            height: 12,
+          ),
+          Utils.buildText(
+            "Ứng dụng cần cập nhật",
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+          ),
+          const SizedBox(
+            height: 12,
+          ),
+          Utils.buildText(
+            contentNotification,
+            fontSize: 14,
+            maxLines: 4,
+            // fontWeight: FontWeight.w700,
+          ),
+          const SizedBox(
+            height: 16,
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 45,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: colorOrange,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () => fuc(),
+                    child: UtilsWidget.buildText(text: "Đồng ý",
+                        textColor: white, fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

@@ -45,7 +45,7 @@ class UtilsWidget {
             height: AppDimens.padding12,
           ),
           buildText(
-            text: "Ứng dụng cần cập nhật",
+            text: "Thông báo",
             fontSize: AppDimens.sizeTextMedium,
             fontWeight: FontWeight.w700,
           ),
