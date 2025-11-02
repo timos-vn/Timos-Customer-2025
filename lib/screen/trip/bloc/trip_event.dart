@@ -64,4 +64,5 @@ class TripEvent with _$TripEvent {
     required int idNhom,
     String? idDoiTac,
   }) = LoadProcessingTripsEvent;
+
 }
