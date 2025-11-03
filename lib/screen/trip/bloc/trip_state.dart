@@ -1,6 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:timos_customer_2025/models/response/group/group_response.dart';
-import 'package:timos_customer_2025/models/response/trip/trip_response.dart';
+import 'package:timos_customer_2025/models/response/response.dart';
 
 part 'trip_state.freezed.dart';
 
@@ -59,17 +58,4 @@ class TripState with _$TripState {
   factory TripState.initial() => const TripState();
 }
 
-// Trip summary model for future use
-@freezed
-class TripSummary with _$TripSummary {
-  const factory TripSummary({
-    required String tripId,
-    required String routeName,
-    required DateTime departureTime,
-    required int bookedSeats,
-    required int totalSeats,
-    required String licensePlate,
-    required String driverName,
-    required String driverPhone,
-  }) = _TripSummary;
-}
+//

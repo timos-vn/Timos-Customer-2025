@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
-import 'package:timos_customer_2025/enum/enum_request_method.dart';
 import 'package:timos_customer_2025/screen/routers/router_generator.dart';
 import 'package:timos_customer_2025/themes/colors.dart';
 import 'package:timos_customer_2025/services/services.dart';
 import 'package:timos_customer_2025/models/response/response.dart';
-import 'package:timos_customer_2025/utils/date_utils.dart';
 
 class CoachPane extends StatefulWidget {
   const CoachPane({super.key});
@@ -276,19 +274,7 @@ class _CoachPaneState extends State<CoachPane> {
                             trailing: const Icon(Icons.chevron_right),
                             onTap: () => Navigator.of(context).pushNamed(
                               RouterGenerator.routeTripDetail,
-                              arguments: TripSummary(
-                                tripId: 'ti',
-                                routeName: trip.tenTuyenDuong,
-                                departureTime: DateTime.now()
-                                    .add(Duration(hours: 72 + index * 3)),
-                                bookedSeats: 10,
-                                totalSeats: 28,
-                                licensePlate:
-                                trip.bienSoXe,
-                                driverName: trip.tenTaiXe,
-                                driverPhone:
-                                    '0900${1.toString().padLeft(6, '0')}',
-                              ),
+                              arguments: trip.id,
                             ),
                           ),
                         );

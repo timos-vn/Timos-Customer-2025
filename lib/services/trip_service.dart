@@ -105,6 +105,8 @@ class TripService extends BaseRepository {
         idNhanVien: idNhanVien,
         ngayBatDau: ngayBatDau,
         ngayKetThuc: ngayKetThuc,
+        // ngayBatDau: "2025-08-19",
+        // ngayKetThuc: "2025-10-24",
         pageIndex: pageIndex,
         pageSize: pageSize,
       );
@@ -128,6 +130,36 @@ class TripService extends BaseRepository {
       return CoachPaneTripResponse.fromJson(response);
     } catch (e) {
       throw Exception('Lỗi khi lấy danh sách chuyến đi: $e');
+    }
+  }
+
+  Future<DetailCoachPaneTripResponse> getDetailCoachTrip({
+    required String idLichXeLimousine,
+  }) async {
+    try {
+      final request = DetailCoachPaneTripRequest(
+        idLichXeLimousine: idLichXeLimousine,
+      );
+      print("detail coach trip request: ${request.toJson()}");
+      final response = await baseCallApi(
+        '/api/v1/manage/chuyen-di/chi-tiet-chuyen-di',
+        EnumRequestMethod.post,
+        jsonMap: request.toJson(),
+        isToken: true,
+      );
+      print("detail coach trip response: $response");
+      if (response == null) {
+        throw Exception('Response is null');
+      }
+
+      if (response is! Map<String, dynamic>) {
+        throw Exception(
+            'Response is not a valid JSON object: ${response.runtimeType}');
+      }
+
+      return DetailCoachPaneTripResponse.fromJson(response);
+    } catch (e) {
+      throw Exception('Lỗi khi lấy chi tiết chuyến đi: $e');
     }
   }
 }

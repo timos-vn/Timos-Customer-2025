@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Utils {
   static bool isEmpty(String? value) {
@@ -26,6 +27,21 @@ class Utils {
           ),
       maxLines: maxLines ?? 1,
     );
+  }
+
+  static String formatTotalMoney(dynamic amount) {
+    String totalMoney = NumberFormat.simpleCurrency(locale: "vi_VN")
+        .format(amount)
+        .replaceAll(' ', '')
+        .replaceAll('.', ',')
+        .replaceAll('₫', '')
+        .toString();
+    if (totalMoney.split(' ').length == 1 ||
+        totalMoney.split(' ').length == 2) {
+      return totalMoney;
+    } else {
+      return totalMoney.split(' ')[0] + ' ' + totalMoney.split(' ')[1];
+    }
   }
 
 
