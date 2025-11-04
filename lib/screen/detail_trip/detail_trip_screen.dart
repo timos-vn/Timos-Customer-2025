@@ -338,7 +338,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                                               (currentFloor?.danhSachGhe ?? [] ).toList().length,
                                                   (index) {
                                                 final list = (currentFloor?.danhSachGhe ?? [] )
-                                                    .where((e) => e.day == index)
+                                                    .where((e) => e.hang == index)
                                                     .toList();
 
 

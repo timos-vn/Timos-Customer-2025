@@ -7,6 +7,7 @@ import 'package:timos_customer_2025/screen/trip/trip_screen.dart';
 import 'package:timos_customer_2025/services/auth_service.dart';
 import 'package:timos_customer_2025/screen/routers/router_generator.dart';
 import 'package:timos_customer_2025/models/response/auth/auth_response.dart';
+import 'package:timos_customer_2025/utils/dio_log.dart';
 import 'package:timos_customer_2025/utils/utils.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -99,13 +100,18 @@ class _ProfileTab extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Avatar mặc định
-            const CircleAvatar(
-              radius: 60,
-              backgroundColor: Colors.grey,
-              child: Icon(
-                Icons.person,
-                size: 80,
-                color: Colors.white,
+            GestureDetector(
+              onDoubleTap: () {
+                Diolog().showDiolog(context);
+              },
+              child: const CircleAvatar(
+                radius: 60,
+                backgroundColor: Colors.grey,
+                child: Icon(
+                  Icons.person,
+                  size: 80,
+                  color: Colors.white,
+                ),
               ),
             ),
             
