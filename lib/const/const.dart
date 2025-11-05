@@ -5,7 +5,7 @@ class Const {
 
   /// live : https://api.quanly.timos.vn
 
-  /// dev: https://devapicus.trungchuyenhn.com
+  /// dev: https://dev.api.quanly.timos.vn
   // ignore: non_constant_identifier_names
   static String HOST_URL = "https://api.quanly.timos.vn";
   // static  String HOST_URL = "https://apicus.trungchuyenhn.com";

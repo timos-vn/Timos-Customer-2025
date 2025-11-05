@@ -1,15 +1,26 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:timos_customer_2025/models/response/response.dart';
 
-part 'detail_trip_state.freezed.dart';
+class DetailTripState {
+  DetailCoachPaneTripData? detailCoachPaneTrip;
+  bool isLoadingTrips = false;
+  String? tripError;
 
-@freezed
-class DetailTripState with _$DetailTripState {
-  const factory DetailTripState({
+  DetailTripState({
+    this.detailCoachPaneTrip,
+    this.isLoadingTrips = false,
+    this.tripError,
+  });
+
+  DetailTripState copyWith({
     DetailCoachPaneTripData? detailCoachPaneTrip,
-    @Default(false) bool isLoadingTrips,
+    bool? isLoadingTrips,
     String? tripError,
-  }) = _DetailTripState;
-
-  factory DetailTripState.initial() => const DetailTripState();
+  }) {
+    return DetailTripState(
+      detailCoachPaneTrip: detailCoachPaneTrip ?? this.detailCoachPaneTrip,
+      isLoadingTrips: isLoadingTrips ?? this.isLoadingTrips,
+      tripError: tripError ?? this.tripError,
+    );
+  }
 }

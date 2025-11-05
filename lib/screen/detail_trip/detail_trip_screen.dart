@@ -153,7 +153,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                             textColor: Colors.white,
                           ),
                           UtilsWidget.buildText(
-                            text: _formatCurrency(data.tongDoanhThu),
+                            text: _formatCurrency(data.tongDoanhThu.toDouble()),
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             textColor: Colors.white,
@@ -200,7 +200,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                           padding: const EdgeInsets.only(right: 8),
                           child: ChoiceChip(
                             label: Text(
-                                "Tầng ${floor.tang} (${floor.soGheDaDat} đặt, ${floor.soGheGiuCho} giữ)"),
+                                "Tầng ${floor.tang + 1} (${floor.soGheDaDat} đặt, ${floor.soGheGiuCho} giữ)"),
                             selected: isSelected,
                             onSelected: (selected) {
                               setState(() {
@@ -233,6 +233,11 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                         color: Colors.orange.shade100,
                         borderColor: Colors.orange,
                         label: "Giữ chỗ"),
+                    const SizedBox(width: 16),
+                    _buildLegendBox(
+                        color: Colors.green.shade100,
+                        borderColor: Colors.green,
+                        label: "Vé trung chuyển"),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -319,7 +324,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                           //   }
                           // }
                           return SizedBox(
-                            height: 500,
+                            height: 800,
                             width: double.infinity,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -340,16 +345,14 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                                                 final list = (currentFloor?.danhSachGhe ?? [] )
                                                     .where((e) => e.hang == index)
                                                     .toList();
-
-
                                                 return Row(
                                                   children: [
                                                     if (index == 0)
                                                       const Padding(
                                                         padding: EdgeInsets.all(4.0),
                                                         child: SizedBox(
-                                                          width: 60,
-                                                          height: 60,
+                                                          width: 90,
+                                                          height: 90,
                                                           child: Center(child: Text("Lái xe")),
                                                         ),
                                                       ),
@@ -376,20 +379,26 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                                                           borderColor = Colors.grey.shade300;
                                                           break;
                                                       }
+
+                                                      if(!seat.isGheAo) {
+                                                        return const SizedBox(
+                                                        );
+                                                      }
+
                                                       return Padding(
                                                         padding: const EdgeInsets.all(4.0),
                                                         child: InkWell(
                                                           onTap: () {},
                                                           child: Container(
-                                                            width: 60,
-                                                            height: 60,
+                                                            width: 90,
+                                                            height: 90,
                                                             decoration: BoxDecoration(
                                                               borderRadius: BorderRadius.circular(8),
                                                               border: Border.all(
-                                                                color: borderColor,
+                                                                color: seat.isTrungChuyen ? Colors.green : borderColor,
                                                                 width: 2,
                                                               ),
-                                                              color: seatColor ,
+                                                              color: seat.isTrungChuyen ? Colors.green.shade50 : seatColor ,
                                                             ),
                                                             child: Center(
                                                               child: Column(
@@ -398,7 +407,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                                                                   Text(
                                                                     seat.tenGhe.toUpperCase(),
                                                                     style: TextStyle(
-                                                                      color: textColor,
+                                                                      color: seat.isTrungChuyen ? Colors.green : textColor,
                                                                       fontWeight: FontWeight.bold,
                                                                     ),
                                                                   ),
@@ -406,7 +415,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                                                                     Utils.formatTotalMoney(seat.giaVe),
                                                                     style: TextStyle(
                                                                       fontSize: 10,
-                                                                      color: textColor,
+                                                                      color: seat.isTrungChuyen ? Colors.green : textColor,
                                                                     ),
                                                                   ),
                                                                 ],
@@ -449,7 +458,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                       Text('Tổng tiền',
                           style: Theme.of(context).textTheme.titleMedium),
                       Text(
-                        _formatCurrency(data.tongDoanhThu),
+                        _formatCurrency(data.tongDoanhThu.toDouble()),
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold, color: mainColor),
                       ),
@@ -465,72 +474,6 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
     );
   }
 
-  Widget _buildSeatItem(DetailGheItem seat) {
-    Color seatColor;
-    Color borderColor;
-    Color textColor = Colors.black;
-
-    // Map trangThaiGhe: 1 = Trống, 2 = Đã đặt, 3 = Giữ chỗ
-    switch (seat.trangThaiGhe) {
-      case 2: // Đã đặt
-        seatColor = mainColor;
-        borderColor = mainColor;
-        textColor = Colors.white;
-        break;
-      case 3: // Giữ chỗ
-        seatColor = Colors.orange.shade100;
-        borderColor = Colors.orange;
-        break;
-      case 1: // Trống
-      default:
-        seatColor = Colors.white;
-        borderColor = Colors.grey.shade300;
-        break;
-    }
-
-    return GestureDetector(
-      onTap: () => _showSeatDetail(seat),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: borderColor, width: 2),
-          color: seatColor,
-          boxShadow: seat.trangThaiGhe == 2
-              ? [
-                  BoxShadow(
-                    color: mainColor.withOpacity(0.3),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ]
-              : null,
-        ),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                seat.tenGhe,
-                style: TextStyle(
-                  color: textColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-              ),
-              if (seat.trangThaiGhe != 1 && seat.giaVe > 0)
-                Text(
-                  "${(seat.giaVe / 1000).toStringAsFixed(0)}K",
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: textColor.withOpacity(0.8),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
   String _formatCurrency(double amount) {
     return "${amount.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} VNĐ";
@@ -591,40 +534,6 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
     );
   }
 
-  void _showSeatDetail(DetailGheItem seat) {
-    if (seat.trangThaiGhe == 1) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Ghế ${seat.tenGhe} - Trống'),
-          backgroundColor: Colors.grey,
-        ),
-      );
-      return;
-    }
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: Text('Thông tin ghế ${seat.tenGhe}'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildDetailRow('Ghế', seat.tenGhe),
-            _buildDetailRow('Tầng', 'Tầng ${seat.tang}'),
-            _buildDetailRow('Giá vé', _formatCurrency(seat.giaVe)),
-            _buildDetailRow('Trạng thái', seat.tenTrangThaiGhe),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Đóng'),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildDetailRow(String label, String value) {
     return Padding(

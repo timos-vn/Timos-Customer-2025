@@ -16,13 +16,24 @@ class _CoachPaneState extends State<CoachPane> {
   String vehicleType = 'Limo';
   String selectedSlot = '06:00-09:00';
   final List<String> vehicleTypes = <String>['Limo', 'Xe Khách', 'Giường nằm'];
-  final List<String> timeSlots = <String>[
-    '06:00-09:00',
-    '09:00-12:00',
-    '12:00-15:00',
-    '15:00-18:00',
-    '18:00-21:00'
-  ];
+  // final List<String> timeSlots = <String>[
+  //   '06:00-09:00',
+  //   '09:00-12:00',
+  //   '12:00-15:00',
+  //   '15:00-18:00',
+  //   '18:00-21:00'
+  // ];
+
+  final List<DateTime> dateFilters = List.generate(7, (index) {
+    // Tạo 7 ngày: hôm nay + 6 ngày tới
+    return DateTime.now().add(Duration(days: index));
+  });
+
+  // final List<String> formattedDates = dateFilters.map((date) {
+  //   return "${date.day.toString().padLeft(2, '0')}/"
+  //       "${date.month.toString().padLeft(2, '0')}/"
+  //       "${date.year}";
+  // }).toList();
 
   // API related
   final TripService _coachTripService = TripService();
@@ -112,6 +123,11 @@ class _CoachPaneState extends State<CoachPane> {
 
   @override
   Widget build(BuildContext context) {
+    final timeSlots = dateFilters.map((date) {
+      return "${date.day.toString().padLeft(2, '0')}/"
+          "${date.month.toString().padLeft(2, '0')}/"
+          "${date.year}";
+    }).toList();
     return Column(
       children: [
         // Date Range Picker & Time Slot Selector
@@ -159,6 +175,7 @@ class _CoachPaneState extends State<CoachPane> {
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (BuildContext _, int i) {
+
                     final String slot = timeSlots[i];
                     final bool selected = slot == selectedSlot;
                     return ChoiceChip(

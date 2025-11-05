@@ -8,7 +8,7 @@ class DetailTripBloc extends Bloc<DetailTripEvent, DetailTripState> {
   DetailTripBloc({
     TripService? tripService,
   })  : _tripService = tripService ?? TripService(),
-        super(DetailTripState.initial()) {
+        super(DetailTripState()) {
     on<LoadDetailCoachPaneTripEvent>(_onLoadDetailCoachPaneTrip);
   }
 
