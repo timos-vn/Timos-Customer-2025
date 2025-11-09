@@ -324,7 +324,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                           //   }
                           // }
                           return SizedBox(
-                            height: 800,
+                            height: 1000,
                             width: double.infinity,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -351,8 +351,8 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                                                       const Padding(
                                                         padding: EdgeInsets.all(4.0),
                                                         child: SizedBox(
-                                                          width: 90,
-                                                          height: 90,
+                                                          width: 110,
+                                                          height: 110,
                                                           child: Center(child: Text("Lái xe")),
                                                         ),
                                                       ),
@@ -380,7 +380,11 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                                                           break;
                                                       }
 
-                                                      if(!seat.isGheAo) {
+                                                      if(seat.day == 0 && seat.tang == 0 && seat.hang == 0) {
+                                                        return SizedBox();
+                                                      }
+
+                                                      if(seat.isGheAo) {
                                                         return const SizedBox(
                                                         );
                                                       }
@@ -390,8 +394,8 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                                                         child: InkWell(
                                                           onTap: () {},
                                                           child: Container(
-                                                            width: 90,
-                                                            height: 90,
+                                                            width: 110,
+                                                            height: 110,
                                                             decoration: BoxDecoration(
                                                               borderRadius: BorderRadius.circular(8),
                                                               border: Border.all(
@@ -413,6 +417,20 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                                                                   ),
                                                                   Text(
                                                                     Utils.formatTotalMoney(seat.giaVe),
+                                                                    style: TextStyle(
+                                                                      fontSize: 10,
+                                                                      color: seat.isTrungChuyen ? Colors.green : textColor,
+                                                                    ),
+                                                                  ),
+                                                                  Text(
+                                                                    "${seat.tenKhachHang}\n${seat.soDienThoaiKhachHang}",
+                                                                    style: TextStyle(
+                                                                      fontSize: 10,
+                                                                      color: seat.isTrungChuyen ? Colors.green : textColor,
+                                                                    ),
+                                                                  ),
+                                                                  Text(
+                                                                    seat.ghiChu,
                                                                     style: TextStyle(
                                                                       fontSize: 10,
                                                                       color: seat.isTrungChuyen ? Colors.green : textColor,

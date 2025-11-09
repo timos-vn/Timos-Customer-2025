@@ -8,6 +8,7 @@ import 'package:timos_customer_2025/services/auth_service.dart';
 import 'package:timos_customer_2025/screen/routers/router_generator.dart';
 import 'package:timos_customer_2025/models/response/auth/auth_response.dart';
 import 'package:timos_customer_2025/utils/dio_log.dart';
+import 'package:timos_customer_2025/utils/shorebird_utils.dart';
 import 'package:timos_customer_2025/utils/utils.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -31,6 +32,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   void onTabSelected(int index) => setState(() => currentIndex = index);
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      ShorebirdUtils.instance.checkUpdateAndRestart(context);
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
