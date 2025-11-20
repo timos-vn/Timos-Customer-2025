@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:timos_customer_2025/models/response/group/group_response.dart';
 import 'package:timos_customer_2025/models/response/trip/trip_response.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/booking/booking_screen.dart';
 import '../bloc/trip_bloc.dart';
 import '../bloc/trip_state.dart';
 import 'share_airport_pane.dart';
@@ -45,6 +46,24 @@ class ManagerTabView extends StatelessWidget {
         // v
       ),
       body: CoachPane(),
+      floatingActionButton: BlocBuilder<TripBloc, TripState>(
+        builder: (context, state) {
+          return FloatingActionButton(
+            onPressed: () {
+              // Handle FAB action
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BookingScreen(
+
+                  ),
+                ),
+              );
+            },
+            child: const Icon(Icons.add),
+          );
+        },
+      ),
     );
   }
 }

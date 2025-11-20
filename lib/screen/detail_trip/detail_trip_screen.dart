@@ -348,9 +348,17 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                                                 return Row(
                                                   children: [
                                                     if (index == 0)
-                                                      const Padding(
+                                                       Padding(
                                                         padding: EdgeInsets.all(4.0),
-                                                        child: SizedBox(
+                                                        child: Container(
+                                                          decoration: BoxDecoration(
+                                                            borderRadius: BorderRadius.circular(8),
+                                                            border: Border.all(
+                                                              color: Colors.grey.shade300,
+                                                              width: 2,
+                                                            ),
+                                                            color: Colors.grey.shade200,
+                                                          ),
                                                           width: 110,
                                                           height: 110,
                                                           child: Center(child: Text("Lái xe")),

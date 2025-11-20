@@ -137,61 +137,61 @@ class _CoachPaneState extends State<CoachPane> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Date Range Picker Button
-              // InkWell(
-              //   onTap: _pickDateRange,
-              //   child: Container(
-              //     padding:
-              //         const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              //     decoration: BoxDecoration(
-              //       color: Colors.blue[50],
-              //       borderRadius: BorderRadius.circular(8),
-              //       border: Border.all(color: Colors.blue),
-              //     ),
-              //     child: Row(
-              //       mainAxisSize: MainAxisSize.min,
-              //       children: [
-              //         const Icon(Icons.calendar_today,
-              //             size: 18, color: Colors.blue),
-              //         const SizedBox(width: 8),
-              //         Text(
-              //           '${intl.DateFormat('dd/MM/yyyy').format(_startDate)} - ${intl.DateFormat('dd/MM/yyyy').format(_endDate)}',
-              //           style: const TextStyle(
-              //             color: Colors.blue,
-              //             fontWeight: FontWeight.w500,
-              //             fontSize: 14,
-              //           ),
-              //         ),
-              //         const SizedBox(width: 4),
-              //         const Icon(Icons.arrow_drop_down,
-              //             size: 22, color: Colors.blue),
-              //       ],
-              //     ),
-              //   ),
-              // ),
-              const SizedBox(height: 12),
-              // Time slot selector
-              SizedBox(
-                height: 40,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (BuildContext _, int i) {
-
-                    final String slot = timeSlots[i];
-                    final bool selected = slot == selectedSlot;
-                    return ChoiceChip(
-                      label: Text(slot),
-                      selected: selected,
-                      onSelected: (_) => setState(() => selectedSlot = slot),
-                      selectedColor: mainColor.withOpacity(0.2),
-                      side: selected
-                          ? BorderSide(color: mainColor)
-                          : BorderSide(color: Colors.grey.shade300),
-                    );
-                  },
-                  separatorBuilder: (_, __) => const SizedBox(width: 8),
-                  itemCount: timeSlots.length,
+              InkWell(
+                onTap: _pickDateRange,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.blue[50],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.blue),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.calendar_today,
+                          size: 18, color: Colors.blue),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${intl.DateFormat('dd/MM/yyyy').format(_startDate)} - ${intl.DateFormat('dd/MM/yyyy').format(_endDate)}',
+                        style: const TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      const Icon(Icons.arrow_drop_down,
+                          size: 22, color: Colors.blue),
+                    ],
+                  ),
                 ),
               ),
+              const SizedBox(height: 12),
+              // Time slot selector
+              // SizedBox(
+              //   height: 40,
+              //   child: ListView.separated(
+              //     scrollDirection: Axis.horizontal,
+              //     itemBuilder: (BuildContext _, int i) {
+
+              //       final String slot = timeSlots[i];
+              //       final bool selected = slot == selectedSlot;
+              //       return ChoiceChip(
+              //         label: Text(slot),
+              //         selected: selected,
+              //         onSelected: (_) => setState(() => selectedSlot = slot),
+              //         selectedColor: mainColor.withOpacity(0.2),
+              //         side: selected
+              //             ? BorderSide(color: mainColor)
+              //             : BorderSide(color: Colors.grey.shade300),
+              //       );
+              //     },
+              //     separatorBuilder: (_, __) => const SizedBox(width: 8),
+              //     itemCount: timeSlots.length,
+              //   ),
+              // ),
             ],
           ),
         ),

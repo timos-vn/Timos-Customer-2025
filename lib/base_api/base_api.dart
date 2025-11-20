@@ -9,6 +9,17 @@ import 'package:timos_customer_2025/enum/enum_request_method.dart';
 import 'package:timos_customer_2025/utils/dio_log.dart';
 
 class BaseApi {
+
+  // Singleton instance
+  static final BaseApi _instance = BaseApi._internal();
+
+  // Getter để lấy instance
+  factory BaseApi() {
+    return _instance;
+  }
+
+  BaseApi._internal(); // constructor private
+
   static Dio dio = getBaseDio();
   final box = GetStorage();
 
