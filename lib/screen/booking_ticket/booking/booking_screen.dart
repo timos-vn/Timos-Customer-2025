@@ -114,17 +114,17 @@ class _BookingScreenState extends State<BookingScreen> {
 
       // For demo show a Dialog
       TicketDetailModel ticketDetail = TicketDetailModel(
-        dropoff: state.dropoff,
-        pickup: state.pickup,
-        pickupDetail: state.pickupDetail,
-        dropoffDetail: state.dropoffDetail,
-        departureDate: state.departureDate,
-        returnDate: state.returnDate,
-        numCustomers: state.numCustomers,
-        isRoundTrip: state.isRoundTrip,
+        dropoff: _to?.tenThanhPho ?? "",
+        pickup: _from?.tenThanhPho ?? "",
+        pickupDetail: "",
+        dropoffDetail: "",
+        departureDate: dateTime,
+        returnDate: DateTime.now(),
+        numCustomers: _passengers,
+        isRoundTrip: false,
         typeCar: state.selectedVehicleType,
-        idDiemLen: state.idDiemLen,
-        idDiemXuong: state.idDiemXuong,
+        idDiemLen: _from?.maTP ?? "",
+        idDiemXuong: _to?.maTP ?? "",
       );
       // Navigator.pushNamed(context, RouterGenerator.ticketDetail,
       //     arguments: ticketDetail);

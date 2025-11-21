@@ -4,6 +4,7 @@ import 'package:timos_customer_2025/screen/booking_ticket/booking/model/ticket_d
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/bloc/ticket_price_bloc.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/bloc/ticket_price_event.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/bloc/ticket_price_state.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/road_trip_screen.dart';
 import 'package:timos_customer_2025/screen/utils/widget/utils_widget.dart';
 import 'package:timos_customer_2025/utils/date_utils.dart';
 import 'package:timos_customer_2025/utils/utils.dart';
@@ -70,16 +71,16 @@ class _TicketPriceScreenState extends State<TicketPriceScreen> {
                         widget.ticketDetailModel.idVanPhongDon =
                             item.idVanPhongDon;
                         widget.ticketDetailModel.idVanPhongTra = item.idVanPhongTra;
-                        // Navigator.push(
-                        //   context,
-                        //     MaterialPageRoute(
-                        //       builder: (context) => RoadTripScreen(
-                        //         typeTicketBusModel: state.typeTicketBusModel,
-                        //         thongTinTuyenDuong: item,
-                        //         ticketDetailModel: widget.ticketDetailModel,
-                        //       ),
-                        //     )
-                        // );
+                        Navigator.push(
+                          context,
+                            MaterialPageRoute(
+                              builder: (context) => RoadTripScreen(
+                                typeTicketBusModel: state.typeTicketBusModel,
+                                thongTinTuyenDuong: item,
+                                ticketDetailModel: widget.ticketDetailModel,
+                              ),
+                            )
+                        );
                       },
                       child: Container(
                         width: double.infinity,

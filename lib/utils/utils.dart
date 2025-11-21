@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:oktoast/oktoast.dart';
+import 'package:timos_customer_2025/screen/widget/custom_toast.dart';
 
 class Utils {
   static bool isEmpty(String? value) {
@@ -42,6 +44,16 @@ class Utils {
     } else {
       return totalMoney.split(' ')[0] + ' ' + totalMoney.split(' ')[1];
     }
+  }
+
+
+  static void showCustomToast(
+      BuildContext context, IconData icon, String title) {
+    showToastWidget(
+      customToast(context, icon, title),
+      duration: const Duration(seconds: 3),
+      onDismiss: () {},
+    );
   }
 
 

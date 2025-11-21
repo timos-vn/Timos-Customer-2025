@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:timos_customer_2025/screen/utils/widget/utils_widget.dart';
 import 'package:timos_customer_2025/themes/colors.dart';
 
-class SeatSelectionScreen extends StatefulWidget {
-  const SeatSelectionScreen({super.key});
+class SeatMngScreen extends StatefulWidget {
+  const SeatMngScreen({super.key});
 
   @override
-  State<SeatSelectionScreen> createState() => _SeatSelectionScreenState();
+  State<SeatMngScreen> createState() => _SeatSelectionScreenState();
 }
 
-class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
+class _SeatSelectionScreenState extends State<SeatMngScreen> {
   int selectedCoach = 1;
 
   final List<Map<String, dynamic>> coaches = [
