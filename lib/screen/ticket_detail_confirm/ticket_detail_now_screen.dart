@@ -7,7 +7,9 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:timos_customer_2025/const/app_dimens.dart';
 import 'package:timos_customer_2025/const/app_icon.dart';
+import 'package:timos_customer_2025/models/response/response.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/booking/model/ticket_detail_model.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_request.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/type_ticket_bus_model.dart';
 import 'package:timos_customer_2025/screen/ticket_detail_confirm/bloc/ticket_detail_now_bloc.dart';
 import 'package:timos_customer_2025/screen/ticket_detail_confirm/bloc/ticket_detail_now_event.dart';
@@ -18,14 +20,20 @@ import 'package:timos_customer_2025/utils/date_utils.dart';
 import 'package:timos_customer_2025/utils/input_widget.dart';
 import 'package:timos_customer_2025/utils/utils.dart';
 
-
 class TicketDetailNowScreen extends StatefulWidget {
   final TicketDetailModel ticketDetail;
 
-  final Set<SoDoGheLoaiX> soDuocChon;
+  // final Set<SoDoGheLoaiX> soDuocChon;
+
+  final ChiTietGhe chiTietGhe;
+  final CoachPaneTripItem coachPaneTripItem;
 
   const TicketDetailNowScreen(
-      {required this.ticketDetail, required this.soDuocChon, super.key});
+      {required this.ticketDetail,
+      // required this.soDuocChon,
+      required this.chiTietGhe,
+      required this.coachPaneTripItem,
+      super.key});
 
   @override
   State<TicketDetailNowScreen> createState() => _TicketDetailNowScreenState();
@@ -44,6 +52,9 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
 
   TextEditingController textNameController = TextEditingController();
   TextEditingController textNumberPhoneController = TextEditingController();
+
+  final diaChiKhachDi = TextEditingController();
+  final diaChiKhachDen = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -173,6 +184,62 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
                                   },
                                 ),
                               ],
+                            ),
+                            const SizedBox(height: 4),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text("Địa chỉ đi",
+                                        style: GoogleFonts.roboto(
+                                            fontSize: 14,
+                                            color: Colors.grey[700])),
+                                    Text(" *",
+                                        style: GoogleFonts.roboto(
+                                            fontSize: 14, color: colorRed)),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                InputWidget(
+                                  controller: diaChiKhachDi,
+                                  placeholder: 'Địa chỉ đi',
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        AppDimens.normalInputBorderRadius),
+                                    borderSide: const BorderSide(
+                                        color: colorApp, width: 1),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text("Địa chỉ đến",
+                                        style: GoogleFonts.roboto(
+                                            fontSize: 14,
+                                            color: Colors.grey[700])),
+                                    Text(" *",
+                                        style: GoogleFonts.roboto(
+                                            fontSize: 14, color: colorRed)),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                InputWidget(
+                                  controller: diaChiKhachDen,
+                                  placeholder: 'Địa chỉ đến',
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        AppDimens.normalInputBorderRadius),
+                                    borderSide: const BorderSide(
+                                        color: colorApp, width: 1),
+                                  ),
+                                ),
+                              ],
                             )
                           ],
                         ),
@@ -209,13 +276,29 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
               onPressed: () async {
                 if (_formKey.currentState?.validate() ?? false) {
                   final idDevice = "";
+                  // _bloc.add(
+                  //   ConfirmTicketEvent(
+                  //       ticketDetailModel: widget.ticketDetail,
+                  //       nameCustomer: textNameController.text.trim(),
+                  //       phoneCustomer: textNumberPhoneController.text.trim(),
+                  //       idDevice: idDevice ?? "",
+                  //       soDuocChon: widget.soDuocChon),
+                  // );
                   _bloc.add(
-                    ConfirmTicketEvent(
-                        ticketDetailModel: widget.ticketDetail,
-                        nameCustomer: textNameController.text.trim(),
-                        phoneCustomer: textNumberPhoneController.text.trim(),
-                        idDevice: idDevice ?? "",
-                        soDuocChon: widget.soDuocChon),
+                    BookTicketEvent(
+                      ticketDetailModel: widget.ticketDetail,
+                      nameCustomer: textNameController.text.trim(),
+                      phoneCustomer: textNumberPhoneController.text.trim(),
+                      idDevice: idDevice ?? "",
+                      chiTietGhe: widget.chiTietGhe,
+                      diaChiDi: diaChiKhachDi.text.trim(),
+                      diaChiDen: diaChiKhachDen.text.trim(),
+                      idLichXe: widget.coachPaneTripItem.id,
+                      idChang: widget.coachPaneTripItem.idTuyenDuong,
+                      idLichChayXe: 0,
+                      nguoiDat: '',
+                      idNhaXe: widget.coachPaneTripItem.idNhaXe,
+                    ),
                   );
                 } else {
                   log("Vui lòng điền đầy đủ thông tin.");
@@ -287,22 +370,24 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
               ],
             ),
             const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Text(
-                      "${ticketDetail.pickup}\n${ticketDetail.pickupDetail}",
-                      style: GoogleFonts.roboto(fontSize: 14)),
-                ),
-                Expanded(
-                  child: Text(
-                      "${ticketDetail.dropoff}\n${ticketDetail.dropoffDetail}",
-                      style: GoogleFonts.roboto(fontSize: 14)),
-                ),
-              ],
-            ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   crossAxisAlignment: CrossAxisAlignment.start,
+            //   children: [
+            //     Expanded(
+            //       child: Text(
+            //           "${ticketDetail.pickup}\n${ticketDetail.pickupDetail}",
+            //           style: GoogleFonts.roboto(fontSize: 14)),
+            //     ),
+            //     Expanded(
+            //       child: Text(
+            //           "${ticketDetail.dropoff}\n${ticketDetail.dropoffDetail}",
+            //           style: GoogleFonts.roboto(fontSize: 14)),
+            //     ),
+            //   ],
+            // ),
+            const SizedBox(height: 4),
+            _buildInfoRow("Tuyến đường:", ticketDetail.pickup ?? ""),
             const SizedBox(height: 4),
             _buildInfoRow("Giờ xuất phát:",
                 convertDateToString(ticketDetail.departureDate, pattern13)),

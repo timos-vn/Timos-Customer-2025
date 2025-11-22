@@ -47,6 +47,7 @@ class AuthService extends BaseRepository {
     _currentUser = loginData.taiKhoan;
 
     await _storage.write(Const.ACCESS_TOKEN, _accessToken);
+    await _storage.write(Const.USER_ID, loginData.taiKhoan.id);
     await _storage.write(Const.REFRESH_TOKEN, _refreshToken);
     await _storage.write('user_data', _currentUser?.toJson());
     

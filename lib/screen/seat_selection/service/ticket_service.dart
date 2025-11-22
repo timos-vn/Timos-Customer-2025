@@ -1,13 +1,23 @@
 
 import 'package:timos_customer_2025/base_api/base_repository.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_model.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_request.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/seating_model.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/seating_request_model.dart';
 
 class TicketService extends BaseRepository {
-  Future<void> bookTicket(BookTicketModel bookTicketModel) async {
+  // Future<void> bookTicket(BookTicketModel bookTicketModel) async {
+  //   await baseCallApi(
+  //     "https://devapicus.trungchuyenhn.com/api/v2/khach-hang-dat-ve/dat-ve-vang-lai",
+  //     "POST",
+  //     jsonMap: bookTicketModel.toJson(),
+  //     isToken: false,
+  //   );
+  // }
+
+  Future<void> bookTicket(BookTicketRequest bookTicketModel) async {
     await baseCallApi(
-      "https://devapicus.trungchuyenhn.com/api/v2/khach-hang-dat-ve/dat-ve-vang-lai",
+      "/api/v1/manage/chuyen-di/dat-ve-vang-lai",
       "POST",
       jsonMap: bookTicketModel.toJson(),
       isToken: false,

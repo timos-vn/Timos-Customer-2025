@@ -391,14 +391,14 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
                             //     context, RouterGenerator.ticketDetail,
                             //     arguments: widget.ticketCusModel);
                             widget.ticketCusModel.price = tongSoTien.toInt();
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => TicketDetailNowScreen(
-                                    ticketDetail: widget.ticketCusModel,
-                                    soDuocChon: soDuocChon,
-                                  ),
-                                ));
+                            // Navigator.push(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //       builder: (context) => TicketDetailNowScreen(
+                            //         ticketDetail: widget.ticketCusModel,
+                            //         soDuocChon: soDuocChon,
+                            //       ),
+                            //     ));
                           },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.yellow.shade700,

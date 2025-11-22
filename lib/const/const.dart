@@ -61,6 +61,7 @@ class Const {
 
   // ignore: non_constant_identifier_names
   static int ID_NHA_XE = 0;
+  static String ID_USER = "";
 
   static double giaTriChietKhau = 0;
 

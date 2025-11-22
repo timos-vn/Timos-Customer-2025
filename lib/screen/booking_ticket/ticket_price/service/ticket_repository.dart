@@ -13,9 +13,9 @@ class TicketRepository extends BaseRepository {
     String tuKhoa = "",
   }) async {
     final value = await baseCallApi(
-      "",
+      "/api/v2/khach-hang-dat-ve/loc-chuyen-di-theo-tinh",
       "POST",
-      urlOther: "https://devapicus.trungchuyenhn.com/api/v2/khach-hang-dat-ve/loc-chuyen-di-theo-tinh",
+      // urlOther: "",
       jsonMap: {
         "loaiHinhDichVu": loaiHinhDichVu,
         "idTinhDi": idTinhDi,

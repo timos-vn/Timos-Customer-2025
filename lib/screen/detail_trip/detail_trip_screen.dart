@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:timos_customer_2025/models/response/response.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/booking/model/ticket_detail_model.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/type_ticket_bus_model.dart';
+import 'package:timos_customer_2025/screen/ticket_detail_confirm/ticket_detail_now_screen.dart';
+import 'package:timos_customer_2025/screen/trip/widgets/driver_view.dart';
 import 'package:timos_customer_2025/themes/colors.dart';
 import 'package:timos_customer_2025/screen/utils/widget/utils_widget.dart';
 import 'package:timos_customer_2025/utils/utils.dart';
+import '../booking_ticket/ticket_price/model/book_ticket_request.dart';
 import 'bloc/detail_trip_bloc.dart';
 import 'bloc/detail_trip_event.dart';
 import 'bloc/detail_trip_state.dart';
@@ -11,7 +16,12 @@ import 'bloc/detail_trip_state.dart';
 class TripDetailScreen extends StatefulWidget {
   final String idLichXeLimousine;
 
-  const TripDetailScreen({super.key, required this.idLichXeLimousine});
+  final CoachPaneTripItem coachPaneTripItem;
+
+  const TripDetailScreen(
+      {super.key,
+      required this.idLichXeLimousine,
+      required this.coachPaneTripItem});
 
   @override
   State<TripDetailScreen> createState() => _TripDetailScreenState();
@@ -25,6 +35,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
   @override
   void initState() {
     super.initState();
+    print("tripSummary ${widget.coachPaneTripItem.id}");
     context.read<DetailTripBloc>().add(
           DetailTripEvent.loadDetailCoachPaneTrip(
             idLichXeLimousine: widget.idLichXeLimousine,
@@ -335,113 +346,231 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                                   child: Row(
                                     children: [
                                       Padding(
-                                        padding: const EdgeInsets.only(right: 6),
+                                        padding:
+                                            const EdgeInsets.only(right: 6),
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             ...List.generate(
-                                              (currentFloor?.danhSachGhe ?? [] ).toList().length,
-                                                  (index) {
-                                                final list = (currentFloor?.danhSachGhe ?? [] )
-                                                    .where((e) => e.hang == index)
+                                              (currentFloor?.danhSachGhe ?? [])
+                                                  .toList()
+                                                  .length,
+                                              (index) {
+                                                final list = (currentFloor
+                                                            ?.danhSachGhe ??
+                                                        [])
+                                                    .where(
+                                                        (e) => e.hang == index)
                                                     .toList();
                                                 return Row(
                                                   children: [
                                                     if (index == 0)
-                                                       Padding(
-                                                        padding: EdgeInsets.all(4.0),
+                                                      Padding(
+                                                        padding:
+                                                            EdgeInsets.all(4.0),
                                                         child: Container(
-                                                          decoration: BoxDecoration(
-                                                            borderRadius: BorderRadius.circular(8),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        8),
                                                             border: Border.all(
-                                                              color: Colors.grey.shade300,
+                                                              color: Colors.grey
+                                                                  .shade300,
                                                               width: 2,
                                                             ),
-                                                            color: Colors.grey.shade200,
+                                                            color: Colors
+                                                                .grey.shade200,
                                                           ),
                                                           width: 110,
                                                           height: 110,
-                                                          child: Center(child: Text("Lái xe")),
+                                                          child: Center(
+                                                              child: Text(
+                                                                  "Lái xe")),
                                                         ),
                                                       ),
-                                                    ...List.generate(list.length, (index) {
+                                                    ...List.generate(
+                                                        list.length, (index) {
                                                       final seat = list[index];
                                                       Color seatColor;
                                                       Color borderColor;
-                                                      Color textColor = Colors.black;
+                                                      Color textColor =
+                                                          Colors.black;
 
                                                       // Map trangThaiGhe: 1 = Trống, 2 = Đã đặt, 3 = Giữ chỗ
-                                                      switch (seat.trangThaiGhe) {
+                                                      switch (
+                                                          seat.trangThaiGhe) {
                                                         case 2: // Đã đặt
                                                           seatColor = mainColor;
-                                                          borderColor = mainColor;
-                                                          textColor = Colors.white;
+                                                          borderColor =
+                                                              mainColor;
+                                                          textColor =
+                                                              Colors.white;
                                                           break;
                                                         case 3: // Giữ chỗ
-                                                          seatColor = Colors.orange.shade100;
-                                                          borderColor = Colors.orange;
+                                                          seatColor = Colors
+                                                              .orange.shade100;
+                                                          borderColor =
+                                                              Colors.orange;
                                                           break;
                                                         case 1: // Trống
                                                         default:
-                                                          seatColor = Colors.white;
-                                                          borderColor = Colors.grey.shade300;
+                                                          seatColor =
+                                                              Colors.white;
+                                                          borderColor = Colors
+                                                              .grey.shade300;
                                                           break;
                                                       }
 
-                                                      if(seat.day == 0 && seat.tang == 0 && seat.hang == 0) {
+                                                      if (seat.day == 0 &&
+                                                          seat.tang == 0 &&
+                                                          seat.hang == 0) {
                                                         return SizedBox();
                                                       }
 
-                                                      if(seat.isGheAo) {
-                                                        return const SizedBox(
-                                                        );
+                                                      if (seat.isGheAo) {
+                                                        return const SizedBox();
                                                       }
 
                                                       return Padding(
-                                                        padding: const EdgeInsets.all(4.0),
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(4.0),
                                                         child: InkWell(
-                                                          onTap: () {},
+                                                          onTap: () {
+                                                            if (seat.trangThaiGhe ==
+                                                                1) {
+                                                              TicketDetailModel
+                                                                  ticket =
+                                                                  TicketDetailModel(
+                                                                dropoff: seat
+                                                                    .diaChiKhachDen,
+                                                                pickup: widget.coachPaneTripItem.tenTuyenDuong,
+                                                                departureDate: state
+                                                                    .detailCoachPaneTrip
+                                                                    ?.ngayChay,
+                                                                numCustomers: 1,
+                                                                price: seat
+                                                                    .giaVe
+                                                                    .toInt(),
+                                                              );
+                                                              // Set<SoDoGheLoaiX> soDuocChon = {
+                                                              //   SoDoGheLoaiX(
+                                                              //     idLoaiXe: state.detailCoachPaneTrip.idLichXeLimousine.
+                                                              //   )
+                                                              // };
+                                                              ChiTietGhe
+                                                                  chiTietGhe =
+                                                                  ChiTietGhe(
+                                                                tang: seat.tang,
+                                                                hang: seat.hang,
+                                                                day: seat.day,
+                                                                giaVe: seat
+                                                                    .giaVe
+                                                                    .toInt(),
+                                                                diemBan: 1,
+                                                                tenGhe:
+                                                                    seat.tenGhe,
+                                                              );
+                                                              Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) =>
+                                                                          TicketDetailNowScreen(
+                                                                    ticketDetail: ticket,
+                                                                    chiTietGhe: chiTietGhe,
+                                                                            coachPaneTripItem: widget.coachPaneTripItem,
+                                                                  ),
+                                                                ),
+                                                              );
+                                                            }
+                                                          },
                                                           child: Container(
                                                             width: 110,
                                                             height: 110,
-                                                            decoration: BoxDecoration(
-                                                              borderRadius: BorderRadius.circular(8),
-                                                              border: Border.all(
-                                                                color: seat.isTrungChuyen ? Colors.green : borderColor,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          8),
+                                                              border:
+                                                                  Border.all(
+                                                                color: seat
+                                                                        .isTrungChuyen
+                                                                    ? Colors
+                                                                        .green
+                                                                    : borderColor,
                                                                 width: 2,
                                                               ),
-                                                              color: seat.isTrungChuyen ? Colors.green.shade50 : seatColor ,
+                                                              color: seat
+                                                                      .isTrungChuyen
+                                                                  ? Colors.green
+                                                                      .shade50
+                                                                  : seatColor,
                                                             ),
                                                             child: Center(
                                                               child: Column(
-                                                                mainAxisSize: MainAxisSize.min,
+                                                                mainAxisSize:
+                                                                    MainAxisSize
+                                                                        .min,
                                                                 children: [
                                                                   Text(
-                                                                    seat.tenGhe.toUpperCase(),
-                                                                    style: TextStyle(
-                                                                      color: seat.isTrungChuyen ? Colors.green : textColor,
-                                                                      fontWeight: FontWeight.bold,
+                                                                    seat.tenGhe
+                                                                        .toUpperCase(),
+                                                                    style:
+                                                                        TextStyle(
+                                                                      color: seat
+                                                                              .isTrungChuyen
+                                                                          ? Colors
+                                                                              .green
+                                                                          : textColor,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
                                                                     ),
                                                                   ),
                                                                   Text(
-                                                                    Utils.formatTotalMoney(seat.giaVe),
-                                                                    style: TextStyle(
-                                                                      fontSize: 10,
-                                                                      color: seat.isTrungChuyen ? Colors.green : textColor,
+                                                                    Utils.formatTotalMoney(
+                                                                        seat.giaVe),
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          10,
+                                                                      color: seat
+                                                                              .isTrungChuyen
+                                                                          ? Colors
+                                                                              .green
+                                                                          : textColor,
                                                                     ),
                                                                   ),
                                                                   Text(
                                                                     "${seat.tenKhachHang}\n${seat.soDienThoaiKhachHang}",
-                                                                    style: TextStyle(
-                                                                      fontSize: 10,
-                                                                      color: seat.isTrungChuyen ? Colors.green : textColor,
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          10,
+                                                                      color: seat
+                                                                              .isTrungChuyen
+                                                                          ? Colors
+                                                                              .green
+                                                                          : textColor,
                                                                     ),
                                                                   ),
                                                                   Text(
                                                                     seat.ghiChu,
-                                                                    style: TextStyle(
-                                                                      fontSize: 10,
-                                                                      color: seat.isTrungChuyen ? Colors.green : textColor,
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          10,
+                                                                      color: seat
+                                                                              .isTrungChuyen
+                                                                          ? Colors
+                                                                              .green
+                                                                          : textColor,
                                                                     ),
                                                                   ),
                                                                 ],
@@ -499,7 +628,6 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
       ),
     );
   }
-
 
   String _formatCurrency(double amount) {
     return "${amount.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} VNĐ";
@@ -559,7 +687,6 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
       ],
     );
   }
-
 
   Widget _buildDetailRow(String label, String value) {
     return Padding(
