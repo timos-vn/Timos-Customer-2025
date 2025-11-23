@@ -1,3 +1,4 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:oktoast/oktoast.dart';
@@ -54,6 +55,19 @@ class Utils {
       duration: const Duration(seconds: 3),
       onDismiss: () {},
     );
+  }
+
+  static void showMyToast(BuildContext context, String message) {
+    Flushbar(
+      message: message,
+      titleColor: Colors.black,
+      messageColor: Colors.white,
+      duration: const Duration(seconds: 2),
+      backgroundColor: Colors.black54,
+      borderRadius: BorderRadius.circular(12),
+      margin: const EdgeInsets.all(16),
+      animationDuration: const Duration(milliseconds: 300),
+    ).show(context);
   }
 
 

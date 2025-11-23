@@ -19,24 +19,11 @@ class _CoachPaneState extends State<CoachPane> {
   String vehicleType = 'Limo';
   String selectedSlot = '06:00-09:00';
   final List<String> vehicleTypes = <String>['Limo', 'Xe Khách', 'Giường nằm'];
-  // final List<String> timeSlots = <String>[
-  //   '06:00-09:00',
-  //   '09:00-12:00',
-  //   '12:00-15:00',
-  //   '15:00-18:00',
-  //   '18:00-21:00'
-  // ];
 
   final List<DateTime> dateFilters = List.generate(7, (index) {
     // Tạo 7 ngày: hôm nay + 6 ngày tới
     return DateTime.now().add(Duration(days: index));
   });
-
-  // final List<String> formattedDates = dateFilters.map((date) {
-  //   return "${date.day.toString().padLeft(2, '0')}/"
-  //       "${date.month.toString().padLeft(2, '0')}/"
-  //       "${date.year}";
-  // }).toList();
 
   // API related
   final TripService _coachTripService = TripService();
@@ -293,15 +280,19 @@ class _CoachPaneState extends State<CoachPane> {
                             ),
                             trailing: const Icon(Icons.chevron_right),
                             onTap: () {
-                              Navigator.push(context, MaterialPageRoute(
-                                builder: (_) => BlocProvider(
-                                  create: (_) => DetailTripBloc(),
-                                  child: TripDetailScreen(
-                                    idLichXeLimousine: trip.id,
-                                    coachPaneTripItem: trip,
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => BlocProvider(
+                                    create: (_) => DetailTripBloc(),
+                                    child: TripDetailScreen(
+                                      idLichXeLimousine: trip.id,
+                                      coachPaneTripItem: trip,
+                                    ),
                                   ),
+                                  settings: RouteSettings(name: "TRIP_DETAIL"),
                                 ),
-                              ));
+                              );
                             },
                           ),
                         );

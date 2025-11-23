@@ -48,7 +48,7 @@ class BookTicketEvent extends TicketDetailNowEvent {
   final int idLichChayXe;
   final int idNhaXe;
 
-  final ChiTietGhe chiTietGhe;
+  final Set<ChiTietGhe> chiTietGhe;
 
   BookTicketEvent({
      required this.ticketDetailModel,

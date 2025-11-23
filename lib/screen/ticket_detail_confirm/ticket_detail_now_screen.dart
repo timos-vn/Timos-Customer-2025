@@ -23,14 +23,11 @@ import 'package:timos_customer_2025/utils/utils.dart';
 class TicketDetailNowScreen extends StatefulWidget {
   final TicketDetailModel ticketDetail;
 
-  // final Set<SoDoGheLoaiX> soDuocChon;
-
-  final ChiTietGhe chiTietGhe;
+  final Set<ChiTietGhe> chiTietGhe;
   final CoachPaneTripItem coachPaneTripItem;
 
   const TicketDetailNowScreen(
       {required this.ticketDetail,
-      // required this.soDuocChon,
       required this.chiTietGhe,
       required this.coachPaneTripItem,
       super.key});
@@ -72,10 +69,18 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
         ),
         body: BlocListener<TicketDetailNowBloc, TicketDetailState>(
           listener: (context, state) {
-            if (state.isBookingSuccess == true) {
-              Utils.showCustomToast(context, Icons.check_circle,
-                  'Thành công! Đặt vé thành công.');
-              Navigator.popUntil(context, (route) => route.isFirst);
+            if (state.bookTicketResponse?.statusCode == 200) {
+              // Utils.showCustomToast(context, Icons.check_circle,
+              //     'Thành công! Đặt vé thành công.');
+
+              // Navigator.popUntil(context, (route) => route.isFirst);
+              Future.delayed(const Duration(milliseconds: 300), () {
+                Navigator.pop(context);
+              });
+              Utils.showMyToast(context, 'Thành công! Đặt vé thành công.');
+            }
+            if (state.bookTicketResponse?.statusCode != 200 &&  state.bookTicketResponse != null && !state.isLoading) {
+              Utils.showMyToast(context, 'Thất bại! Đặt vé không thành công.');
             }
           },
           child: BlocBuilder<TicketDetailNowBloc, TicketDetailState>(
@@ -247,70 +252,57 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  _buildQRCodeCard(),
-                  // const SizedBox(height: 12),
-                  // _buildPickupCard(),
-                  // const SizedBox(height: 12),
-                  // _buildMainBusCard(),
-                  // const SizedBox(height: 12),
-                  // _buildDropOffCard(),
-                  // const SizedBox(height: 12),
-                  // _buildTransferCard(),
                 ],
               ),
             );
           }),
         ),
-        bottomNavigationBar: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-          child: SizedBox(
-            height: 40,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colorApp,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                minimumSize: const Size(double.infinity, 50),
-              ),
-              onPressed: () async {
-                if (_formKey.currentState?.validate() ?? false) {
-                  final idDevice = "";
-                  // _bloc.add(
-                  //   ConfirmTicketEvent(
-                  //       ticketDetailModel: widget.ticketDetail,
-                  //       nameCustomer: textNameController.text.trim(),
-                  //       phoneCustomer: textNumberPhoneController.text.trim(),
-                  //       idDevice: idDevice ?? "",
-                  //       soDuocChon: widget.soDuocChon),
-                  // );
-                  _bloc.add(
-                    BookTicketEvent(
-                      ticketDetailModel: widget.ticketDetail,
-                      nameCustomer: textNameController.text.trim(),
-                      phoneCustomer: textNumberPhoneController.text.trim(),
-                      idDevice: idDevice ?? "",
-                      chiTietGhe: widget.chiTietGhe,
-                      diaChiDi: diaChiKhachDi.text.trim(),
-                      diaChiDen: diaChiKhachDen.text.trim(),
-                      idLichXe: widget.coachPaneTripItem.id,
-                      idChang: widget.coachPaneTripItem.idTuyenDuong,
-                      idLichChayXe: 0,
-                      nguoiDat: '',
-                      idNhaXe: widget.coachPaneTripItem.idNhaXe,
+        bottomNavigationBar: BlocBuilder<TicketDetailNowBloc, TicketDetailState>(
+          builder: (context, state) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+              child: SizedBox(
+                height: 40,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colorApp,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                  );
-                } else {
-                  log("Vui lòng điền đầy đủ thông tin.");
-                }
-              },
-              child: UtilsWidget.buildText(
-                  text: "Đặt vé",
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  textColor: whiteColor),
-            ),
-          ),
+                    minimumSize: const Size(double.infinity, 50),
+                  ),
+                  onPressed: () async {
+                    if (_formKey.currentState?.validate() ?? false) {
+                      final idDevice = "";
+                      _bloc.add(
+                        BookTicketEvent(
+                          ticketDetailModel: widget.ticketDetail,
+                          nameCustomer: textNameController.text.trim(),
+                          phoneCustomer: textNumberPhoneController.text.trim(),
+                          idDevice: idDevice ?? "",
+                          chiTietGhe: widget.chiTietGhe,
+                          diaChiDi: diaChiKhachDi.text.trim(),
+                          diaChiDen: diaChiKhachDen.text.trim(),
+                          idLichXe: widget.coachPaneTripItem.id,
+                          idChang: widget.coachPaneTripItem.idTuyenDuong,
+                          idLichChayXe: 0,
+                          nguoiDat: '',
+                          idNhaXe: widget.coachPaneTripItem.idNhaXe,
+                        ),
+                      );
+                    } else {
+                      log("Vui lòng điền đầy đủ thông tin.");
+                    }
+                  },
+                  child: state.isLoading ? CircularProgressIndicator(): UtilsWidget.buildText(
+                      text: "Đặt vé",
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      textColor: whiteColor),
+                ),
+              ),
+            );
+          }
         ),
       ),
     );
@@ -360,32 +352,13 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
                     color: Colors.green[100],
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Text(
-                      (ticketDetail.isRoundTrip ?? false)
-                          ? "Khứ hồi"
-                          : "Một chiều",
+                  child: Text("Một chiều",
                       style: GoogleFonts.roboto(
                           fontSize: 12, color: Colors.green[700])),
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   crossAxisAlignment: CrossAxisAlignment.start,
-            //   children: [
-            //     Expanded(
-            //       child: Text(
-            //           "${ticketDetail.pickup}\n${ticketDetail.pickupDetail}",
-            //           style: GoogleFonts.roboto(fontSize: 14)),
-            //     ),
-            //     Expanded(
-            //       child: Text(
-            //           "${ticketDetail.dropoff}\n${ticketDetail.dropoffDetail}",
-            //           style: GoogleFonts.roboto(fontSize: 14)),
-            //     ),
-            //   ],
-            // ),
             const SizedBox(height: 4),
             _buildInfoRow("Tuyến đường:", ticketDetail.pickup ?? ""),
             const SizedBox(height: 4),
@@ -403,12 +376,10 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
               child: _buildInfoRow("Ngày về:",
                   convertDateToString(ticketDetail.returnDate, pattern1)),
             ),
-            // Visibility(
-            //     visible: ticketDetail.typeTicket == TypeTicketEnum.veBaoXe,
-            //     child: _buildInfoRow(
-            //         "Loại xe:", "${ticketDetail.typeCar?.tenLoai} ngồi")),
-            _buildInfoRow("Giá vé:",
-                "${Utils.formatTotalMoney(ticketDetail.price ?? 0)}đ"),
+            ... widget.chiTietGhe.toList().map((e) => _buildInfoRow(
+                "Tên ghế:", "${(e.tenGhe ?? "").toUpperCase()} Hàng ${e.hang} Dãy ${(e.day ?? 0) + 1}")),
+            // _buildInfoRow(
+            //     "Tên ghế", "${ticketDetail.typeCar?.tenLoai} ngồi"),
             // _buildInfoRow("Email:", ""),
             // const SizedBox(height: 4),
             // Column(

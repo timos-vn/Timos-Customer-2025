@@ -1,10 +1,10 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:timos_customer_2025/models/response/response.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/booking/model/ticket_detail_model.dart';
-import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/type_ticket_bus_model.dart';
+import 'package:timos_customer_2025/screen/detail_trip/ticket_detail_bottom_sheet.dart';
 import 'package:timos_customer_2025/screen/ticket_detail_confirm/ticket_detail_now_screen.dart';
-import 'package:timos_customer_2025/screen/trip/widgets/driver_view.dart';
 import 'package:timos_customer_2025/themes/colors.dart';
 import 'package:timos_customer_2025/screen/utils/widget/utils_widget.dart';
 import 'package:timos_customer_2025/utils/utils.dart';
@@ -30,12 +30,11 @@ class TripDetailScreen extends StatefulWidget {
 class _TripDetailScreenState extends State<TripDetailScreen> {
   int selectedFloor = 1;
 
-  // Set<SoDoGheLoaiX> soDuocChon = {};
+  Set<DanhSachGhe> soDuocChon = {};
 
   @override
   void initState() {
     super.initState();
-    print("tripSummary ${widget.coachPaneTripItem.id}");
     context.read<DetailTripBloc>().add(
           DetailTripEvent.loadDetailCoachPaneTrip(
             idLichXeLimousine: widget.idLichXeLimousine,
@@ -252,63 +251,25 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                   ],
                 ),
                 const SizedBox(height: 12),
+                Text(
+                  "* Chọn ghế để xem chi tiết hành khách",
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.copyWith(fontStyle: FontStyle.italic),
+                ),
+                Text(
+                  "* Chọn ghế trống để đặt thêm vé",
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.copyWith(fontStyle: FontStyle.italic),
+                ),
 
-                // // Seat Grid
-                // if (currentFloor != null && currentFloor.danhSachGhe.isNotEmpty)
-                //   Container(
-                //     padding: const EdgeInsets.all(12),
-                //     decoration: BoxDecoration(
-                //       color: Colors.grey.shade50,
-                //       borderRadius: BorderRadius.circular(8),
-                //       border: Border.all(color: Colors.grey.shade200),
-                //     ),
-                //     child: GridView.builder(
-                //       shrinkWrap: true,
-                //       physics: const NeverScrollableScrollPhysics(),
-                //       gridDelegate:
-                //           const SliverGridDelegateWithFixedCrossAxisCount(
-                //         crossAxisCount: 4,
-                //         mainAxisSpacing: 8,
-                //         crossAxisSpacing: 8,
-                //         childAspectRatio: 1,
-                //       ),
-                //       itemCount: currentFloor.danhSachGhe.length,
-                //       itemBuilder: (context, index) {
-                //         final seat = currentFloor.danhSachGhe[index];
-                //         return _buildSeatItem(seat);
-                //       },
-                //     ),
-                //   ),
                 const SizedBox(height: 16),
 
                 Column(
                   children: [
-                    // Chú thích trạng thái ghế
-                    // Padding(
-                    //   padding: const EdgeInsets.symmetric(
-                    //       horizontal: 16, vertical: 8),
-                    //   child: Row(
-                    //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //     crossAxisAlignment: CrossAxisAlignment.center,
-                    //     children: [
-                    //       _buildLegendBox(
-                    //           color: Colors.white,
-                    //           borderColor: Colors.grey,
-                    //           label: "Chỗ trống"),
-                    //       const SizedBox(width: 16),
-                    //       _buildLegendBox(
-                    //           color: Colors.green.shade50,
-                    //           label: "Chỗ đang chọn",
-                    //           borderColor: Colors.green),
-                    //       const SizedBox(width: 16),
-                    //       _buildLegendBox(
-                    //           color: Colors.grey.shade300,
-                    //           label: "Đã bán",
-                    //           hasBorder: false),
-                    //     ],
-                    //   ),
-                    // ),
-
                     BlocBuilder<DetailTripBloc, DetailTripState>(
                       builder: (context, state) {
                         if (state.isLoadingTrips) {
@@ -319,21 +280,6 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                             ),
                           );
                         } else {
-                          // for(var seat in state.listSeating) {
-                          //   if(seat.tang == 0) {
-                          //     for(var s in listTang1) {
-                          //       if(s.day == seat.day && s.hang == seat.hang && s.tenGhe == seat.tenGhe) {
-                          //         s.isDatGhe = true;
-                          //       }
-                          //     }
-                          //   } else if(seat.tang == 1) {
-                          //     for(var s in listTang2) {
-                          //       if(s.day == seat.day && s.hang == seat.hang && s.tenGhe == seat.tenGhe) {
-                          //         s.isDatGhe = true;
-                          //       }
-                          //     }
-                          //   }
-                          // }
                           return SizedBox(
                             height: 1000,
                             width: double.infinity,
@@ -341,255 +287,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Row(
-                                    children: [
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 6),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            ...List.generate(
-                                              (currentFloor?.danhSachGhe ?? [])
-                                                  .toList()
-                                                  .length,
-                                              (index) {
-                                                final list = (currentFloor
-                                                            ?.danhSachGhe ??
-                                                        [])
-                                                    .where(
-                                                        (e) => e.hang == index)
-                                                    .toList();
-                                                return Row(
-                                                  children: [
-                                                    if (index == 0)
-                                                      Padding(
-                                                        padding:
-                                                            EdgeInsets.all(4.0),
-                                                        child: Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        8),
-                                                            border: Border.all(
-                                                              color: Colors.grey
-                                                                  .shade300,
-                                                              width: 2,
-                                                            ),
-                                                            color: Colors
-                                                                .grey.shade200,
-                                                          ),
-                                                          width: 110,
-                                                          height: 110,
-                                                          child: Center(
-                                                              child: Text(
-                                                                  "Lái xe")),
-                                                        ),
-                                                      ),
-                                                    ...List.generate(
-                                                        list.length, (index) {
-                                                      final seat = list[index];
-                                                      Color seatColor;
-                                                      Color borderColor;
-                                                      Color textColor =
-                                                          Colors.black;
-
-                                                      // Map trangThaiGhe: 1 = Trống, 2 = Đã đặt, 3 = Giữ chỗ
-                                                      switch (
-                                                          seat.trangThaiGhe) {
-                                                        case 2: // Đã đặt
-                                                          seatColor = mainColor;
-                                                          borderColor =
-                                                              mainColor;
-                                                          textColor =
-                                                              Colors.white;
-                                                          break;
-                                                        case 3: // Giữ chỗ
-                                                          seatColor = Colors
-                                                              .orange.shade100;
-                                                          borderColor =
-                                                              Colors.orange;
-                                                          break;
-                                                        case 1: // Trống
-                                                        default:
-                                                          seatColor =
-                                                              Colors.white;
-                                                          borderColor = Colors
-                                                              .grey.shade300;
-                                                          break;
-                                                      }
-
-                                                      if (seat.day == 0 &&
-                                                          seat.tang == 0 &&
-                                                          seat.hang == 0) {
-                                                        return SizedBox();
-                                                      }
-
-                                                      if (seat.isGheAo) {
-                                                        return const SizedBox();
-                                                      }
-
-                                                      return Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(4.0),
-                                                        child: InkWell(
-                                                          onTap: () {
-                                                            if (seat.trangThaiGhe ==
-                                                                1) {
-                                                              TicketDetailModel
-                                                                  ticket =
-                                                                  TicketDetailModel(
-                                                                dropoff: seat
-                                                                    .diaChiKhachDen,
-                                                                pickup: widget.coachPaneTripItem.tenTuyenDuong,
-                                                                departureDate: state
-                                                                    .detailCoachPaneTrip
-                                                                    ?.ngayChay,
-                                                                numCustomers: 1,
-                                                                price: seat
-                                                                    .giaVe
-                                                                    .toInt(),
-                                                              );
-                                                              // Set<SoDoGheLoaiX> soDuocChon = {
-                                                              //   SoDoGheLoaiX(
-                                                              //     idLoaiXe: state.detailCoachPaneTrip.idLichXeLimousine.
-                                                              //   )
-                                                              // };
-                                                              ChiTietGhe
-                                                                  chiTietGhe =
-                                                                  ChiTietGhe(
-                                                                tang: seat.tang,
-                                                                hang: seat.hang,
-                                                                day: seat.day,
-                                                                giaVe: seat
-                                                                    .giaVe
-                                                                    .toInt(),
-                                                                diemBan: 1,
-                                                                tenGhe:
-                                                                    seat.tenGhe,
-                                                              );
-                                                              Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                  builder:
-                                                                      (context) =>
-                                                                          TicketDetailNowScreen(
-                                                                    ticketDetail: ticket,
-                                                                    chiTietGhe: chiTietGhe,
-                                                                            coachPaneTripItem: widget.coachPaneTripItem,
-                                                                  ),
-                                                                ),
-                                                              );
-                                                            }
-                                                          },
-                                                          child: Container(
-                                                            width: 110,
-                                                            height: 110,
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          8),
-                                                              border:
-                                                                  Border.all(
-                                                                color: seat
-                                                                        .isTrungChuyen
-                                                                    ? Colors
-                                                                        .green
-                                                                    : borderColor,
-                                                                width: 2,
-                                                              ),
-                                                              color: seat
-                                                                      .isTrungChuyen
-                                                                  ? Colors.green
-                                                                      .shade50
-                                                                  : seatColor,
-                                                            ),
-                                                            child: Center(
-                                                              child: Column(
-                                                                mainAxisSize:
-                                                                    MainAxisSize
-                                                                        .min,
-                                                                children: [
-                                                                  Text(
-                                                                    seat.tenGhe
-                                                                        .toUpperCase(),
-                                                                    style:
-                                                                        TextStyle(
-                                                                      color: seat
-                                                                              .isTrungChuyen
-                                                                          ? Colors
-                                                                              .green
-                                                                          : textColor,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold,
-                                                                    ),
-                                                                  ),
-                                                                  Text(
-                                                                    Utils.formatTotalMoney(
-                                                                        seat.giaVe),
-                                                                    style:
-                                                                        TextStyle(
-                                                                      fontSize:
-                                                                          10,
-                                                                      color: seat
-                                                                              .isTrungChuyen
-                                                                          ? Colors
-                                                                              .green
-                                                                          : textColor,
-                                                                    ),
-                                                                  ),
-                                                                  Text(
-                                                                    "${seat.tenKhachHang}\n${seat.soDienThoaiKhachHang}",
-                                                                    style:
-                                                                        TextStyle(
-                                                                      fontSize:
-                                                                          10,
-                                                                      color: seat
-                                                                              .isTrungChuyen
-                                                                          ? Colors
-                                                                              .green
-                                                                          : textColor,
-                                                                    ),
-                                                                  ),
-                                                                  Text(
-                                                                    seat.ghiChu,
-                                                                    style:
-                                                                        TextStyle(
-                                                                      fontSize:
-                                                                          10,
-                                                                      color: seat
-                                                                              .isTrungChuyen
-                                                                          ? Colors
-                                                                              .green
-                                                                          : textColor,
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      );
-                                                    }),
-                                                  ],
-                                                );
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                _buildSeat(currentFloor),
                               ],
                             ),
                           );
@@ -626,6 +324,267 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
           );
         },
       ),
+      bottomNavigationBar: _buildBottom(),
+    );
+  }
+
+  Widget _buildSeat(TangHienTai? currentFloor) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(right: 6),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ...List.generate(
+                  (currentFloor?.danhSachGhe ?? []).toList().length,
+                  (index) {
+                    final list = (currentFloor?.danhSachGhe ?? [])
+                        .where((e) => e.hang == index)
+                        .toList();
+                    return Row(
+                      children: [
+                        if (index == 0)
+                          Padding(
+                            padding: EdgeInsets.all(4.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: Colors.grey.shade300,
+                                  width: 2,
+                                ),
+                                color: Colors.grey.shade200,
+                              ),
+                              width: 110,
+                              height: 110,
+                              child: Center(child: Text("Lái xe")),
+                            ),
+                          ),
+                        ...List.generate(list.length, (index) {
+                          final seat = list[index];
+                          Color seatColor;
+                          Color borderColor;
+                          Color textColor = Colors.black;
+
+                          // Map trangThaiGhe: 1 = Trống, 2 = Đã đặt, 3 = Giữ chỗ
+                          switch (seat.trangThaiGhe) {
+                            case 2: // Đã đặt
+                              seatColor = mainColor;
+                              borderColor = mainColor;
+                              textColor = Colors.white;
+                              break;
+                            case 3: // Giữ chỗ
+                              seatColor = Colors.orange.shade100;
+                              borderColor = Colors.orange;
+                              break;
+                            case 1: // Trống
+                            default:
+                              seatColor = Colors.white;
+                              borderColor = Colors.grey.shade300;
+                              break;
+                          }
+
+                          if (seat.day == 0 &&
+                              seat.tang == 0 &&
+                              seat.hang == 0) {
+                            return SizedBox();
+                          }
+
+                          if (seat.isGheAo) {
+                            return const SizedBox();
+                          }
+
+                          return Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: InkWell(
+                              onTap: () {
+                                if (seat.trangThaiGhe == 1) {
+
+                                  if (soDuocChon.contains(seat)) {
+                                    soDuocChon.remove(seat);
+                                  } else {
+                                    soDuocChon.add(seat);
+                                  }
+                                  setState(() {});
+                                } else {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    backgroundColor: Colors.transparent,
+                                    builder: (_) =>
+                                        TicketDetailBottomSheet(seat),
+                                  );
+                                }
+                              },
+                              child: Container(
+                                width: 110,
+                                height: 110,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: seat.isTrungChuyen
+                                        ? Colors.green
+                                        : (soDuocChon.contains(seat)
+                                            ? Colors.orange
+                                            : borderColor),
+                                    width: 2,
+                                  ),
+                                  color: seat.isTrungChuyen
+                                      ? Colors.green.shade50
+                                      : seatColor,
+                                ),
+                                child: Center(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        seat.tenGhe.toUpperCase(),
+                                        style: TextStyle(
+                                          color: seat.isTrungChuyen
+                                              ? Colors.green
+                                              : textColor,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        Utils.formatTotalMoney(seat.giaVe),
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: seat.isTrungChuyen
+                                              ? Colors.green
+                                              : textColor,
+                                        ),
+                                      ),
+                                      Text(
+                                        "${seat.tenKhachHang}\n${seat.soDienThoaiKhachHang}",
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: seat.isTrungChuyen
+                                              ? Colors.green
+                                              : textColor,
+                                        ),
+                                      ),
+                                      Text(
+                                        seat.ghiChu,
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: seat.isTrungChuyen
+                                              ? Colors.green
+                                              : textColor,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+                      ],
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottom() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(22),
+          topRight: Radius.circular(22),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 12,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: BlocBuilder<DetailTripBloc, DetailTripState>(
+          builder: (context, state) {
+        return SizedBox(
+          height: 55,
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: () {
+              Set<ChiTietGhe> chiTietGhes = {};
+              for (var seat in soDuocChon) {
+                chiTietGhes.add(
+                  ChiTietGhe(
+                    tang: seat.tang,
+                    hang: seat.hang,
+                    day: seat.day,
+                    giaVe: seat.giaVe.toInt(),
+                    diemBan: 1,
+                    tenGhe: seat.tenGhe,
+                  ),
+                );
+              }
+
+              if (soDuocChon.isNotEmpty) {
+                TicketDetailModel ticket = TicketDetailModel(
+                  dropoff: soDuocChon.first.diaChiKhachDen,
+                  pickup: widget.coachPaneTripItem.tenTuyenDuong,
+                  departureDate: state.detailCoachPaneTrip?.ngayChay,
+                  numCustomers: 1,
+                  price: soDuocChon.first.giaVe.toInt(),
+                );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TicketDetailNowScreen(
+                      ticketDetail: ticket,
+                      chiTietGhe: chiTietGhes,
+                      coachPaneTripItem: widget.coachPaneTripItem,
+                    ),
+                  ),
+                );
+              } else {
+                Utils.showMyToast(context, "Vui lòng chọn ghế để đặt vé");
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              elevation: 0,
+              // Trick: dùng foregroundPainter để apply gradient như background
+              padding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ).copyWith(
+              backgroundColor: WidgetStateProperty.all(Colors.transparent),
+            ),
+            child: Ink(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    mainColor, mainColor.withValues(alpha: 0.8)
+                  ],
+                ),
+                borderRadius: BorderRadius.all(Radius.circular(14)),
+              ),
+              child: Center(
+                child: UtilsWidget.buildText(
+                    text: "Đặt vé",
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    textColor: Colors.white),
+              ),
+            ),
+          ),
+        );
+      }),
     );
   }
 

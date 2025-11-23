@@ -2,9 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:timos_customer_2025/const/const.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/booking/model/ticket_detail_model.dart';
-import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_model.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_request.dart';
-import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/type_ticket_bus_model.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_response.dart';
 import 'package:timos_customer_2025/screen/seat_selection/service/ticket_service.dart';
 import 'package:timos_customer_2025/screen/ticket_detail_confirm/bloc/ticket_detail_now_event.dart';
 import 'package:timos_customer_2025/screen/ticket_detail_confirm/bloc/ticket_detail_now_state.dart';
@@ -90,6 +89,7 @@ class TicketDetailNowBloc
 
   Future<void> bookingTicket(BookTicketEvent event, Emitter emit) async {
     emit(state.copyWith(isLoading: true, errorMessage: null));
+    BookTicketResponse response;
     try {
       final box = GetStorage();
       String userId = box.read(Const.USER_ID);
@@ -110,7 +110,7 @@ class TicketDetailNowBloc
         idVanPhongTra: null,
         daThanhToan: false,
         ghiChu: "Đặt vé vãng lai",
-        chiTietGhes: [event.chiTietGhe],
+        chiTietGhes: event.chiTietGhe.toList(),
         nguoiTao: userId,
         loaiDatVe: 1,
         idNhanVienPhucVu: "",
@@ -125,13 +125,18 @@ class TicketDetailNowBloc
         idLichXe: "",
         ipClient: '',
       );
-      await ticketService.bookTicket(bookTicketModel);
-      emit(state.copyWith(isBookingSuccess: true));
+      response =  await ticketService.bookTicket(bookTicketModel);
+      emit(state.copyWith(
+        isLoading: false,
+        errorMessage: null,
+        bookTicketResponse: response,
+      ));
     } catch (e) {
-      print("Lỗi: $e");
-      emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
-    } finally {
-      emit(state.copyWith(isLoading: false));
+      emit(state.copyWith(
+        isLoading: false,
+        errorMessage: e.toString(),
+        bookTicketResponse: null,
+      ));
     }
   }
 }

@@ -1,5 +1,6 @@
 
 import 'package:timos_customer_2025/screen/booking_ticket/booking/model/ticket_detail_model.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_response.dart';
 
 class TicketDetailState {
 
@@ -7,13 +8,13 @@ class TicketDetailState {
   final String? errorMessage;
   final bool isLoading;
 
-  final bool? isBookingSuccess;
+  BookTicketResponse? bookTicketResponse;
 
   TicketDetailState({
     this.errorMessage,
     this.isLoading = false,
     required this.ticketDetailModel,
-    this.isBookingSuccess,
+    this.bookTicketResponse
   });
 
   TicketDetailState copyWith({
@@ -21,13 +22,13 @@ class TicketDetailState {
     bool? isLoading,
     bool? isSuccess,
     TicketDetailModel? ticketDetailModel,
-    bool? isBookingSuccess,
+    BookTicketResponse? bookTicketResponse
   }) {
     return TicketDetailState(
       ticketDetailModel: ticketDetailModel ?? this.ticketDetailModel,
       errorMessage: errorMessage ?? this.errorMessage,
       isLoading: isLoading ?? this.isLoading,
-      isBookingSuccess: isBookingSuccess ?? this.isBookingSuccess,
+      bookTicketResponse: bookTicketResponse ?? this.bookTicketResponse,
     );
   }
 }

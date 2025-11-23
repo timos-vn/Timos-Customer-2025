@@ -28,22 +28,6 @@ class ManagerTabView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Quản lý nhà xe'),
-        // bottom: PreferredSize(
-        //   preferredSize: const Size.fromHeight(48),
-        //   child: Align(
-        //     alignment: Alignment.centerLeft,
-        //     child: TabBar(
-        //       isScrollable: true,
-        //       tabAlignment: TabAlignment.start,
-        //       tabs: const <Tab>[
-        //         Tab(text: 'Xe ghép/Sân bay'),
-        //         Tab(text: 'Trung chuyển'),
-        //         Tab(text: 'Limo/Xe khách/Giường nằm'),
-        //       ],
-        //     ),
-        //   ),
-        // ),
-        // v
       ),
       body: CoachPane(),
       floatingActionButton: BlocBuilder<TripBloc, TripState>(
@@ -54,9 +38,8 @@ class ManagerTabView extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => BookingScreen(
-
-                  ),
+                  builder: (context) => BookingScreen(),
+                  settings: RouteSettings(name: "BOOKING_SCREEN"),
                 ),
               );
             },
