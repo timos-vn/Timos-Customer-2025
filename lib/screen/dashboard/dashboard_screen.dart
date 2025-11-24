@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:timos_customer_2025/enum/enum_request_method.dart';
 import 'package:timos_customer_2025/screen/utils/widget/utils_widget.dart';
 import 'package:timos_customer_2025/themes/colors.dart';
-import 'package:timos_customer_2025/screen/customer/customer_sceen.dart';
 import 'package:timos_customer_2025/screen/trip/trip_screen.dart';
 import 'package:timos_customer_2025/services/auth_service.dart';
 import 'package:timos_customer_2025/screen/routers/router_generator.dart';
@@ -100,203 +99,91 @@ class _ProfileTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = AuthService.currentUser;
-    
     return Scaffold(
-      appBar: AppBar(title: const Text('Menu')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+      backgroundColor: backgroundColor,
+      appBar: AppBar(
+        backgroundColor: backgroundColor,
+        elevation: 0,
+        centerTitle: true,
+        title: const Text('Menu'),
+      ),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
           children: [
-            // Avatar mặc định
             GestureDetector(
-              onDoubleTap: () {
-                Diolog().showDiolog(context);
-              },
-              child: const CircleAvatar(
-                radius: 60,
-                backgroundColor: Colors.grey,
-                child: Icon(
-                  Icons.person,
-                  size: 80,
-                  color: Colors.white,
-                ),
+              onDoubleTap: () => Diolog().showDiolog(context),
+              child: _MenuHeaderCard(
+                name: user?.hoTen ?? 'Chưa cập nhật',
+                role: user?.roleName ?? 'Không xác định',
+                phone: user?.dienThoai ?? '--',
               ),
             ),
-            
-            const SizedBox(height: 24),
-            
-            // Thông tin user
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Họ tên
-                    Row(
-                      children: [
-                        const Icon(Icons.person_outline, color: Colors.grey),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Họ tên',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              Text(
-                                user?.hoTen ?? 'Chưa cập nhật',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    
-                    const Divider(height: 32),
-                    
-                    // Số điện thoại
-                    Row(
-                      children: [
-                        const Icon(Icons.phone_outlined, color: Colors.grey),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Số điện thoại',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              Text(
-                                user?.dienThoai ?? 'Chưa cập nhật',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    
-                    const Divider(height: 32),
-                    
-                    // Role
-                    Row(
-                      children: [
-                        const Icon(Icons.work_outline, color: Colors.grey),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Chức vụ',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              Text(
-                                user?.roleName ?? 'Không xác định',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Divider(height: 32),
-                    InkWell(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return UtilsWidget.dialogUpdateShorebird(
-                              contentNotification: "Bạn có chắc muốn xoá tài khoản, hành động này sẽ xoá toàn bộ dữ liệu và không thể khôi phục.",
-                              fuc: () async {
-                                await AuthService.signOut();
-                                if (context.mounted) {
-                                  Navigator.of(context).pushNamedAndRemoveUntil(
-                                    RouterGenerator.routeLoginScreen,
-                                        (Route<dynamic> route) => false,
-                                  );
-                                }
-                              },
-                            );
+            const SizedBox(height: 16),
+            _SectionCard(
+              title: 'Thông tin cá nhân',
+              children: [
+                _InfoRow(
+                  icon: Icons.person_outline,
+                  label: 'Họ tên',
+                  value: user?.hoTen ?? 'Chưa cập nhật',
+                ),
+                _InfoRow(
+                  icon: Icons.phone_android,
+                  label: 'Số điện thoại',
+                  value: user?.dienThoai ?? 'Chưa cập nhật',
+                ),
+                _InfoRow(
+                  icon: Icons.badge_outlined,
+                  label: 'Chức vụ',
+                  value: user?.roleName ?? 'Không xác định',
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            _SectionCard(
+              title: 'Hành động',
+              children: [
+                _MenuActionTile(
+                  icon: Icons.delete_outline,
+                  label: 'Xoá tài khoản',
+                  subtitle:
+                      'Xoá tài khoản sẽ mất toàn bộ dữ liệu và không thể khôi phục.',
+                  isDanger: true,
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return UtilsWidget.dialogUpdateShorebird(
+                          contentNotification:
+                              "Bạn có chắc muốn xoá tài khoản, hành động này sẽ xoá toàn bộ dữ liệu và không thể khôi phục.",
+                          fuc: () async {
+                            await AuthService.signOut();
+                            if (context.mounted) {
+                              Navigator.of(context).pushNamedAndRemoveUntil(
+                                RouterGenerator.routeLoginScreen,
+                                (Route<dynamic> route) => false,
+                              );
+                            }
                           },
                         );
                       },
-                      child: Row(
-                        children: [
-                          const Icon(Icons.delete, color: Colors.grey),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'Xoá tài khoản',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                                Text(
-                                  "Xoá tài khoản sẽ mất toàn bộ dữ liệu và không thể khôi phục",
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            
-            const Spacer(),
-            
-            // Nút đăng xuất
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.tonal(
-                onPressed: () async {
-                  await AuthService.signOut();
-                  if (context.mounted) {
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                      RouterGenerator.routeLoginScreen,
-                      (Route<dynamic> route) => false,
                     );
-                  }
-                },
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  },
                 ),
-                child: const Text('Đăng xuất'),
-              ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            _LogoutButton(
+              onPressed: () async {
+                await AuthService.signOut();
+                if (context.mounted) {
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    RouterGenerator.routeLoginScreen,
+                    (Route<dynamic> route) => false,
+                  );
+                }
+              },
             ),
           ],
         ),
@@ -362,6 +249,247 @@ class _ProfileTab extends StatelessWidget {
   }
 }
 
+class _MenuHeaderCard extends StatelessWidget {
+  final String name;
+  final String role;
+  final String phone;
+
+  const _MenuHeaderCard({
+    required this.name,
+    required this.role,
+    required this.phone,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 18,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 72,
+            height: 72,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: backgroundColor,
+              border: Border.all(color: mainColor.withValues(alpha: 0.3)),
+            ),
+            child: const Icon(Icons.person, size: 36, color: Colors.grey),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  role,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.grey.shade600,
+                      ),
+                ),
+                const SizedBox(height: 10),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: mainColor.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.phone_iphone,
+                          size: 16, color: mainColor),
+                      const SizedBox(width: 6),
+                      Text(
+                        phone,
+                        style: const TextStyle(
+                          color: mainColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SectionCard extends StatelessWidget {
+  final String title;
+  final List<Widget> children;
+
+  const _SectionCard({required this.title, required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 18, 16, 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: Colors.black.withValues(alpha: 0.03)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+          const SizedBox(height: 12),
+          for (var i = 0; i < children.length; i++) ...[
+            children[i],
+            if (i != children.length - 1)
+              Divider(height: 24, color: Colors.grey.shade200, thickness: 0.8),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _InfoRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _InfoRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: CircleAvatar(
+        radius: 22,
+        backgroundColor: backgroundColor,
+        child: Icon(icon, color: mainColor),
+      ),
+      title: Text(
+        label,
+        style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+      ),
+      subtitle: Text(
+        value,
+        style: const TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 15,
+        ),
+      ),
+    );
+  }
+}
+
+class _MenuActionTile extends StatelessWidget {
+  final VoidCallback onTap;
+  final IconData icon;
+  final String label;
+  final String subtitle;
+  final bool isDanger;
+
+  const _MenuActionTile({
+    required this.icon,
+    required this.label,
+    required this.subtitle,
+    required this.onTap,
+    this.isDanger = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isDanger ? Colors.red : mainColor;
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: CircleAvatar(
+        radius: 24,
+        backgroundColor: color.withValues(alpha: 0.12),
+        child: Icon(icon, color: color),
+      ),
+      title: Text(
+        label,
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          color: color,
+        ),
+      ),
+      subtitle: Padding(
+        padding: const EdgeInsets.only(top: 4),
+        child: Text(
+          subtitle,
+          style: TextStyle(color: Colors.grey.shade600),
+        ),
+      ),
+      trailing: Icon(Icons.chevron_right, color: Colors.grey.shade400),
+      onTap: onTap,
+    );
+  }
+}
+
+class _LogoutButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const _LogoutButton({required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton.icon(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.redAccent,
+        elevation: 0,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: Colors.redAccent.withValues(alpha: 0.4)),
+        ),
+      ),
+      icon: const Icon(Icons.logout),
+      label: const Text(
+        'Đăng xuất',
+        style: TextStyle(fontWeight: FontWeight.w600),
+      ),
+    );
+  }
+}
+
 class _MetricCard extends StatelessWidget {
   final String title;
   final String value;
@@ -390,7 +518,7 @@ class _MetricCard extends StatelessWidget {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: mainColor.withOpacity(.15),
+                      color: mainColor.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(trend,
@@ -411,7 +539,11 @@ class _AnalyticsBanner extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-            colors: <Color>[mainColor, mainColor.withOpacity(0.8)]),
+          colors: <Color>[
+            mainColor,
+            mainColor.withValues(alpha: 0.8),
+          ],
+        ),
         borderRadius: BorderRadius.circular(16),
       ),
       padding: const EdgeInsets.all(16),

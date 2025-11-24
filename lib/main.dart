@@ -28,18 +28,16 @@ class MyApp extends StatelessWidget {
       primary: mainColor,
       secondary: secondaryColor,
       surface: cardBackground,
-      background: backgroundColor,
       onPrimary: white,
       onSecondary: white,
       onSurface: textPrimary,
-      onBackground: textPrimary,
     );
     final ThemeData theme = ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: backgroundColor,
       appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),

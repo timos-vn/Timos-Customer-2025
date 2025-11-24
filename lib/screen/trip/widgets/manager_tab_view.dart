@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:timos_customer_2025/models/response/group/group_response.dart';
 import 'package:timos_customer_2025/models/response/trip/trip_response.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/booking/booking_screen.dart';
-import '../bloc/trip_bloc.dart';
-import '../bloc/trip_state.dart';
-import 'share_airport_pane.dart';
-import 'transfer_manager_pane.dart';
+import 'package:timos_customer_2025/themes/colors.dart';
 import 'coach_pane.dart';
 
 class ManagerTabView extends StatelessWidget {
@@ -26,26 +22,64 @@ class ManagerTabView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Quản lý nhà xe'),
+      backgroundColor: backgroundColor,
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            const Padding(
+              padding: EdgeInsets.fromLTRB(16, 12, 16, 4),
+              child: _ManagerHeader(),
+            ),
+            const Expanded(
+              child: CoachPane(),
+            ),
+          ],
+        ),
       ),
-      body: CoachPane(),
-      floatingActionButton: BlocBuilder<TripBloc, TripState>(
-        builder: (context, state) {
-          return FloatingActionButton(
-            onPressed: () {
-              // Handle FAB action
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => BookingScreen(),
-                  settings: RouteSettings(name: "BOOKING_SCREEN"),
+    );
+  }
+}
+
+class _ManagerHeader extends StatelessWidget {
+  const _ManagerHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            mainColor.withValues(alpha: 0.12),
+            mainColor.withValues(alpha: 0.03),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Quản lý nhà xe',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                 ),
-              );
-            },
-            child: const Icon(Icons.add),
-          );
-        },
+                const SizedBox(height: 6),
+                Text(
+                  'Theo dõi lịch trình, doanh thu và trạng thái chuyến đi',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.black54,
+                      ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
