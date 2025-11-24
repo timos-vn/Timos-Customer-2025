@@ -42,7 +42,6 @@ class BookTicketEvent extends TicketDetailNowEvent {
   final String diaChiDi;
   final String diaChiDen;
   final String idDevice;
-  final String nguoiDat;
   final String idLichXe;
   final int idChang;
   final int idLichChayXe;
@@ -61,7 +60,6 @@ class BookTicketEvent extends TicketDetailNowEvent {
     required this.idChang,
     required this.idLichChayXe,
     required this.idLichXe,
-    required this.nguoiDat,
     required this.idNhaXe,
   });
 

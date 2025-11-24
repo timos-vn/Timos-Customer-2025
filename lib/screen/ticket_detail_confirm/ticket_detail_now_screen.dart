@@ -25,11 +25,13 @@ class TicketDetailNowScreen extends StatefulWidget {
 
   final Set<ChiTietGhe> chiTietGhe;
   final CoachPaneTripItem coachPaneTripItem;
+  final DetailCoachPaneTripData? detailCoachPaneTrip;
 
   const TicketDetailNowScreen(
       {required this.ticketDetail,
       required this.chiTietGhe,
       required this.coachPaneTripItem,
+        this.detailCoachPaneTrip,
       super.key});
 
   @override
@@ -74,9 +76,12 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
               //     'Thành công! Đặt vé thành công.');
 
               // Navigator.popUntil(context, (route) => route.isFirst);
-              Future.delayed(const Duration(milliseconds: 300), () {
-                Navigator.pop(context);
-              });
+              // Future.delayed(const Duration(milliseconds: 300), () {
+              //
+              // });
+              // Navigator.pop(context);
+              // Navigator.popUntil(context, (route) => route.settings.name == "TRIP_DETAIL");
+              Navigator.popUntil(context, (route) => route.isFirst);
               Utils.showMyToast(context, 'Thành công! Đặt vé thành công.');
             }
             if (state.bookTicketResponse?.statusCode != 200 &&  state.bookTicketResponse != null && !state.isLoading) {
@@ -284,9 +289,8 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
                           diaChiDi: diaChiKhachDi.text.trim(),
                           diaChiDen: diaChiKhachDen.text.trim(),
                           idLichXe: widget.coachPaneTripItem.id,
-                          idChang: widget.coachPaneTripItem.idTuyenDuong,
-                          idLichChayXe: 0,
-                          nguoiDat: '',
+                          idChang: ((widget.detailCoachPaneTrip?.danhSachChangDuong ?? []).isNotEmpty ? widget.detailCoachPaneTrip?.danhSachChangDuong.first.id : 0) ?? 0,
+                          idLichChayXe: widget.detailCoachPaneTrip?.idLichChayXe ?? 0,
                           idNhaXe: widget.coachPaneTripItem.idNhaXe,
                         ),
                       );

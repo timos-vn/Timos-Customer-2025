@@ -780,7 +780,9 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                       ticketDetail: ticket,
                       chiTietGhe: chiTietGhes,
                       coachPaneTripItem: widget.coachPaneTripItem,
+                      detailCoachPaneTrip: state.detailCoachPaneTrip,
                     ),
+                    settings: RouteSettings(name: "TICKET_DETAIL_BOOK"),
                   ),
                 );
               } else {

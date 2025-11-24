@@ -122,7 +122,7 @@ class TicketDetailNowBloc
         doman: "",
         ip: "",
         deVice: event.idDevice,
-        idLichXe: "",
+        idLichXe: event.idLichXe,
         ipClient: '',
       );
       response =  await ticketService.bookTicket(bookTicketModel);

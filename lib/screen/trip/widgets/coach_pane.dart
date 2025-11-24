@@ -130,6 +130,7 @@ class _CoachPaneState extends State<CoachPane> {
                       coachPaneTripItem: trip,
                     ),
                   ),
+                  settings: RouteSettings(name: "TRIP_DETAIL"),
                 ),
               );
             },
