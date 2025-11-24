@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart' as intl;
-import 'package:timos_customer_2025/enum/enum_request_method.dart';
+import 'package:timos_customer_2025/screen/detail_trip/bloc/detail_trip_bloc.dart';
+import 'package:timos_customer_2025/screen/detail_trip/detail_trip_screen.dart';
 import 'package:timos_customer_2025/screen/routers/router_generator.dart';
 import 'package:timos_customer_2025/themes/colors.dart';
 import 'package:timos_customer_2025/services/services.dart';
@@ -17,13 +19,11 @@ class _CoachPaneState extends State<CoachPane> {
   String vehicleType = 'Limo';
   String selectedSlot = '06:00-09:00';
   final List<String> vehicleTypes = <String>['Limo', 'Xe Khách', 'Giường nằm'];
-  final List<String> timeSlots = <String>[
-    '06:00-09:00',
-    '09:00-12:00',
-    '12:00-15:00',
-    '15:00-18:00',
-    '18:00-21:00'
-  ];
+
+  final List<DateTime> dateFilters = List.generate(7, (index) {
+    // Tạo 7 ngày: hôm nay + 6 ngày tới
+    return DateTime.now().add(Duration(days: index));
+  });
 
   // API related
   final TripService _coachTripService = TripService();
@@ -113,6 +113,11 @@ class _CoachPaneState extends State<CoachPane> {
 
   @override
   Widget build(BuildContext context) {
+    final timeSlots = dateFilters.map((date) {
+      return "${date.day.toString().padLeft(2, '0')}/"
+          "${date.month.toString().padLeft(2, '0')}/"
+          "${date.year}";
+    }).toList();
     return Column(
       children: [
         // Date Range Picker & Time Slot Selector
@@ -155,27 +160,28 @@ class _CoachPaneState extends State<CoachPane> {
               ),
               const SizedBox(height: 12),
               // Time slot selector
-              SizedBox(
-                height: 40,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (BuildContext _, int i) {
-                    final String slot = timeSlots[i];
-                    final bool selected = slot == selectedSlot;
-                    return ChoiceChip(
-                      label: Text(slot),
-                      selected: selected,
-                      onSelected: (_) => setState(() => selectedSlot = slot),
-                      selectedColor: mainColor.withOpacity(0.2),
-                      side: selected
-                          ? BorderSide(color: mainColor)
-                          : BorderSide(color: Colors.grey.shade300),
-                    );
-                  },
-                  separatorBuilder: (_, __) => const SizedBox(width: 8),
-                  itemCount: timeSlots.length,
-                ),
-              ),
+              // SizedBox(
+              //   height: 40,
+              //   child: ListView.separated(
+              //     scrollDirection: Axis.horizontal,
+              //     itemBuilder: (BuildContext _, int i) {
+
+              //       final String slot = timeSlots[i];
+              //       final bool selected = slot == selectedSlot;
+              //       return ChoiceChip(
+              //         label: Text(slot),
+              //         selected: selected,
+              //         onSelected: (_) => setState(() => selectedSlot = slot),
+              //         selectedColor: mainColor.withOpacity(0.2),
+              //         side: selected
+              //             ? BorderSide(color: mainColor)
+              //             : BorderSide(color: Colors.grey.shade300),
+              //       );
+              //     },
+              //     separatorBuilder: (_, __) => const SizedBox(width: 8),
+              //     itemCount: timeSlots.length,
+              //   ),
+              // ),
             ],
           ),
         ),
@@ -273,22 +279,21 @@ class _CoachPaneState extends State<CoachPane> {
                               ],
                             ),
                             trailing: const Icon(Icons.chevron_right),
-                            onTap: () => Navigator.of(context).pushNamed(
-                              RouterGenerator.routeTripDetail,
-                              arguments: TripSummary(
-                                tripId: 'ti',
-                                routeName: '$vehicleType ${(':00', '')}',
-                                departureTime: DateTime.now()
-                                    .add(Duration(hours: 72 + index * 3)),
-                                bookedSeats: 10,
-                                totalSeats: 28,
-                                licensePlate:
-                                    '29B-12${1.toString().padLeft(3, '0')}',
-                                driverName: 'Tài xế ${1 + 1}',
-                                driverPhone:
-                                    '0900${1.toString().padLeft(6, '0')}',
-                              ),
-                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => BlocProvider(
+                                    create: (_) => DetailTripBloc(),
+                                    child: TripDetailScreen(
+                                      idLichXeLimousine: trip.id,
+                                      coachPaneTripItem: trip,
+                                    ),
+                                  ),
+                                  settings: RouteSettings(name: "TRIP_DETAIL"),
+                                ),
+                              );
+                            },
                           ),
                         );
                       },

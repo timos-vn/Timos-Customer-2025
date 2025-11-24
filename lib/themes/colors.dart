@@ -18,6 +18,13 @@ const Color dark_text = Color(0xFFB8B8B8);
 const Color accent = Color(0xFFF16B23);
 const Color red = Color(0xFFFF4759);
 const Color blue = Color(0xFF4688FA);
+const Color colorApp = Color(0xfff7892b);
+const disableColor = Color(0xFF7D7D7E);
+const Color colorRed = Colors.red;
+const Color borderColor = Color(0xFFE0E0E0);
+const Color whiteColor = const Color(0XFFFFFFFF);
+
+
 // Status
 const Color successColor = Color(0xFF2E7D32);
 const Color warningColor = Color(0xFFF9A825);

@@ -42,17 +42,21 @@ class _TripScreenView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TripBloc, state.TripState>(
       builder: (context, tripState) {
-        if (tripState.isManager) {
-          return _BlocManagerTabView(
-            tripState: tripState,
-          );
-        }
+        // if (tripState.isManager) {
+        //   return _BlocManagerTabView(
+        //     tripState: tripState,
+        //   );
+        // }
 
-        return _BlocDriverView(
-          vehicleTypes: vehicleTypes,
-          timeSlots: timeSlots,
+        return _BlocManagerTabView(
           tripState: tripState,
         );
+
+        // return _BlocDriverView(
+        //   vehicleTypes: vehicleTypes,
+        //   timeSlots: timeSlots,
+        //   tripState: tripState,
+        // );
       },
     );
   }

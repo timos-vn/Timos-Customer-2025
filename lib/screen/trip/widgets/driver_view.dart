@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:timos_customer_2025/screen/detail_trip/bloc/detail_trip_bloc.dart';
+import 'package:timos_customer_2025/screen/detail_trip/detail_trip_screen.dart';
 import 'package:timos_customer_2025/themes/colors.dart';
 import 'package:timos_customer_2025/screen/routers/router_generator.dart';
 

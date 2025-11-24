@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:timos_customer_2025/models/response/group/group_response.dart';
 import 'package:timos_customer_2025/models/response/trip/trip_response.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/booking/booking_screen.dart';
 import '../bloc/trip_bloc.dart';
 import '../bloc/trip_state.dart';
 import 'share_airport_pane.dart';
@@ -24,50 +25,27 @@ class ManagerTabView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Quản lý nhà xe'),
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(48),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: TabBar(
-                isScrollable: true,
-                tabAlignment: TabAlignment.start,
-                tabs: const <Tab>[
-                  Tab(text: 'Xe ghép/Sân bay'),
-                  Tab(text: 'Trung chuyển'),
-                  Tab(text: 'Limo/Xe khách/Giường nằm'),
-                ],
-              ),
-            ),
-          ),
-          actions: [
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.search),
-            ),
-          ],
-        ),
-        body: TabBarView(
-          children: <Widget>[
-            BlocBuilder<TripBloc, TripState>(
-              builder: (context, state) {
-                return ShareAirportPane(
-                  internalGroups: internalGroups,
-                  publicGroups: publicGroups,
-                  isLoadingGroups: isLoadingGroups,
-                  trips: state.trips,
-                  isLoadingTrips: state.isLoadingTrips,
-                );
-              },
-            ),
-            const TransferManagerPane(),
-            const CoachPane(),
-          ],
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Quản lý nhà xe'),
+      ),
+      body: CoachPane(),
+      floatingActionButton: BlocBuilder<TripBloc, TripState>(
+        builder: (context, state) {
+          return FloatingActionButton(
+            onPressed: () {
+              // Handle FAB action
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BookingScreen(),
+                  settings: RouteSettings(name: "BOOKING_SCREEN"),
+                ),
+              );
+            },
+            child: const Icon(Icons.add),
+          );
+        },
       ),
     );
   }

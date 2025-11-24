@@ -3,33 +3,14 @@
 class Const {
   /// DF server
 
-  /// live : https://apicus.trungchuyenhn.com
+  /// live : https://api.quanly.timos.vn
 
-  /// dev: https://devapicus.trungchuyenhn.com
+  /// dev: https://dev.api.quanly.timos.vn
   // ignore: non_constant_identifier_names
   static String HOST_URL = "https://dev.api.quanly.timos.vn";
   // static  String HOST_URL = "https://apicus.trungchuyenhn.com";
   // ignore: non_constant_identifier_names
-  static int PORT_URL = 0;
 
-  /// DF base URL Dio
-  // static const String HOST_GOOGLE_MAP_URL = "https://maps.googleapis.com/maps/api/";
-  static const String HOST_GOOGLE_MAP_URL = "https://rsapi.goong.io/";
-  //https://rsapi.goong.io/Place/AutoComplete?api_key=2M2M2YDPq6KEHDLpCpdYbzLJyomS6d9DSvbZPM7K&input=hồ%20hoàn%20kiếm
-  // static const String PLACE_KEY =//"AIzaSyDD4jhDsa0LDNEbV-8PbgaySS64_pdQZto";
-  // "AIzaSyDRm0fBbhT7m22hPbANI8IRBHsilJL8UDI";
-
-  static const ACTION = 0;
-  static const HOME = 1;
-  static const ACCOUNT = 2;
-
-  static const String ACTION_UPDATE = '1';
-  static const String ACTION_DELETE = '4';
-  static const String TYPE_ONE = '1';
-  static const String TYPE_ALL = '0';
-
-  ///version app
-  static String versionApp = '1.0.31';
 
   // Lấy tỉnh thành từ file ra
   static const String fileDataProvince = "assets/data/data_province.json";
@@ -80,6 +61,7 @@ class Const {
 
   // ignore: non_constant_identifier_names
   static int ID_NHA_XE = 0;
+  static String ID_USER = "";
 
   static double giaTriChietKhau = 0;
 

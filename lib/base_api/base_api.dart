@@ -2,11 +2,24 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
+import 'package:dio_log_sds/interceptor/dio_log_interceptor.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:timos_customer_2025/const/const.dart';
 import 'package:timos_customer_2025/enum/enum_request_method.dart';
+import 'package:timos_customer_2025/utils/dio_log.dart';
 
 class BaseApi {
+
+  // Singleton instance
+  static final BaseApi _instance = BaseApi._internal();
+
+  // Getter để lấy instance
+  factory BaseApi() {
+    return _instance;
+  }
+
+  BaseApi._internal(); // constructor private
+
   static Dio dio = getBaseDio();
   final box = GetStorage();
 
@@ -22,6 +35,10 @@ class BaseApi {
         return client;
       },
     );
+
+    if (Diolog().showDebug) {
+      dio.interceptors.add(SDSDioLogInterceptor());
+    }
     return dio;
   }
 
