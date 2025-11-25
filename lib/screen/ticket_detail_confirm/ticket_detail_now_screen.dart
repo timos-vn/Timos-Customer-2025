@@ -220,6 +220,12 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
                                     borderSide: const BorderSide(
                                         color: colorApp, width: 1),
                                   ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Vui lòng nhập địa chỉ đi';
+                                    }
+                                    return null;
+                                  },
                                 ),
                               ],
                             ),
@@ -248,6 +254,12 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
                                     borderSide: const BorderSide(
                                         color: colorApp, width: 1),
                                   ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Vui lòng nhập địa chỉ đến';
+                                    }
+                                    return null;
+                                  },
                                 ),
                               ],
                             )
@@ -296,6 +308,10 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
                       );
                     } else {
                       log("Vui lòng điền đầy đủ thông tin.");
+                      if (!mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Vui lòng điền đầy đủ thông tin.')),
+                      );
                     }
                   },
                   child: state.isLoading ? CircularProgressIndicator(): UtilsWidget.buildText(

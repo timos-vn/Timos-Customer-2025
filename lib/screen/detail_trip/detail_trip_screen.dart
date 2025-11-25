@@ -686,7 +686,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
           if (row == firstRow && firstRow != null) {
             children.add(
               Container(
-                width: seatWidth,
+                width: 120,
                 height: seatWidth + 5,
                 margin: EdgeInsets.only(right: gap),
                 decoration: BoxDecoration(
@@ -697,10 +697,17 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                   ),
                   color: Colors.grey.shade100,
                 ),
-                child: const Icon(
-                  Icons.drive_eta,
-                  size: 36,
-                  color: Colors.black54,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    UtilsWidget.buildText(text: "Tài xế"),
+                    const Icon(
+                      Icons.drive_eta,
+                      size: 36,
+                      color: Colors.black54,
+                    ),
+                  ],
                 ),
               ),
             );

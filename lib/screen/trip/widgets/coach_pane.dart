@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:timos_customer_2025/main.dart';
 import 'package:timos_customer_2025/models/response/response.dart';
 import 'package:timos_customer_2025/screen/detail_trip/bloc/detail_trip_bloc.dart';
 import 'package:timos_customer_2025/screen/detail_trip/detail_trip_screen.dart';
@@ -47,6 +48,18 @@ class _CoachPaneState extends State<CoachPane> {
         setState(() {
           _trips = response.data ?? [];
         });
+      } else {
+        if (!mounted) return;
+        if(response.statusCode == 401) {
+          navigatorKey.currentState?.pushNamedAndRemoveUntil(
+            '/login',
+                (route) => false,
+          );
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Không thể tải chuyến: ${response.message}')),
+        );
+
       }
     } catch (e) {
       if (!mounted) return;

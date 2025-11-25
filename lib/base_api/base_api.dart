@@ -3,30 +3,71 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:dio_log_sds/interceptor/dio_log_interceptor.dart';
+import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:timos_customer_2025/const/const.dart';
 import 'package:timos_customer_2025/enum/enum_request_method.dart';
 import 'package:timos_customer_2025/utils/dio_log.dart';
 
+import '../main.dart';
+
 class BaseApi {
 
-  // Singleton instance
   static final BaseApi _instance = BaseApi._internal();
+  factory BaseApi() => _instance;
+  BaseApi._internal();
 
-  // Getter để lấy instance
-  factory BaseApi() {
-    return _instance;
-  }
-
-  BaseApi._internal(); // constructor private
-
-  static Dio dio = getBaseDio();
   final box = GetStorage();
 
-  static Dio getBaseDio() {
-    Dio dio = Dio();
+  /// ---------------------------
+  /// DIO SINGLETON
+  /// ---------------------------
+  static final Dio dio = getBaseDio()
+    ..interceptors.add(
+      InterceptorsWrapper(
+        onError: (DioException error, handler) {
+          print("Trạng thái lỗi: ${error.response?.statusCode}");
+          // Auto logout khi token hết hạn
+          if (error.response?.statusCode == 401) {
+            final context = navigatorKey.currentContext;
+            if (context != null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+                  ),
+                ),
+              );
+            }
+            navigatorKey.currentState?.pushNamedAndRemoveUntil(
+              '/login',
+                  (route) => false,
+            );
+          } else {
+            final context = navigatorKey.currentContext;
+            if (context != null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Lỗi hệ thống vui lòng thử lại sau! (${error.response?.statusCode})',
+                  ),
+                ),
+              );
+            }
+          }
 
-    dio.options = buildDefaultOptions();
+
+          return handler.next(error);
+        },
+      ),
+    );
+
+  /// ---------------------------
+  /// Build Dio
+  /// ---------------------------
+  static Dio getBaseDio() {
+    final dio = Dio(buildDefaultOptions());
+
     dio.httpClientAdapter = IOHttpClientAdapter(
       createHttpClient: () {
         final client = HttpClient();
@@ -42,38 +83,36 @@ class BaseApi {
     return dio;
   }
 
+  /// ---------------------------
+  /// Default timeout
+  /// ---------------------------
   static BaseOptions buildDefaultOptions({Duration? timeOut}) {
-    return BaseOptions()
-      ..connectTimeout = timeOut ?? const Duration(milliseconds: 1500)
-      ..receiveTimeout = timeOut ?? const Duration(milliseconds: 1500);
+    return BaseOptions(
+      connectTimeout: timeOut ?? const Duration(milliseconds: 1500),
+      receiveTimeout: timeOut ?? const Duration(milliseconds: 1500),
+    );
   }
 
-  // // Khi nào cần lắng nghe lỗi từ BaseApi thì gọi hàm này
-  // void setOnErrorListener(Function(Object error) onErrorCallBack) {
-  //   this.onErrorCallBack = onErrorCallBack;
-  // }
-  //
-  // late Function(Object error) onErrorCallBack;
-
-  /// [isQueryParametersPost]: `true`: phương thức post gửi params, mặc định = `false`
-  ///
-  /// [dioOptions]: option của Dio() sử dụng khi gọi api có option riêng
-  ///
-  /// [functionError]: chạy function riêng khi request xảy ra Exception (mặc định sử dụng [showDialogError])
+  /// ---------------------------
+  /// KHÔNG ĐỤNG GÌ TỚI HÀM NÀY
+  /// CALL API GIỮ NGUYÊN 100%
+  /// ---------------------------
   Future<dynamic> callApi(
-    String action,
-    String requestMethod, {
-    dynamic jsonMap,
-    bool isDownload = false,
-    String? urlOther,
-    Map<String, String>? headersUrlOther,
-    bool isQueryParametersPost = false,
-    BaseOptions? dioOptions,
-    Function(Object error)? functionError,
-    bool isToken = true,
-    Duration? timeOut,
-  }) async {
+      String action,
+      String requestMethod, {
+        dynamic jsonMap,
+        bool isDownload = false,
+        String? urlOther,
+        Map<String, String>? headersUrlOther,
+        bool isQueryParametersPost = false,
+        BaseOptions? dioOptions,
+        Function(Object error)? functionError,
+        bool isToken = true,
+        Duration? timeOut,
+      }) async {
+
     dio.options = dioOptions ?? buildDefaultOptions(timeOut: timeOut);
+
     dynamic response;
 
     String url = urlOther ?? (Const.HOST_URL + action);
@@ -84,16 +123,16 @@ class BaseApi {
 
     Options options = isDownload
         ? Options(
-            headers: headers,
-            responseType: ResponseType.bytes,
-            followRedirects: false,
-            validateStatus: (status) {
-              return status != null && status < 500;
-            })
+      headers: headers,
+      responseType: ResponseType.bytes,
+      followRedirects: false,
+      validateStatus: (status) => status != null && status < 500,
+    )
         : Options(
-            headers: headers,
-            responseType: ResponseType.json,
-          );
+      headers: headers,
+      responseType: ResponseType.json,
+    );
+
     CancelToken cancelToken = CancelToken();
 
     try {
@@ -136,19 +175,25 @@ class BaseApi {
         );
       }
       return response.data;
+
     } catch (e) {
-      return functionError != null ? functionError(e) : showDialogError(e);
+      return functionError != null
+          ? functionError(e)
+          : showDialogError(e);
     }
   }
 
+  /// ---------------------------
+  /// KEEP NGUYÊN — KHÔNG ĐỔI
+  /// ---------------------------
   dynamic showDialogError(dynamic e) {
     if (e.response?.data != null &&
         e.response.data is Map &&
         e.response.data["errorMessage"] != null) {
       return e.response.data;
     }
-    // onErrorCallBack(e);
-    // Re-throw the exception if we can't handle it
+
+    // Quan trọng: RETHROW để interceptor nhận lỗi
     throw e;
   }
 
@@ -160,3 +205,4 @@ class BaseApi {
     };
   }
 }
+
