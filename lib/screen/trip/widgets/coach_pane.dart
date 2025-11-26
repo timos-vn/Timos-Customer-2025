@@ -19,8 +19,8 @@ class _CoachPaneState extends State<CoachPane> {
   final TripService _coachTripService = TripService();
   bool _isLoading = false;
   List<CoachPaneTripItem> _trips = [];
-  DateTime _startDate = DateTime.now().add(const Duration(days: 1));
-  DateTime _endDate = DateTime.now().add(const Duration(days: 8));
+  DateTime _startDate = DateTime.now().add(const Duration(days: 0));
+  DateTime _endDate = DateTime.now().add(const Duration(days: 7));
   String _statusFilter = 'Tất cả';
 
   @override
@@ -958,11 +958,19 @@ class _DateRangePickerSheetState extends State<_DateRangePickerSheet> {
               ],
             ),
             const SizedBox(height: 12),
-            CalendarDatePicker(
-              initialDate: _tempStart ?? DateTime.now(),
-              firstDate: DateTime.now().subtract(const Duration(days: 1)),
-              lastDate: DateTime.now().add(const Duration(days: 365)),
-              onDateChanged: _onDaySelected,
+            Theme(
+              data: Theme.of(context).copyWith(
+                colorScheme: Theme.of(context).colorScheme.copyWith(
+                  primary: Colors.black,          // màu của ngày được chọn
+                  onPrimary: Colors.red,      // màu chữ của ngày được chọn
+                ),
+              ),
+              child: CalendarDatePicker(
+                initialDate: _tempStart ?? DateTime.now(),
+                firstDate: DateTime.now().subtract(const Duration(days: 0)),
+                lastDate: DateTime.now().add(const Duration(days: 365)),
+                onDateChanged: _onDaySelected,
+              ),
             ),
             const SizedBox(height: 8),
             Align(

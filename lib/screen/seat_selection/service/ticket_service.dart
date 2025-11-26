@@ -21,7 +21,6 @@ class TicketService extends BaseRepository {
       "/api/v1/manage/chuyen-di/dat-ve-vang-lai",
       "POST",
       jsonMap: bookTicketModel.toJson(),
-      isToken: false,
     );
     return BookTicketResponse.fromJson(response);
   }

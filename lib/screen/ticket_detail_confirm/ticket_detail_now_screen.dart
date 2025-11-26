@@ -383,9 +383,9 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
             _buildInfoRow("Tuyến đường:", ticketDetail.pickup ?? ""),
             const SizedBox(height: 4),
             _buildInfoRow("Giờ xuất phát:",
-                convertDateToString(ticketDetail.departureDate, pattern13)),
+                widget.detailCoachPaneTrip?.gioDi ?? ""),
             _buildInfoRow("Ngày xuất phát:",
-                convertDateToString(ticketDetail.departureDate, pattern1)),
+                convertDateToString(widget.detailCoachPaneTrip?.ngayChay, pattern1)),
             Visibility(
               visible: ticketDetail.isRoundTrip ?? false,
               child: _buildInfoRow("Giờ về:",

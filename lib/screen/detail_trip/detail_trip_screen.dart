@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:timos_customer_2025/models/response/response.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/booking/model/ticket_detail_model.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/service/signalr_service.dart';
 import 'package:timos_customer_2025/screen/detail_trip/ticket_detail_bottom_sheet.dart';
 import 'package:timos_customer_2025/screen/ticket_detail_confirm/ticket_detail_now_screen.dart';
 import 'package:timos_customer_2025/themes/colors.dart';
@@ -32,6 +33,8 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
 
   Set<DanhSachGhe> soDuocChon = {};
 
+  final signalRService = SignalRService();
+
   @override
   void initState() {
     super.initState();
@@ -40,6 +43,9 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
             idLichXeLimousine: widget.idLichXeLimousine,
           ),
         );
+
+    signalRService.startConnection();
+
   }
 
   @override

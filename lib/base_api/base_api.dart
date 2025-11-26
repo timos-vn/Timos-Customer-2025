@@ -12,12 +12,14 @@ import 'package:timos_customer_2025/utils/dio_log.dart';
 import '../main.dart';
 
 class BaseApi {
-
   static final BaseApi _instance = BaseApi._internal();
   factory BaseApi() => _instance;
   BaseApi._internal();
 
   final box = GetStorage();
+
+  /// Prevent multiple logout triggers
+  static bool _isLoggingOut = false;
 
   /// ---------------------------
   /// DIO SINGLETON
@@ -25,37 +27,60 @@ class BaseApi {
   static final Dio dio = getBaseDio()
     ..interceptors.add(
       InterceptorsWrapper(
-        onError: (DioException error, handler) {
-          print("Trạng thái lỗi: ${error.response?.statusCode}");
-          // Auto logout khi token hết hạn
-          if (error.response?.statusCode == 401) {
-            final context = navigatorKey.currentContext;
-            if (context != null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+        onError: (DioException error, handler) async {
+          final statusCode = error.response?.statusCode;
+          print("⚠️ Trạng thái lỗi: $statusCode");
+
+          final context = navigatorKey.currentContext;
+
+          // -------------------------------
+          // TOKEN HẾT HẠN → LOGOUT 1 LẦN
+          // -------------------------------
+          if (statusCode == 401) {
+            if (!_isLoggingOut) {
+              _isLoggingOut = true;
+
+              // show snack bar nếu còn context
+              if (context != null) {
+                ScaffoldMessenger.of(context).clearSnackBars();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+                    ),
                   ),
-                ),
+                );
+              }
+
+              // Đợi UI snack bar 200ms rồi mới logout
+              await Future.delayed(const Duration(milliseconds: 200));
+
+              navigatorKey.currentState?.pushNamedAndRemoveUntil(
+                '/login',
+                    (route) => false,
               );
+
+              // reset flag sau khi màn login được mở
+              Future.delayed(const Duration(milliseconds: 500), () {
+                _isLoggingOut = false;
+              });
             }
-            navigatorKey.currentState?.pushNamedAndRemoveUntil(
-              '/login',
-                  (route) => false,
-            );
-          } else {
-            final context = navigatorKey.currentContext;
-            if (context != null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Lỗi hệ thống vui lòng thử lại sau! (${error.response?.statusCode})',
-                  ),
-                ),
-              );
-            }
+
+            return; // DỪNG, không bắn thêm handler
           }
 
+          // -------------------------------
+          // LỖI HỆ THỐNG CHUNG (1 lần)
+          // -------------------------------
+          if (context != null && statusCode != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Lỗi hệ thống, vui lòng thử lại sau! ($statusCode)',
+                ),
+              ),
+            );
+          }
 
           return handler.next(error);
         },
@@ -80,6 +105,7 @@ class BaseApi {
     if (Diolog().showDebug) {
       dio.interceptors.add(SDSDioLogInterceptor());
     }
+
     return dio;
   }
 
@@ -94,8 +120,7 @@ class BaseApi {
   }
 
   /// ---------------------------
-  /// KHÔNG ĐỤNG GÌ TỚI HÀM NÀY
-  /// CALL API GIỮ NGUYÊN 100%
+  /// KHÔNG ĐỤNG — GIỮ NGUYÊN
   /// ---------------------------
   Future<dynamic> callApi(
       String action,
@@ -110,7 +135,6 @@ class BaseApi {
         bool isToken = true,
         Duration? timeOut,
       }) async {
-
     dio.options = dioOptions ?? buildDefaultOptions(timeOut: timeOut);
 
     dynamic response;
@@ -174,12 +198,10 @@ class BaseApi {
           cancelToken: cancelToken,
         );
       }
-      return response.data;
 
+      return response.data;
     } catch (e) {
-      return functionError != null
-          ? functionError(e)
-          : showDialogError(e);
+      return functionError != null ? functionError(e) : showDialogError(e);
     }
   }
 
@@ -193,8 +215,7 @@ class BaseApi {
       return e.response.data;
     }
 
-    // Quan trọng: RETHROW để interceptor nhận lỗi
-    throw e;
+    throw e; // Rethrow để interceptor bắt được
   }
 
   Future<Map<String, String>> getBaseHeader() async {
@@ -205,4 +226,5 @@ class BaseApi {
     };
   }
 }
+
 

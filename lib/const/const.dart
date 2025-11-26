@@ -9,7 +9,8 @@ class Const {
   // ignore: non_constant_identifier_names
   static String HOST_URL = "https://dev.api.quanly.timos.vn";
   // static  String HOST_URL = "https://apicus.trungchuyenhn.com";
-  // ignore: non_constant_identifier_names
+
+  static const String urlWebSocket = "https://devapicus.trungchuyenhn.com/hubs/ticket";
 
 
   // Lấy tỉnh thành từ file ra
