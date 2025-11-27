@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:timos_customer_2025/const/const.dart';
 import 'package:timos_customer_2025/models/response/response.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/booking/model/ticket_detail_model.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/cancel_ticket_request.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/service/signalr_service.dart';
 import 'package:timos_customer_2025/screen/detail_trip/ticket_detail_bottom_sheet.dart';
 import 'package:timos_customer_2025/screen/ticket_detail_confirm/ticket_detail_now_screen.dart';
@@ -39,7 +42,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
   void initState() {
     super.initState();
     context.read<DetailTripBloc>().add(
-          DetailTripEvent.loadDetailCoachPaneTrip(
+      LoadDetailCoachPaneTripEvent(
             idLichXeLimousine: widget.idLichXeLimousine,
           ),
         );
@@ -50,141 +53,159 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<DetailTripBloc, DetailTripState>(
-      builder: (context, state) {
-        final data = state.detailCoachPaneTrip;
+    return  BlocListener<DetailTripBloc, DetailTripState>(
+      listenWhen: (prev, next) => prev.isCancelSuccess != next.isCancelSuccess,
+      listener: (context, state) {
+        if (state.isCancelSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Huỷ vé thành công',
+              ),
+            ),
+          );
+          context.read<DetailTripBloc>().add(
+            LoadDetailCoachPaneTripEvent(
+              idLichXeLimousine: widget.idLichXeLimousine,
+            ),
+          );
+        }},
+      child: BlocBuilder<DetailTripBloc, DetailTripState>(
+        builder: (context, state) {
+          final data = state.detailCoachPaneTrip;
 
-        return Scaffold(
-          appBar: AppBar(
-            elevation: 0,
-            backgroundColor: Colors.white,
-            iconTheme: const IconThemeData(color: Colors.black87),
-            title: data != null
-                ? Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              data.maLimo,
-                              style: const TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.black87,
-                                letterSpacing: -0.5,
+          return Scaffold(
+            appBar: AppBar(
+              elevation: 0,
+              backgroundColor: Colors.white,
+              iconTheme: const IconThemeData(color: Colors.black87),
+              title: data != null
+                  ? Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                data.maLimo,
+                                style: const TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.black87,
+                                  letterSpacing: -0.5,
+                                ),
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 4),
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(3),
-                                  decoration: BoxDecoration(
-                                    color: mainColor.withValues(alpha: 0.15),
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Icon(
-                                    Icons.directions_bus,
-                                    size: 12,
-                                    color: mainColor,
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
-                                Flexible(
-                                  child: Text(
-                                    data.bienSoXe,
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.grey.shade700,
+                              const SizedBox(height: 4),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(3),
+                                    decoration: BoxDecoration(
+                                      color: mainColor.withValues(alpha: 0.15),
+                                      borderRadius: BorderRadius.circular(4),
                                     ),
-                                    overflow: TextOverflow.ellipsis,
+                                    child: Icon(
+                                      Icons.directions_bus,
+                                      size: 12,
+                                      color: mainColor,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              mainColor.withValues(alpha: 0.15),
-                              mainColor.withValues(alpha: 0.08),
+                                  const SizedBox(width: 6),
+                                  Flexible(
+                                    child: Text(
+                                      data.bienSoXe,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.grey.shade700,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: mainColor.withValues(alpha: 0.25),
-                            width: 1.5,
-                          ),
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.event_seat,
-                              size: 16,
-                              color: mainColor,
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                mainColor.withValues(alpha: 0.15),
+                                mainColor.withValues(alpha: 0.08),
+                              ],
                             ),
-                            const SizedBox(width: 6),
-                            Text(
-                              '${data.soGheDaDat}/${data.tongSoGhe}',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: mainColor.withValues(alpha: 0.25),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.event_seat,
+                                size: 16,
                                 color: mainColor,
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 6),
+                              Text(
+                                '${data.soGheDaDat}/${data.tongSoGhe}',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: mainColor,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    )
+                  : const Text(
+                      'Chi tiết chuyến',
+                      style: TextStyle(color: Colors.black87),
+                    ),
+            ),
+            body: _buildBody(context, state, data),
+            bottomNavigationBar: data != null
+                ? AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    transitionBuilder:
+                        (Widget child, Animation<double> animation) {
+                      return SlideTransition(
+                        position: Tween<Offset>(
+                          begin: const Offset(0.0, 1.0),
+                          end: Offset.zero,
+                        ).animate(
+                          CurvedAnimation(
+                            parent: animation,
+                            curve: Curves.easeOutCubic,
+                          ),
+                        ),
+                        child: FadeTransition(
+                          opacity: animation,
+                          child: child,
+                        ),
+                      );
+                    },
+                    child: soDuocChon.isNotEmpty
+                        ? _buildBottom(key: const ValueKey('bottom-nav'))
+                        : const SizedBox.shrink(key: ValueKey('empty')),
                   )
-                : const Text(
-                    'Chi tiết chuyến',
-                    style: TextStyle(color: Colors.black87),
-                  ),
-          ),
-          body: _buildBody(context, state, data),
-          bottomNavigationBar: data != null
-              ? AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  transitionBuilder:
-                      (Widget child, Animation<double> animation) {
-                    return SlideTransition(
-                      position: Tween<Offset>(
-                        begin: const Offset(0.0, 1.0),
-                        end: Offset.zero,
-                      ).animate(
-                        CurvedAnimation(
-                          parent: animation,
-                          curve: Curves.easeOutCubic,
-                        ),
-                      ),
-                      child: FadeTransition(
-                        opacity: animation,
-                        child: child,
-                      ),
-                    );
-                  },
-                  child: soDuocChon.isNotEmpty
-                      ? _buildBottom(key: const ValueKey('bottom-nav'))
-                      : const SizedBox.shrink(key: ValueKey('empty')),
-                )
-              : null,
-        );
-      },
+                : null,
+          );
+        },
+      ),
     );
   }
 
@@ -209,7 +230,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
             ElevatedButton(
               onPressed: () {
                 context.read<DetailTripBloc>().add(
-                      DetailTripEvent.loadDetailCoachPaneTrip(
+                  LoadDetailCoachPaneTripEvent(
                         idLichXeLimousine:
                             widget.idLichXeLimousine.toString(),
                       ),
@@ -320,7 +341,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildSeat(currentFloor),
+                _buildSeat(currentFloor, state),
               ],
             ),
           ),
@@ -525,7 +546,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
     );
   }
 
-  Widget _buildSeat(TangHienTai? currentFloor) {
+  Widget _buildSeat(TangHienTai? currentFloor, DetailTripState state,) {
     final rows = (currentFloor?.danhSachGhe ?? [])
         .map((e) => e.hang)
         .toSet()
@@ -563,114 +584,178 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
             return const SizedBox();
           }
 
-          return InkWell(
-            onTap: () {
-              if (seat.trangThaiGhe == 1) {
-                if (soDuocChon.contains(seat)) {
-                  soDuocChon.remove(seat);
-                } else {
-                  soDuocChon.add(seat);
-                }
-                setState(() {});
-              } else {
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (_) => TicketDetailBottomSheet(seat),
-                );
-              }
-            },
-            child: Container(
-              width: width,
-              height: width + 5,
-              margin: EdgeInsets.only(right: gap),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: seat.isTrungChuyen
-                      ? Colors.green
-                      : (soDuocChon.contains(seat)
-                          ? Colors.orange
-                          : borderColor),
-                  width: 2,
-                ),
-                color: seat.isTrungChuyen ? Colors.green.shade50 : seatColor,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+          return Builder(
+            builder: (context) {
+              return InkWell(
+                onTap: () async {
+                  if (seat.trangThaiGhe == 1) {
+                    if (soDuocChon.contains(seat)) {
+                      soDuocChon.remove(seat);
+                    } else {
+                      soDuocChon.add(seat);
+                    }
+                    setState(() {});
+                  } else {
+                    final value = await showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (_) => TicketDetailBottomSheet(seat),
+                    );
+
+                    print("Gia trị ${value}");
+
+                    if(value != null) {
+                      if (value == 'cancel_ticket') {
+                        // CancelTicketRequest
+                        final box = GetStorage();
+                        String userId = box.read(Const.USER_ID);
+                        context.read<DetailTripBloc>().add(
+                          CancelTripEvent(
+                            cancelTicketRequest: CancelTicketRequest(
+                              idLichXe: widget.idLichXeLimousine,
+                              idKhachHang: "seat",
+                              maDatCho: seat.maDatCho.toInt(),
+                              ngayChay: state.detailCoachPaneTrip?.ngayChay,
+                              nguoiHuy: userId,
+                              lyDoHuy: "Hành khách yêu cầu hủy vé",
+                              thoiGianHuy: DateTime.now(),
+                            ),
+                          ),
+                        );
+                      } else if (value == 'edit_ticket') {
+                        Set<ChiTietGhe> chiTietGhes = {};
+                        chiTietGhes.add(
+                          ChiTietGhe(
+                            tang: seat.tang,
+                            hang: seat.hang,
+                            day: seat.day,
+                            giaVe: seat.giaVe.toInt(),
+                            diemBan: 1,
+                            tenGhe: seat.tenGhe,
+                          ),
+                        );
+
+                          TicketDetailModel ticket = TicketDetailModel(
+                            dropoff: seat.diaChiKhachDen,
+                            pickup: widget.coachPaneTripItem.tenTuyenDuong,
+                            departureDate: state.detailCoachPaneTrip?.ngayChay,
+                            numCustomers: 1,
+                            price: seat.giaVe.toInt(),
+                          );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  TicketDetailNowScreen(
+                                    ticketDetail: ticket,
+                                    chiTietGhe: chiTietGhes,
+                                    coachPaneTripItem: widget.coachPaneTripItem,
+                                    detailCoachPaneTrip: state
+                                        .detailCoachPaneTrip,
+                                    isUpdate: true,
+                                    danhSachGhe: seat,
+                                  ),
+                              settings: RouteSettings(
+                                  name: "TICKET_DETAIL_BOOK"),
+                            ),
+                          );
+                        }
+                    }
+                  }
+                },
+                child: Container(
+                  width: width,
+                  height: width + 5,
+                  margin: EdgeInsets.only(right: gap),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: seat.isTrungChuyen
+                          ? Colors.green
+                          : (soDuocChon.contains(seat)
+                              ? Colors.orange
+                              : borderColor),
+                      width: 2,
+                    ),
+                    color: seat.isTrungChuyen ? Colors.green.shade50 : seatColor,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: Text(
-                          seat.tenGhe.toUpperCase(),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              seat.tenGhe.toUpperCase(),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: seat.isTrungChuyen ? Colors.green : textColor,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          if (seat.isTrungChuyen)
+                            const Icon(Icons.swap_horiz, size: 16, color: Colors.green),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        Utils.formatTotalMoney(seat.giaVe),
+                        style: TextStyle(
+                          color: seat.isTrungChuyen ? Colors.green : textColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      if (seat.tenKhachHang.isNotEmpty)
+                        Text(
+                          seat.tenKhachHang,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color: seat.isTrungChuyen ? Colors.green : textColor,
-                            fontWeight: FontWeight.w700,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                      ),
-                      if (seat.isTrungChuyen)
-                        const Icon(Icons.swap_horiz, size: 16, color: Colors.green),
+                      if (seat.soDienThoaiKhachHang.isNotEmpty)
+                        Text(
+                          seat.soDienThoaiKhachHang,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: seat.isTrungChuyen ? Colors.green : textColor,
+                            fontSize: 12,
+                          ),
+                        ),
+                      const Spacer(),
+                      if (seat.ghiChu.isNotEmpty)
+                        Container(
+                          padding:
+                              const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: (seat.isTrungChuyen ? Colors.green : textColor)
+                                .withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            seat.ghiChu,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: seat.isTrungChuyen ? Colors.green : textColor,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ),
                     ],
                   ),
-                  const SizedBox(height: 6),
-                  Text(
-                    Utils.formatTotalMoney(seat.giaVe),
-                    style: TextStyle(
-                      color: seat.isTrungChuyen ? Colors.green : textColor,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  if (seat.tenKhachHang.isNotEmpty)
-                    Text(
-                      seat.tenKhachHang,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: seat.isTrungChuyen ? Colors.green : textColor,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  if (seat.soDienThoaiKhachHang.isNotEmpty)
-                    Text(
-                      seat.soDienThoaiKhachHang,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: seat.isTrungChuyen ? Colors.green : textColor,
-                        fontSize: 12,
-                      ),
-                    ),
-                  const Spacer(),
-                  if (seat.ghiChu.isNotEmpty)
-                    Container(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: (seat.isTrungChuyen ? Colors.green : textColor)
-                            .withValues(alpha: 0.08),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        seat.ghiChu,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: seat.isTrungChuyen ? Colors.green : textColor,
-                          fontSize: 10,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
+                ),
+              );
+            }
           );
         }
 

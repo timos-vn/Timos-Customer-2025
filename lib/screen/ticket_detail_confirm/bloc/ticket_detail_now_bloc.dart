@@ -21,6 +21,10 @@ class TicketDetailNowBloc
     on<BookTicketEvent>((event, emit) async {
       await bookingTicket(event, emit);
     });
+
+    on<BookTicketUpdateEvent>((event, emit) async {
+      await updateTicket(event, emit);
+    });
   }
 
   // Future<void> bookingTicket(
@@ -126,6 +130,60 @@ class TicketDetailNowBloc
         ipClient: '',
       );
       response =  await ticketService.bookTicket(bookTicketModel);
+      emit(state.copyWith(
+        isLoading: false,
+        errorMessage: null,
+        bookTicketResponse: response,
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        isLoading: false,
+        errorMessage: e.toString(),
+        bookTicketResponse: null,
+      ));
+    }
+  }
+
+  Future<void> updateTicket(BookTicketUpdateEvent event, Emitter emit) async {
+    emit(state.copyWith(isLoading: true, errorMessage: null));
+    BookTicketResponse response;
+    try {
+      final box = GetStorage();
+      String userId = box.read(Const.USER_ID);
+      BookTicketRequest bookTicketModel = BookTicketRequest(
+        idNhaXe: event.idNhaXe,
+        hoTen: event.nameCustomer,
+        dienThoai: event.phoneCustomer,
+        diaChiKhachDi: event.diaChiDi,
+        diaChiKhachDen: event.diaChiDen,
+        tienCocVe: 0,
+        khachTcDon: false,
+        khachTcTra: false,
+        idNhaTcDon: null,
+        idNhaTcTra: null,
+        isVeTangCuong: false,
+        idChang: event.idChang,
+        idVanPhongDon: null,
+        idVanPhongTra: null,
+        daThanhToan: false,
+        ghiChu: "Đặt vé vãng lai",
+        chiTietGhes: event.chiTietGhe.toList(),
+        nguoiTao: userId,
+        loaiDatVe: 1,
+        idNhanVienPhucVu: "",
+        thoiGianDatVe: DateTime.now(),
+        yeuCauXuatHoaDon: false,
+        thongTinHoaDon: null,
+        ngayChay: event.ticketDetailModel.departureDate,
+        idLichChayXe: event.idLichChayXe,
+        doman: "",
+        ip: "",
+        deVice: event.idDevice,
+        idLichXe: event.idLichXe,
+        ipClient: '',
+        maDatCho: event.maDatCho,
+      );
+      response =  await ticketService.updateTicket(bookTicketModel);
       emit(state.copyWith(
         isLoading: false,
         errorMessage: null,

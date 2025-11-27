@@ -2,6 +2,8 @@ import 'package:timos_customer_2025/base_api/base_repository.dart';
 import 'package:timos_customer_2025/enum/enum_request_method.dart';
 import 'package:timos_customer_2025/models/response/response.dart';
 import 'package:timos_customer_2025/models/network/request.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/cancel_ticket_request.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/cancel_ticket_response.dart';
 
 class TripService extends BaseRepository {
   static final TripService _instance = TripService._internal();
@@ -158,6 +160,31 @@ class TripService extends BaseRepository {
       }
 
       return DetailCoachPaneTripResponse.fromJson(response);
+    } catch (e) {
+      throw Exception('Lỗi khi lấy chi tiết chuyến đi: $e');
+    }
+  }
+
+  Future<CancelTicketResponse> cancelTicket({
+    required CancelTicketRequest cancelTicketRequest,
+  }) async {
+    try {
+      final response = await baseCallApi(
+        '/api/v1/manage/chuyen-di/huy-ve-vang-lai',
+        EnumRequestMethod.post,
+        jsonMap: cancelTicketRequest.toJson(),
+        isToken: true,
+      );
+      if (response == null) {
+        throw Exception('Response is null');
+      }
+
+      if (response is! Map<String, dynamic>) {
+        throw Exception(
+            'Response is not a valid JSON object: ${response.runtimeType}');
+      }
+
+      return CancelTicketResponse.fromJson(response);
     } catch (e) {
       throw Exception('Lỗi khi lấy chi tiết chuyến đi: $e');
     }

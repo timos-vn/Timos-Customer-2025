@@ -201,6 +201,7 @@ class DanhSachGhe {
     required this.tenTaiXeTrungChuyen,
     required this.soDienThoaiTaiXeTrungChuyen,
     required this.bienSoXeTrungChuyen,
+    required this.maDatCho
   });
 
   final int idGhe;
@@ -211,6 +212,7 @@ class DanhSachGhe {
   final int trangThaiGhe;
   final String tenTrangThaiGhe;
   final num giaVe;
+  final num maDatCho;
   final String tenLoaiGhe;
   final String mauSac;
   final String idDatVe;
@@ -264,6 +266,7 @@ class DanhSachGhe {
       tenTaiXeTrungChuyen: json["tenTaiXeTrungChuyen"] ?? "",
       soDienThoaiTaiXeTrungChuyen: json["soDienThoaiTaiXeTrungChuyen"] ?? "",
       bienSoXeTrungChuyen: json["bienSoXeTrungChuyen"] ?? "",
+      maDatCho: json["maDatCho"] ?? 0,
     );
   }
 

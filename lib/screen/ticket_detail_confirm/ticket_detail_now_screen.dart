@@ -26,12 +26,17 @@ class TicketDetailNowScreen extends StatefulWidget {
   final Set<ChiTietGhe> chiTietGhe;
   final CoachPaneTripItem coachPaneTripItem;
   final DetailCoachPaneTripData? detailCoachPaneTrip;
+  final DanhSachGhe? danhSachGhe;
+  final bool? isUpdate;
+
 
   const TicketDetailNowScreen(
       {required this.ticketDetail,
       required this.chiTietGhe,
       required this.coachPaneTripItem,
         this.detailCoachPaneTrip,
+        this.danhSachGhe,
+        this.isUpdate,
       super.key});
 
   @override
@@ -46,6 +51,12 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
   @override
   void initState() {
     _bloc.add(InitDataEvent(ticketDetailModel: widget.ticketDetail));
+    if(widget.isUpdate ?? false) {
+      textNameController.text = widget.danhSachGhe?.tenKhachHang ?? "";
+      textNumberPhoneController.text = widget.danhSachGhe?.soDienThoaiKhachHang ?? "";
+      diaChiKhachDi.text = widget.danhSachGhe?.diaChiKhachDi ?? "";
+      diaChiKhachDen.text = widget.danhSachGhe?.diaChiKhachDen ?? "";
+    }
     super.initState();
   }
 
@@ -290,22 +301,44 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
                   ),
                   onPressed: () async {
                     if (_formKey.currentState?.validate() ?? false) {
-                      final idDevice = "";
-                      _bloc.add(
-                        BookTicketEvent(
-                          ticketDetailModel: widget.ticketDetail,
-                          nameCustomer: textNameController.text.trim(),
-                          phoneCustomer: textNumberPhoneController.text.trim(),
-                          idDevice: idDevice ?? "",
-                          chiTietGhe: widget.chiTietGhe,
-                          diaChiDi: diaChiKhachDi.text.trim(),
-                          diaChiDen: diaChiKhachDen.text.trim(),
-                          idLichXe: widget.coachPaneTripItem.id,
-                          idChang: ((widget.detailCoachPaneTrip?.danhSachChangDuong ?? []).isNotEmpty ? widget.detailCoachPaneTrip?.danhSachChangDuong.first.id : 0) ?? 0,
-                          idLichChayXe: widget.detailCoachPaneTrip?.idLichChayXe ?? 0,
-                          idNhaXe: widget.coachPaneTripItem.idNhaXe,
-                        ),
-                      );
+
+                      if(widget.isUpdate ?? false) {
+                        final idDevice = "";
+                        _bloc.add(
+                          BookTicketUpdateEvent(
+                            ticketDetailModel: widget.ticketDetail,
+                            nameCustomer: textNameController.text.trim(),
+                            phoneCustomer: textNumberPhoneController.text.trim(),
+                            idDevice: idDevice ?? "",
+                            chiTietGhe: widget.chiTietGhe,
+                            diaChiDi: diaChiKhachDi.text.trim(),
+                            diaChiDen: diaChiKhachDen.text.trim(),
+                            idLichXe: widget.coachPaneTripItem.id,
+                            idChang: ((widget.detailCoachPaneTrip?.danhSachChangDuong ?? []).isNotEmpty ? widget.detailCoachPaneTrip?.danhSachChangDuong.first.id : 0) ?? 0,
+                            idLichChayXe: widget.detailCoachPaneTrip?.idLichChayXe ?? 0,
+                            idNhaXe: widget.coachPaneTripItem.idNhaXe,
+                            maDatCho: widget.danhSachGhe?.maDatCho.toInt() ?? 0,
+                          ),
+                        );
+                      } else {
+                        final idDevice = "";
+                        _bloc.add(
+                          BookTicketEvent(
+                            ticketDetailModel: widget.ticketDetail,
+                            nameCustomer: textNameController.text.trim(),
+                            phoneCustomer: textNumberPhoneController.text.trim(),
+                            idDevice: idDevice ?? "",
+                            chiTietGhe: widget.chiTietGhe,
+                            diaChiDi: diaChiKhachDi.text.trim(),
+                            diaChiDen: diaChiKhachDen.text.trim(),
+                            idLichXe: widget.coachPaneTripItem.id,
+                            idChang: ((widget.detailCoachPaneTrip?.danhSachChangDuong ?? []).isNotEmpty ? widget.detailCoachPaneTrip?.danhSachChangDuong.first.id : 0) ?? 0,
+                            idLichChayXe: widget.detailCoachPaneTrip?.idLichChayXe ?? 0,
+                            idNhaXe: widget.coachPaneTripItem.idNhaXe,
+                          ),
+                        );
+                      }
+
                     } else {
                       log("Vui lòng điền đầy đủ thông tin.");
                       if (!mounted) return;

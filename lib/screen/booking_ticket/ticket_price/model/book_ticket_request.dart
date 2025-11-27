@@ -30,6 +30,7 @@ class BookTicketRequest {
     required this.ip,
     required this.deVice,
     required this.ipClient,
+    this.maDatCho,
   });
 
   final int? idNhaXe;
@@ -62,6 +63,7 @@ class BookTicketRequest {
   final String? ip;
   final String? deVice;
   final String? ipClient;
+  final int? maDatCho;
 
   factory BookTicketRequest.fromJson(Map<String, dynamic> json){
     return BookTicketRequest(
@@ -95,6 +97,7 @@ class BookTicketRequest {
       ip: json["ip"],
       deVice: json["deVice"],
       ipClient: json["ipClient"],
+      maDatCho: json["maDatCho"]
     );
   }
 
@@ -129,6 +132,7 @@ class BookTicketRequest {
     "ip": ip,
     "deVice": deVice,
     "ipClient": ipClient,
+    "maDatCho": maDatCho,
   };
 
 }

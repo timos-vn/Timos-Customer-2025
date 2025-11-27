@@ -66,3 +66,38 @@ class BookTicketEvent extends TicketDetailNowEvent {
   @override
   List<Object?> get props => [ticketDetailModel, nameCustomer, phoneCustomer, chiTietGhe, idDevice, diaChiDi, diaChiDen];
 }
+
+
+class BookTicketUpdateEvent extends TicketDetailNowEvent {
+  final TicketDetailModel ticketDetailModel;
+  final String nameCustomer;
+  final String phoneCustomer;
+  final String diaChiDi;
+  final String diaChiDen;
+  final String idDevice;
+  final String idLichXe;
+  final int idChang;
+  final int idLichChayXe;
+  final int idNhaXe;
+  final int maDatCho;
+
+  final Set<ChiTietGhe> chiTietGhe;
+
+  BookTicketUpdateEvent({
+    required this.ticketDetailModel,
+    required this.nameCustomer,
+    required this.phoneCustomer,
+    required this.chiTietGhe,
+    required this.idDevice,
+    required this.diaChiDen,
+    required this.diaChiDi,
+    required this.idChang,
+    required this.idLichChayXe,
+    required this.idLichXe,
+    required this.idNhaXe,
+    required this.maDatCho,
+  });
+
+  @override
+  List<Object?> get props => [ticketDetailModel, nameCustomer, phoneCustomer, chiTietGhe, idDevice, diaChiDi, diaChiDen];
+}

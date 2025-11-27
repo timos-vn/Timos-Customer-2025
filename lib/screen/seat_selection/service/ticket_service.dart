@@ -25,6 +25,15 @@ class TicketService extends BaseRepository {
     return BookTicketResponse.fromJson(response);
   }
 
+  Future<BookTicketResponse> updateTicket(BookTicketRequest bookTicketModel) async {
+    final response =  await baseCallApi(
+      "/api/v1/manage/chuyen-di/sua-ve-vang-lai",
+      "PUT",
+      jsonMap: bookTicketModel.toJson(),
+    );
+    return BookTicketResponse.fromJson(response);
+  }
+
   Future<SeatingModel> getSeatingPlan(SeatingRequestModel seat) async {
     final response = await baseCallApi(
       "",

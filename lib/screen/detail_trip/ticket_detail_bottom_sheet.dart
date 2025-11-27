@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:timos_customer_2025/models/response/detail_coach_pane_trip/detail_coach_pane_trip_response.dart';
+import 'package:timos_customer_2025/screen/utils/widget/utils_widget.dart';
+import 'package:timos_customer_2025/themes/colors.dart';
 import 'package:timos_customer_2025/utils/utils.dart';
 
 class TicketDetailBottomSheet extends StatelessWidget {
-
   final DanhSachGhe danhSachGhe;
 
   const TicketDetailBottomSheet(this.danhSachGhe, {super.key});
@@ -59,7 +60,8 @@ class TicketDetailBottomSheet extends StatelessWidget {
 
               _infoRow("Tên khách", danhSachGhe.tenKhachHang),
               _infoRow("Số điện thoại", danhSachGhe.soDienThoaiKhachHang),
-              _infoRow("Loại vé", danhSachGhe.isTrungChuyen ? "Vé trung chuyển" : "Vé thường"),
+              _infoRow("Loại vé",
+                  danhSachGhe.isTrungChuyen ? "Vé trung chuyển" : "Vé thường"),
               _infoRow("Giá tiền", Utils.formatTotalMoney(danhSachGhe.giaVe)),
 
               const SizedBox(height: 12),
@@ -69,13 +71,69 @@ class TicketDetailBottomSheet extends StatelessWidget {
               const SizedBox(height: 12),
 
               _infoRow("Tên ghế", danhSachGhe.tenGhe),
-              _infoRow("Vị trí ghế", "Hàng ${danhSachGhe.hang} Dãy ${danhSachGhe.day}"),
+              _infoRow("Vị trí ghế",
+                  "Hàng ${danhSachGhe.hang} Dãy ${danhSachGhe.day}"),
               _infoRow("Tài xế chung chuyển", danhSachGhe.tenTaiXeTrungChuyen),
-              _infoRow("SDT chung chuyển", danhSachGhe.soDienThoaiTaiXeTrungChuyen),
+              _infoRow(
+                  "SDT chung chuyển", danhSachGhe.soDienThoaiTaiXeTrungChuyen),
               _infoRow("Ghi chú", danhSachGhe.ghiChu),
 
               const SizedBox(height: 30),
 
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                      child: SizedBox(
+                        height: 40,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: cardBackground,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            minimumSize: const Size(double.infinity, 50),
+                          ),
+                          onPressed: () async {
+                            Navigator.pop(context, 'cancel_ticket');
+                          },
+                          child: UtilsWidget.buildText(
+                              text: "Huỷ vé",
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              textColor: textColorDefault),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                      child: SizedBox(
+                        height: 40,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: colorApp,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            minimumSize: const Size(double.infinity, 50),
+                          ),
+                          onPressed: () async {
+                            Navigator.pop(context, 'edit_ticket');
+                          },
+                          child: UtilsWidget.buildText(
+                              text: "Chỉnh sửa vé",
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              textColor: whiteColor),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 16),
             ],
           ),
