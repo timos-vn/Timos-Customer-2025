@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/booking/model/ticket_detail_model.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_request.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_update_rquest.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/type_ticket_bus_model.dart';
 
 abstract class TicketDetailNowEvent extends Equatable {}
@@ -81,7 +82,7 @@ class BookTicketUpdateEvent extends TicketDetailNowEvent {
   final int idNhaXe;
   final int maDatCho;
 
-  final Set<ChiTietGhe> chiTietGhe;
+  final Set<ChiTietGheUpdate> chiTietGhe;
 
   BookTicketUpdateEvent({
     required this.ticketDetailModel,

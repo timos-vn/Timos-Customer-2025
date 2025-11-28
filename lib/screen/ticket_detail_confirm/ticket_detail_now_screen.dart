@@ -10,6 +10,7 @@ import 'package:timos_customer_2025/const/app_icon.dart';
 import 'package:timos_customer_2025/models/response/response.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/booking/model/ticket_detail_model.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_request.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_update_rquest.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/type_ticket_bus_model.dart';
 import 'package:timos_customer_2025/screen/ticket_detail_confirm/bloc/ticket_detail_now_bloc.dart';
 import 'package:timos_customer_2025/screen/ticket_detail_confirm/bloc/ticket_detail_now_event.dart';
@@ -23,7 +24,8 @@ import 'package:timos_customer_2025/utils/utils.dart';
 class TicketDetailNowScreen extends StatefulWidget {
   final TicketDetailModel ticketDetail;
 
-  final Set<ChiTietGhe> chiTietGhe;
+  final Set<ChiTietGhe>? chiTietGhe;
+  final Set<ChiTietGheUpdate>? chiTietGheUpdate;
   final CoachPaneTripItem coachPaneTripItem;
   final DetailCoachPaneTripData? detailCoachPaneTrip;
   final DanhSachGhe? danhSachGhe;
@@ -31,9 +33,8 @@ class TicketDetailNowScreen extends StatefulWidget {
 
 
   const TicketDetailNowScreen(
-      {required this.ticketDetail,
-      required this.chiTietGhe,
-      required this.coachPaneTripItem,
+      {required this.ticketDetail, this.chiTietGhe,
+      required this.coachPaneTripItem, this.chiTietGheUpdate,
         this.detailCoachPaneTrip,
         this.danhSachGhe,
         this.isUpdate,
@@ -310,7 +311,7 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
                             nameCustomer: textNameController.text.trim(),
                             phoneCustomer: textNumberPhoneController.text.trim(),
                             idDevice: idDevice ?? "",
-                            chiTietGhe: widget.chiTietGhe,
+                            chiTietGhe: widget.chiTietGheUpdate ?? {},
                             diaChiDi: diaChiKhachDi.text.trim(),
                             diaChiDen: diaChiKhachDen.text.trim(),
                             idLichXe: widget.coachPaneTripItem.id,
@@ -328,7 +329,7 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
                             nameCustomer: textNameController.text.trim(),
                             phoneCustomer: textNumberPhoneController.text.trim(),
                             idDevice: idDevice ?? "",
-                            chiTietGhe: widget.chiTietGhe,
+                            chiTietGhe: widget.chiTietGhe ?? {},
                             diaChiDi: diaChiKhachDi.text.trim(),
                             diaChiDen: diaChiKhachDen.text.trim(),
                             idLichXe: widget.coachPaneTripItem.id,
@@ -429,8 +430,16 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
               child: _buildInfoRow("Ngày về:",
                   convertDateToString(ticketDetail.returnDate, pattern1)),
             ),
-            ... widget.chiTietGhe.toList().map((e) => _buildInfoRow(
-                "Tên ghế:", "${(e.tenGhe ?? "").toUpperCase()} Hàng ${e.hang} Dãy ${(e.day ?? 0) + 1}")),
+            if(widget.isUpdate ?? false) ... [
+              ... (widget.chiTietGheUpdate ?? {} ).toList().map((e) => _buildInfoRow(
+                  "Tên ghế:", "${(e.tenGhe ?? "").toUpperCase()} Hàng ${e.hang} Dãy ${(e.day ?? 0) + 1}")),
+            ],
+
+            if(!(widget.isUpdate ?? false)) ... [
+              ... (widget.chiTietGhe ?? {} ).toList().map((e) => _buildInfoRow(
+                  "Tên ghế:", "${(e.tenGhe ?? "").toUpperCase()} Hàng ${e.hang} Dãy ${(e.day ?? 0) + 1}")),
+            ]
+
             // _buildInfoRow(
             //     "Tên ghế", "${ticketDetail.typeCar?.tenLoai} ngồi"),
             // _buildInfoRow("Email:", ""),

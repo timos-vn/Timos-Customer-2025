@@ -4,6 +4,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:timos_customer_2025/const/const.dart';
 import 'package:timos_customer_2025/models/response/response.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/booking/model/ticket_detail_model.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_update_rquest.dart' show ChiTietGheUpdate;
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/cancel_ticket_request.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/service/signalr_service.dart';
 import 'package:timos_customer_2025/screen/detail_trip/ticket_detail_bottom_sheet.dart';
@@ -614,7 +615,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                           CancelTripEvent(
                             cancelTicketRequest: CancelTicketRequest(
                               idLichXe: widget.idLichXeLimousine,
-                              idKhachHang: "seat",
+                              idKhachHang: "",
                               maDatCho: seat.maDatCho.toInt(),
                               ngayChay: state.detailCoachPaneTrip?.ngayChay,
                               nguoiHuy: userId,
@@ -624,9 +625,9 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                           ),
                         );
                       } else if (value == 'edit_ticket') {
-                        Set<ChiTietGhe> chiTietGhes = {};
+                        Set<ChiTietGheUpdate> chiTietGhes = {};
                         chiTietGhes.add(
-                          ChiTietGhe(
+                          ChiTietGheUpdate(
                             tang: seat.tang,
                             hang: seat.hang,
                             day: seat.day,
@@ -649,7 +650,8 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                               builder: (context) =>
                                   TicketDetailNowScreen(
                                     ticketDetail: ticket,
-                                    chiTietGhe: chiTietGhes,
+                                    // chiTietGhe: chiTietGhes,
+                                    chiTietGheUpdate: chiTietGhes,
                                     coachPaneTripItem: widget.coachPaneTripItem,
                                     detailCoachPaneTrip: state
                                         .detailCoachPaneTrip,

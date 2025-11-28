@@ -1,5 +1,5 @@
-class BookTicketRequest {
-  BookTicketRequest({
+class BookTicketUpdateRequest {
+  BookTicketUpdateRequest({
     required this.idNhaXe,
     required this.hoTen,
     required this.dienThoai,
@@ -30,6 +30,7 @@ class BookTicketRequest {
     required this.ip,
     required this.deVice,
     required this.ipClient,
+    this.maDatCho,
   });
 
   final int? idNhaXe;
@@ -49,7 +50,7 @@ class BookTicketRequest {
   final dynamic idVanPhongTra;
   final bool? daThanhToan;
   final String? ghiChu;
-  final List<ChiTietGhe> chiTietGhes;
+  final List<ChiTietGheUpdate> chiTietGhes;
   final String? nguoiTao;
   final int? loaiDatVe;
   final dynamic idNhanVienPhucVu;
@@ -62,39 +63,41 @@ class BookTicketRequest {
   final String? ip;
   final String? deVice;
   final String? ipClient;
+  final int? maDatCho;
 
-  factory BookTicketRequest.fromJson(Map<String, dynamic> json){
-    return BookTicketRequest(
-      idNhaXe: json["idNhaXe"],
-      hoTen: json["hoTen"],
-      dienThoai: json["dienThoai"],
-      diaChiKhachDi: json["diaChiKhachDi"],
-      diaChiKhachDen: json["diaChiKhachDen"],
-      idLichXe: json["idLichXe"],
-      tienCocVe: json["tienCocVe"],
-      khachTcDon: json["khachTCDon"],
-      khachTcTra: json["khachTCTra"],
-      idNhaTcDon: json["idNhaTCDon"],
-      idNhaTcTra: json["idNhaTCTra"],
-      isVeTangCuong: json["isVeTangCuong"],
-      idChang: json["idChang"],
-      idVanPhongDon: json["idVanPhongDon"],
-      idVanPhongTra: json["idVanPhongTra"],
-      daThanhToan: json["daThanhToan"],
-      ghiChu: json["ghiChu"],
-      chiTietGhes: json["chiTietGhes"] == null ? [] : List<ChiTietGhe>.from(json["chiTietGhes"]!.map((x) => ChiTietGhe.fromJson(x))),
-      nguoiTao: json["nguoiTao"],
-      loaiDatVe: json["loaiDatVe"],
-      idNhanVienPhucVu: json["idNhanVienPhucVu"],
-      thoiGianDatVe: DateTime.tryParse(json["thoiGianDatVe"] ?? ""),
-      yeuCauXuatHoaDon: json["yeuCauXuatHoaDon"],
-      thongTinHoaDon: json["thongTinHoaDon"],
-      ngayChay: DateTime.tryParse(json["ngayChay"] ?? ""),
-      idLichChayXe: json["idLichChayXe"],
-      doman: json["doman"],
-      ip: json["ip"],
-      deVice: json["deVice"],
-      ipClient: json["ipClient"],
+  factory BookTicketUpdateRequest.fromJson(Map<String, dynamic> json){
+    return BookTicketUpdateRequest(
+        idNhaXe: json["idNhaXe"],
+        hoTen: json["hoTen"],
+        dienThoai: json["dienThoai"],
+        diaChiKhachDi: json["diaChiKhachDi"],
+        diaChiKhachDen: json["diaChiKhachDen"],
+        idLichXe: json["idLichXe"],
+        tienCocVe: json["tienCocVe"],
+        khachTcDon: json["khachTCDon"],
+        khachTcTra: json["khachTCTra"],
+        idNhaTcDon: json["idNhaTCDon"],
+        idNhaTcTra: json["idNhaTCTra"],
+        isVeTangCuong: json["isVeTangCuong"],
+        idChang: json["idChang"],
+        idVanPhongDon: json["idVanPhongDon"],
+        idVanPhongTra: json["idVanPhongTra"],
+        daThanhToan: json["daThanhToan"],
+        ghiChu: json["ghiChu"],
+        chiTietGhes: json["chiTietGhes"] == null ? [] : List<ChiTietGheUpdate>.from(json["chiTietGhes"]!.map((x) => ChiTietGheUpdate.fromJson(x))),
+        nguoiTao: json["nguoiTao"],
+        loaiDatVe: json["loaiDatVe"],
+        idNhanVienPhucVu: json["idNhanVienPhucVu"],
+        thoiGianDatVe: DateTime.tryParse(json["thoiGianDatVe"] ?? ""),
+        yeuCauXuatHoaDon: json["yeuCauXuatHoaDon"],
+        thongTinHoaDon: json["thongTinHoaDon"],
+        ngayChay: DateTime.tryParse(json["ngayChay"] ?? ""),
+        idLichChayXe: json["idLichChayXe"],
+        doman: json["doman"],
+        ip: json["ip"],
+        deVice: json["deVice"],
+        ipClient: json["ipClient"],
+        maDatCho: json["maDatCho"]
     );
   }
 
@@ -129,12 +132,13 @@ class BookTicketRequest {
     "ip": ip,
     "deVice": deVice,
     "ipClient": ipClient,
+    "maDatCho": maDatCho,
   };
 
 }
 
-class ChiTietGhe {
-  ChiTietGhe({
+class ChiTietGheUpdate {
+  ChiTietGheUpdate({
     required this.tang,
     required this.hang,
     required this.day,
@@ -150,8 +154,8 @@ class ChiTietGhe {
   final int? diemBan;
   final String? tenGhe;
 
-  factory ChiTietGhe.fromJson(Map<String, dynamic> json){
-    return ChiTietGhe(
+  factory ChiTietGheUpdate.fromJson(Map<String, dynamic> json){
+    return ChiTietGheUpdate(
       tang: json["tang"],
       hang: json["hang"],
       day: json["day"],

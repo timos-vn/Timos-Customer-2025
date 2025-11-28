@@ -4,6 +4,7 @@ import 'package:timos_customer_2025/const/const.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/booking/model/ticket_detail_model.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_request.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_response.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_update_rquest.dart';
 import 'package:timos_customer_2025/screen/seat_selection/service/ticket_service.dart';
 import 'package:timos_customer_2025/screen/ticket_detail_confirm/bloc/ticket_detail_now_event.dart';
 import 'package:timos_customer_2025/screen/ticket_detail_confirm/bloc/ticket_detail_now_state.dart';
@@ -150,7 +151,7 @@ class TicketDetailNowBloc
     try {
       final box = GetStorage();
       String userId = box.read(Const.USER_ID);
-      BookTicketRequest bookTicketModel = BookTicketRequest(
+      BookTicketUpdateRequest bookTicketModel = BookTicketUpdateRequest(
         idNhaXe: event.idNhaXe,
         hoTen: event.nameCustomer,
         dienThoai: event.phoneCustomer,
