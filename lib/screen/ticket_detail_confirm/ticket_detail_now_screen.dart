@@ -101,7 +101,12 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
               }
             }
             if (state.bookTicketResponse?.statusCode != 200 &&  state.bookTicketResponse != null && !state.isLoading) {
-              Utils.showMyToast(context, 'Thất bại! Đặt vé không thành công.');
+              if(state.codeScreen == 1) {
+                Utils.showMyToast(context, 'Thất bại! Đặt vé không thành công.');
+              } else {
+                Utils.showMyToast(context, 'Thất bại! Cập nhật không thành công.');
+              }
+
             }
           },
           child: BlocBuilder<TicketDetailNowBloc, TicketDetailState>(

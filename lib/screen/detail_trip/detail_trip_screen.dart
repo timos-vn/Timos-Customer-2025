@@ -74,21 +74,41 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<DetailTripBloc, DetailTripState>(
-      listenWhen: (prev, next) => prev.statusApp != next.statusApp,
+      listenWhen: (prev, next) =>
+          prev.isLoadingTrips != next.isLoadingTrips ||
+          prev.tripError != next.tripError ||
+              prev.statusApp != next.statusApp,
       listener: (context, state) {
         if (state.statusApp == 1) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text(
-                'Huỷ vé thành công',
-              ),
+              content: Text('Huỷ vé thành công'),
+              backgroundColor: Colors.green,
             ),
           );
+          // Reload lại chi tiết chuyến
           context.read<DetailTripBloc>().add(
             LoadDetailCoachPaneTripEvent(
               idLichXeLimousine: widget.idLichXeLimousine,
             ),
           );
+        }
+        // Xử lý lỗi - hiển thị toast và giữ nguyên dialog
+        if (state.tripError != null && !state.isLoadingTrips) {
+          // Hiển thị toast thông báo lỗi
+          Utils.showMyToast(context, state.tripError!);
+
+          // Clear error state sau khi hiển thị toast (không reload để giữ dialog mở)
+          // Chỉ clear error, không reload data
+          Future.delayed(const Duration(milliseconds: 300), () {
+            if (mounted) {
+              // Emit state mới với error = null để clear error, giữ nguyên data
+              final currentState = context.read<DetailTripBloc>().state;
+              context.read<DetailTripBloc>().emit(
+                currentState.copyWith(tripError: null),
+              );
+            }
+          });
         }
 
         if(state.statusApp == 2) {
@@ -98,12 +118,17 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
             ),
           );
         }
-        },
+      },
       child: BlocBuilder<DetailTripBloc, DetailTripState>(
         builder: (context, state) {
           final data = state.detailCoachPaneTrip;
 
-          return Scaffold(
+          // Hiển thị loading overlay khi đang xử lý
+          final isLoading = state.isLoadingTrips;
+
+          return Stack(
+            children: [
+              Scaffold(
             appBar: AppBar(
               elevation: 0,
               backgroundColor: Colors.white,
@@ -232,6 +257,31 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                         : const SizedBox.shrink(key: ValueKey('empty')),
                   )
                 : null,
+              ),
+              // Loading overlay khi đang xử lý (hủy vé hoặc reload)
+              if (isLoading && data != null)
+                Container(
+                  color: Colors.black.withOpacity(0.3),
+                  child: const Center(
+                    child: Card(
+                      child: Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CircularProgressIndicator(),
+                            SizedBox(height: 16),
+                            Text(
+                              'Đang xử lý...',
+                              style: TextStyle(fontSize: 14),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           );
         },
       ),
@@ -243,11 +293,14 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
     DetailTripState state,
     DetailCoachPaneTripData? data,
   ) {
-    if (state.isLoadingTrips) {
+    // Nếu đang loading và chưa có data, hiển thị loading
+    if (state.isLoadingTrips && data == null) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (state.tripError != null) {
+    // Nếu có lỗi nhưng đã có data trước đó, vẫn hiển thị data cũ (không hiển thị màn hình trắng)
+    // Lỗi sẽ được hiển thị qua toast trong listener
+    if (state.tripError != null && data == null) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -625,18 +678,11 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                     }
                     setState(() {});
                   } else {
-                    final value = await showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (_) => TicketDetailBottomSheet(seat),
-                    );
-
-                    print("Gia trị ${value}");
+                    final value = await TicketDetailBottomSheet.show(context, seat);
 
                     if(value != null) {
                       if (value == 'cancel_ticket') {
-                        // CancelTicketRequest
+                        // Hiển thị loading và gọi API hủy vé
                         final box = GetStorage();
                         String userId = box.read(Const.USER_ID);
                         context.read<DetailTripBloc>().add(
@@ -696,9 +742,9 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                 },
                 child: Container(
                   width: width,
-                  height: width + 5,
+                  height: width + 12,
                   margin: EdgeInsets.only(right: gap),
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
@@ -713,10 +759,13 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Expanded(
+                          Flexible(
                             child: Text(
                               seat.tenGhe.toUpperCase(),
                               maxLines: 1,
@@ -724,43 +773,50 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                               style: TextStyle(
                                 color: seat.isTrungChuyen ? Colors.green : textColor,
                                 fontWeight: FontWeight.w700,
+                                fontSize: 13,
                               ),
                             ),
                           ),
                           if (seat.isTrungChuyen)
-                            const Icon(Icons.swap_horiz, size: 16, color: Colors.green),
+                            const Icon(Icons.swap_horiz, size: 14, color: Colors.green),
                         ],
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 3),
                       Text(
                         Utils.formatTotalMoney(seat.giaVe),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: seat.isTrungChuyen ? Colors.green : textColor,
                           fontWeight: FontWeight.w600,
+                          fontSize: 11,
                         ),
                       ),
-                      const SizedBox(height: 6),
-                      if (seat.tenKhachHang.isNotEmpty)
+                      if (seat.tenKhachHang.isNotEmpty) ...[
+                        const SizedBox(height: 3),
                         Text(
                           seat.tenKhachHang,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color: seat.isTrungChuyen ? Colors.green : textColor,
-                            fontSize: 12,
+                            fontSize: 11,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                      if (seat.soDienThoaiKhachHang.isNotEmpty)
+                      ],
+                      if (seat.soDienThoaiKhachHang.isNotEmpty) ...[
+                        const SizedBox(height: 2),
                         Text(
                           seat.soDienThoaiKhachHang,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color: seat.isTrungChuyen ? Colors.green : textColor,
-                            fontSize: 12,
+                            fontSize: 11,
                           ),
                         ),
+                      ],
                       const Spacer(),
                       if (seat.ghiChu.isNotEmpty)
                         Container(

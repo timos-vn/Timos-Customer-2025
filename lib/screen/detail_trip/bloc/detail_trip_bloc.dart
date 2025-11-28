@@ -53,22 +53,26 @@ class DetailTripBloc extends Bloc<DetailTripEvent, DetailTripState> {
       );
 
       if (response.data == true) {
-        // Success effect
+        // Success - set flag để listener reload
         emit(state.copyWith(isLoadingTrips: false, statusApp: 1));
-
         // Reset effect state
         emit(state.copyWith(statusApp: 0));
+
       } else {
+        // Lỗi - giữ nguyên data cũ, chỉ set error để hiển thị toast
         emit(state.copyWith(
           isLoadingTrips: false,
-          tripError: "Huỷ vé thất bại",
+          tripError: response.message ?? "Huỷ vé thất bại",
+          // Giữ nguyên detailCoachPaneTrip để không hiển thị màn hình trắng
         ));
       }
 
     } catch (e) {
+      // Lỗi - giữ nguyên data cũ, chỉ set error để hiển thị toast
       emit(state.copyWith(
-        tripError: 'Lỗi khi huỷ vé $e',
+        tripError: 'Lỗi khi huỷ vé: $e',
         isLoadingTrips: false,
+        // Giữ nguyên detailCoachPaneTrip để không hiển thị màn hình trắng
       ));
     }
   }

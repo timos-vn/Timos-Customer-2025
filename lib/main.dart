@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:timos_customer_2025/screen/routers/router_generator.dart';
 import 'package:timos_customer_2025/screen/splash/splash_screen.dart';
@@ -56,6 +57,16 @@ class MyApp extends StatelessWidget {
         home: const SplashScreen(),
         onGenerateRoute: RouterGenerator.generateRouter,
         debugShowCheckedModeBanner: false,
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('vi', 'VN'),
+          Locale('en', 'US'),
+        ],
+        locale: const Locale('vi', 'VN'),
       ),
     );
   }

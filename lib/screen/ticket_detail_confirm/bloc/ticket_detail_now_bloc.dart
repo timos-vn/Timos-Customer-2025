@@ -143,6 +143,7 @@ class TicketDetailNowBloc
         isLoading: false,
         errorMessage: e.toString(),
         bookTicketResponse: null,
+        codeScreen: 1,
       ));
     }
   }
@@ -198,6 +199,7 @@ class TicketDetailNowBloc
         isLoading: false,
         errorMessage: e.toString(),
         bookTicketResponse: null,
+        codeScreen: 2,
       ));
     }
   }

@@ -17,16 +17,43 @@ class CoachPane extends StatefulWidget {
 
 class _CoachPaneState extends State<CoachPane> {
   final TripService _coachTripService = TripService();
+  final ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
   List<CoachPaneTripItem> _trips = [];
-  DateTime _startDate = DateTime.now().add(const Duration(days: 0));
-  DateTime _endDate = DateTime.now().add(const Duration(days: 7));
+  DateTime _selectedDate = DateTime.now();
   String _statusFilter = 'Tất cả';
+  bool _showScrollToTop = false;
 
   @override
   void initState() {
     super.initState();
     _loadTrips();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    // Hiển thị FAB khi scroll xuống hơn 200px
+    final shouldShow = _scrollController.offset > 200;
+    if (shouldShow != _showScrollToTop) {
+      setState(() {
+        _showScrollToTop = shouldShow;
+      });
+    }
+  }
+
+  void _scrollToTop() {
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeOut,
+    );
   }
 
   Future<void> _loadTrips() async {
@@ -39,8 +66,8 @@ class _CoachPaneState extends State<CoachPane> {
         idNhaXe: user.idNhaXe,
         idLoaiNhaXe: 2,
         idNhanVien: user.id,
-        ngayBatDau: intl.DateFormat('yyyy-MM-dd').format(_startDate),
-        ngayKetThuc: intl.DateFormat('yyyy-MM-dd').format(_endDate),
+        ngayBatDau: intl.DateFormat('yyyy-MM-dd').format(_selectedDate),
+        ngayKetThuc: intl.DateFormat('yyyy-MM-dd').format(_selectedDate),
         pageIndex: 1,
         pageSize: 50,
       );
@@ -79,35 +106,47 @@ class _CoachPaneState extends State<CoachPane> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => _FilterBottomSheet(
-        initialStart: _startDate,
-        initialEnd: _endDate,
+        initialDate: _selectedDate,
         initialStatus: _statusFilter,
       ),
     );
 
     if (result != null && mounted) {
-      final shouldReload = !result.startDate.isAtSameMomentAs(_startDate) ||
-          !result.endDate.isAtSameMomentAs(_endDate);
+      final dateChanged = !result.selectedDate.isAtSameMomentAs(_selectedDate);
+      final statusChanged = result.status != _statusFilter;
+      
       setState(() {
-        _startDate = result.startDate;
-        _endDate = result.endDate;
+        _selectedDate = result.selectedDate;
         _statusFilter = result.status;
       });
-      if (shouldReload) {
+      
+      // Reload nếu thay đổi ngày, filter chỉ áp dụng trên client-side
+      if (dateChanged) {
         _loadTrips();
       }
     }
   }
 
   List<CoachPaneTripItem> get _filteredTrips {
+    if (_statusFilter == 'Tất cả') {
+      return _trips;
+    }
+    
     return _trips.where((trip) {
       switch (_statusFilter) {
         case 'Chưa có tài xế':
-          return trip.tenTaiXe.isEmpty;
+          // Kiểm tra cả idTaiXe và tenTaiXe
+          final hasNoDriver = (trip.idTaiXe == null || 
+                              trip.idTaiXe?.isEmpty == true) && 
+                             trip.tenTaiXe.isEmpty;
+          return hasNoDriver;
         case 'Đã full':
+          // Chỉ tính khi có tổng số ghế > 0 và số ghế đã đặt >= tổng số ghế
           return trip.tongSoGhe > 0 && trip.soGheDaDat >= trip.tongSoGhe;
         case 'Còn trống':
-          return trip.tongSoGhe == 0 || trip.soGheDaDat < trip.tongSoGhe;
+          // Phải có tổng số ghế > 0 và số ghế đã đặt < tổng số ghế
+          // Nếu tongSoGhe == 0 thì không tính là còn trống (chưa có thông tin)
+          return trip.tongSoGhe > 0 && trip.soGheDaDat < trip.tongSoGhe;
         default:
           return true;
       }
@@ -116,54 +155,70 @@ class _CoachPaneState extends State<CoachPane> {
 
   @override
   Widget build(BuildContext context) {
-    final rangeLabel =
-        '${intl.DateFormat('dd/MM/yyyy').format(_startDate)} - ${intl.DateFormat('dd/MM/yyyy').format(_endDate)}';
+    final dateLabel = intl.DateFormat('dd/MM/yyyy').format(_selectedDate);
 
-    return RefreshIndicator(
-      onRefresh: _loadTrips,
-      color: mainColor,
-      child: ListView(
-        padding: EdgeInsets.zero,
-        physics: const AlwaysScrollableScrollPhysics(),
-        children: [
-          const SizedBox(height: 16),
-          _TripSection(
-            rangeLabel: rangeLabel,
-            isLoading: _isLoading,
-            trips: _filteredTrips,
-            onOpenFilter: _openFilterBottomSheet,
-            onTripTap: (trip) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => BlocProvider(
-                    create: (_) => DetailTripBloc(),
-                    child: TripDetailScreen(
-                      idLichXeLimousine: trip.id,
-                      coachPaneTripItem: trip,
+    return Stack(
+      children: [
+        RefreshIndicator(
+          onRefresh: _loadTrips,
+          color: mainColor,
+          child: ListView(
+            controller: _scrollController,
+            padding: EdgeInsets.zero,
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: [
+              const SizedBox(height: 16),
+              _TripSection(
+                dateLabel: dateLabel,
+                isLoading: _isLoading,
+                trips: _filteredTrips,
+                onOpenFilter: _openFilterBottomSheet,
+                onTripTap: (trip) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BlocProvider(
+                        create: (_) => DetailTripBloc(),
+                        child: TripDetailScreen(
+                          idLichXeLimousine: trip.id,
+                          coachPaneTripItem: trip,
+                        ),
+                      ),
+                      settings: RouteSettings(name: "TRIP_DETAIL"),
                     ),
-                  ),
-                  settings: RouteSettings(name: "TRIP_DETAIL"),
-                ),
-              );
-            },
+                  );
+                },
+              ),
+              const SizedBox(height: 32),
+            ],
           ),
-          const SizedBox(height: 32),
-        ],
-      ),
+        ),
+        // Floating button scroll to top
+        AnimatedPositioned(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          bottom: _showScrollToTop ? 20 : -80,
+          right: 20,
+          child: FloatingActionButton(
+            onPressed: _scrollToTop,
+            backgroundColor: mainColor,
+            child: const Icon(Icons.arrow_upward, color: Colors.white),
+          ),
+        ),
+      ],
     );
   }
 }
 
 class _TripSection extends StatelessWidget {
-  final String rangeLabel;
+  final String dateLabel;
   final bool isLoading;
   final List<CoachPaneTripItem> trips;
   final ValueChanged<CoachPaneTripItem> onTripTap;
   final VoidCallback onOpenFilter;
 
   const _TripSection({
-    required this.rangeLabel,
+    required this.dateLabel,
     required this.isLoading,
     required this.trips,
     required this.onTripTap,
@@ -205,7 +260,7 @@ class _TripSection extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        rangeLabel,
+                        dateLabel,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: Colors.grey.shade600,
                               fontWeight: FontWeight.w600,
@@ -608,13 +663,11 @@ class _DriverRow extends StatelessWidget {
 }
 
 class _FilterBottomSheet extends StatefulWidget {
-  final DateTime initialStart;
-  final DateTime initialEnd;
+  final DateTime initialDate;
   final String initialStatus;
 
   const _FilterBottomSheet({
-    required this.initialStart,
-    required this.initialEnd,
+    required this.initialDate,
     required this.initialStatus,
   });
 
@@ -630,24 +683,30 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
     'Còn trống',
   ];
 
-  late DateTime _tempStart = widget.initialStart;
-  late DateTime _tempEnd = widget.initialEnd;
+  late DateTime _tempDate = widget.initialDate;
   late String _tempStatus = widget.initialStatus;
 
-  Future<void> _pickDateRange() async {
-    final picked = await showModalBottomSheet<DateTimeRange>(
+  Future<void> _pickDate() async {
+    final picked = await showDatePicker(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => _DateRangePickerSheet(
-        initialRange: DateTimeRange(start: _tempStart, end: _tempEnd),
-      ),
+      initialDate: _tempDate,
+      firstDate: DateTime.now().subtract(const Duration(days: 0)),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: Theme.of(context).colorScheme.copyWith(
+              primary: mainColor,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (picked != null) {
       setState(() {
-        _tempStart = picked.start;
-        _tempEnd = picked.end;
+        _tempDate = picked;
       });
     }
   }
@@ -655,8 +714,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
   void _apply() {
     Navigator.of(context).pop(
       _FilterResult(
-        startDate: _tempStart,
-        endDate: _tempEnd,
+        selectedDate: _tempDate,
         status: _tempStatus,
       ),
     );
@@ -700,7 +758,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
               ),
               const SizedBox(height: 16),
               GestureDetector(
-                onTap: _pickDateRange,
+                onTap: _pickDate,
                 child: Container(
                   width: double.infinity,
                   padding:
@@ -717,14 +775,14 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Khoảng thời gian',
+                            'Ngày',
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                   color: Colors.grey.shade600,
                                 ),
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '${intl.DateFormat('dd/MM/yyyy').format(_tempStart)} - ${intl.DateFormat('dd/MM/yyyy').format(_tempEnd)}',
+                            intl.DateFormat('dd/MM/yyyy').format(_tempDate),
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyLarge
@@ -828,13 +886,11 @@ class _StatusFilterChip extends StatelessWidget {
 }
 
 class _FilterResult {
-  final DateTime startDate;
-  final DateTime endDate;
+  final DateTime selectedDate;
   final String status;
 
   const _FilterResult({
-    required this.startDate,
-    required this.endDate,
+    required this.selectedDate,
     required this.status,
   });
 }
