@@ -10,6 +10,7 @@ import 'package:timos_customer_2025/const/app_icon.dart';
 import 'package:timos_customer_2025/models/response/response.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/booking/model/ticket_detail_model.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_request.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_update_rquest.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/type_ticket_bus_model.dart';
 import 'package:timos_customer_2025/screen/ticket_detail_confirm/bloc/ticket_detail_now_bloc.dart';
 import 'package:timos_customer_2025/screen/ticket_detail_confirm/bloc/ticket_detail_now_event.dart';
@@ -23,15 +24,20 @@ import 'package:timos_customer_2025/utils/utils.dart';
 class TicketDetailNowScreen extends StatefulWidget {
   final TicketDetailModel ticketDetail;
 
-  final Set<ChiTietGhe> chiTietGhe;
+  final Set<ChiTietGhe>? chiTietGhe;
+  final Set<ChiTietGheUpdate>? chiTietGheUpdate;
   final CoachPaneTripItem coachPaneTripItem;
   final DetailCoachPaneTripData? detailCoachPaneTrip;
+  final DanhSachGhe? danhSachGhe;
+  final bool? isUpdate;
+
 
   const TicketDetailNowScreen(
-      {required this.ticketDetail,
-      required this.chiTietGhe,
-      required this.coachPaneTripItem,
+      {required this.ticketDetail, this.chiTietGhe,
+      required this.coachPaneTripItem, this.chiTietGheUpdate,
         this.detailCoachPaneTrip,
+        this.danhSachGhe,
+        this.isUpdate,
       super.key});
 
   @override
@@ -46,6 +52,12 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
   @override
   void initState() {
     _bloc.add(InitDataEvent(ticketDetailModel: widget.ticketDetail));
+    if(widget.isUpdate ?? false) {
+      textNameController.text = widget.danhSachGhe?.tenKhachHang ?? "";
+      textNumberPhoneController.text = widget.danhSachGhe?.soDienThoaiKhachHang ?? "";
+      diaChiKhachDi.text = widget.danhSachGhe?.diaChiKhachDi ?? "";
+      diaChiKhachDen.text = widget.danhSachGhe?.diaChiKhachDen ?? "";
+    }
     super.initState();
   }
 
@@ -220,6 +232,12 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
                                     borderSide: const BorderSide(
                                         color: colorApp, width: 1),
                                   ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Vui lòng nhập địa chỉ đi';
+                                    }
+                                    return null;
+                                  },
                                 ),
                               ],
                             ),
@@ -248,6 +266,12 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
                                     borderSide: const BorderSide(
                                         color: colorApp, width: 1),
                                   ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Vui lòng nhập địa chỉ đến';
+                                    }
+                                    return null;
+                                  },
                                 ),
                               ],
                             )
@@ -278,24 +302,50 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
                   ),
                   onPressed: () async {
                     if (_formKey.currentState?.validate() ?? false) {
-                      final idDevice = "";
-                      _bloc.add(
-                        BookTicketEvent(
-                          ticketDetailModel: widget.ticketDetail,
-                          nameCustomer: textNameController.text.trim(),
-                          phoneCustomer: textNumberPhoneController.text.trim(),
-                          idDevice: idDevice ?? "",
-                          chiTietGhe: widget.chiTietGhe,
-                          diaChiDi: diaChiKhachDi.text.trim(),
-                          diaChiDen: diaChiKhachDen.text.trim(),
-                          idLichXe: widget.coachPaneTripItem.id,
-                          idChang: ((widget.detailCoachPaneTrip?.danhSachChangDuong ?? []).isNotEmpty ? widget.detailCoachPaneTrip?.danhSachChangDuong.first.id : 0) ?? 0,
-                          idLichChayXe: widget.detailCoachPaneTrip?.idLichChayXe ?? 0,
-                          idNhaXe: widget.coachPaneTripItem.idNhaXe,
-                        ),
-                      );
+
+                      if(widget.isUpdate ?? false) {
+                        final idDevice = "";
+                        _bloc.add(
+                          BookTicketUpdateEvent(
+                            ticketDetailModel: widget.ticketDetail,
+                            nameCustomer: textNameController.text.trim(),
+                            phoneCustomer: textNumberPhoneController.text.trim(),
+                            idDevice: idDevice ?? "",
+                            chiTietGhe: widget.chiTietGheUpdate ?? {},
+                            diaChiDi: diaChiKhachDi.text.trim(),
+                            diaChiDen: diaChiKhachDen.text.trim(),
+                            idLichXe: widget.coachPaneTripItem.id,
+                            idChang: ((widget.detailCoachPaneTrip?.danhSachChangDuong ?? []).isNotEmpty ? widget.detailCoachPaneTrip?.danhSachChangDuong.first.id : 0) ?? 0,
+                            idLichChayXe: widget.detailCoachPaneTrip?.idLichChayXe ?? 0,
+                            idNhaXe: widget.coachPaneTripItem.idNhaXe,
+                            maDatCho: widget.danhSachGhe?.maDatCho.toInt() ?? 0,
+                          ),
+                        );
+                      } else {
+                        final idDevice = "";
+                        _bloc.add(
+                          BookTicketEvent(
+                            ticketDetailModel: widget.ticketDetail,
+                            nameCustomer: textNameController.text.trim(),
+                            phoneCustomer: textNumberPhoneController.text.trim(),
+                            idDevice: idDevice ?? "",
+                            chiTietGhe: widget.chiTietGhe ?? {},
+                            diaChiDi: diaChiKhachDi.text.trim(),
+                            diaChiDen: diaChiKhachDen.text.trim(),
+                            idLichXe: widget.coachPaneTripItem.id,
+                            idChang: ((widget.detailCoachPaneTrip?.danhSachChangDuong ?? []).isNotEmpty ? widget.detailCoachPaneTrip?.danhSachChangDuong.first.id : 0) ?? 0,
+                            idLichChayXe: widget.detailCoachPaneTrip?.idLichChayXe ?? 0,
+                            idNhaXe: widget.coachPaneTripItem.idNhaXe,
+                          ),
+                        );
+                      }
+
                     } else {
                       log("Vui lòng điền đầy đủ thông tin.");
+                      if (!mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Vui lòng điền đầy đủ thông tin.')),
+                      );
                     }
                   },
                   child: state.isLoading ? CircularProgressIndicator(): UtilsWidget.buildText(
@@ -367,9 +417,9 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
             _buildInfoRow("Tuyến đường:", ticketDetail.pickup ?? ""),
             const SizedBox(height: 4),
             _buildInfoRow("Giờ xuất phát:",
-                convertDateToString(ticketDetail.departureDate, pattern13)),
+                widget.detailCoachPaneTrip?.gioDi ?? ""),
             _buildInfoRow("Ngày xuất phát:",
-                convertDateToString(ticketDetail.departureDate, pattern1)),
+                convertDateToString(widget.detailCoachPaneTrip?.ngayChay, pattern1)),
             Visibility(
               visible: ticketDetail.isRoundTrip ?? false,
               child: _buildInfoRow("Giờ về:",
@@ -380,8 +430,16 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
               child: _buildInfoRow("Ngày về:",
                   convertDateToString(ticketDetail.returnDate, pattern1)),
             ),
-            ... widget.chiTietGhe.toList().map((e) => _buildInfoRow(
-                "Tên ghế:", "${(e.tenGhe ?? "").toUpperCase()} Hàng ${e.hang} Dãy ${(e.day ?? 0) + 1}")),
+            if(widget.isUpdate ?? false) ... [
+              ... (widget.chiTietGheUpdate ?? {} ).toList().map((e) => _buildInfoRow(
+                  "Tên ghế:", "${(e.tenGhe ?? "").toUpperCase()} Hàng ${e.hang} Dãy ${(e.day ?? 0) + 1}")),
+            ],
+
+            if(!(widget.isUpdate ?? false)) ... [
+              ... (widget.chiTietGhe ?? {} ).toList().map((e) => _buildInfoRow(
+                  "Tên ghế:", "${(e.tenGhe ?? "").toUpperCase()} Hàng ${e.hang} Dãy ${(e.day ?? 0) + 1}")),
+            ]
+
             // _buildInfoRow(
             //     "Tên ghế", "${ticketDetail.typeCar?.tenLoai} ngồi"),
             // _buildInfoRow("Email:", ""),

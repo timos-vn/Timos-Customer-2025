@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:timos_customer_2025/main.dart';
 import 'package:timos_customer_2025/models/response/response.dart';
 import 'package:timos_customer_2025/screen/detail_trip/bloc/detail_trip_bloc.dart';
 import 'package:timos_customer_2025/screen/detail_trip/detail_trip_screen.dart';
@@ -18,8 +19,8 @@ class _CoachPaneState extends State<CoachPane> {
   final TripService _coachTripService = TripService();
   bool _isLoading = false;
   List<CoachPaneTripItem> _trips = [];
-  DateTime _startDate = DateTime.now().add(const Duration(days: 1));
-  DateTime _endDate = DateTime.now().add(const Duration(days: 8));
+  DateTime _startDate = DateTime.now().add(const Duration(days: 0));
+  DateTime _endDate = DateTime.now().add(const Duration(days: 7));
   String _statusFilter = 'Tất cả';
 
   @override
@@ -47,6 +48,18 @@ class _CoachPaneState extends State<CoachPane> {
         setState(() {
           _trips = response.data ?? [];
         });
+      } else {
+        if (!mounted) return;
+        if(response.statusCode == 401) {
+          navigatorKey.currentState?.pushNamedAndRemoveUntil(
+            '/login',
+                (route) => false,
+          );
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Không thể tải chuyến: ${response.message}')),
+        );
+
       }
     } catch (e) {
       if (!mounted) return;
@@ -945,11 +958,19 @@ class _DateRangePickerSheetState extends State<_DateRangePickerSheet> {
               ],
             ),
             const SizedBox(height: 12),
-            CalendarDatePicker(
-              initialDate: _tempStart ?? DateTime.now(),
-              firstDate: DateTime.now().subtract(const Duration(days: 1)),
-              lastDate: DateTime.now().add(const Duration(days: 365)),
-              onDateChanged: _onDaySelected,
+            Theme(
+              data: Theme.of(context).copyWith(
+                colorScheme: Theme.of(context).colorScheme.copyWith(
+                  primary: Colors.black,          // màu của ngày được chọn
+                  onPrimary: Colors.red,      // màu chữ của ngày được chọn
+                ),
+              ),
+              child: CalendarDatePicker(
+                initialDate: _tempStart ?? DateTime.now(),
+                firstDate: DateTime.now().subtract(const Duration(days: 0)),
+                lastDate: DateTime.now().add(const Duration(days: 365)),
+                onDateChanged: _onDaySelected,
+              ),
             ),
             const SizedBox(height: 8),
             Align(

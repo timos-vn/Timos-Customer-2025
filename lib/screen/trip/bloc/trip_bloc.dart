@@ -19,7 +19,7 @@ class TripBloc extends Bloc<TripEvent, TripState> {
         super(TripState.initial()) {
     // Register event handlers
     on<InitializeTripEvent>(_onInitialize);
-    on<LoadGroupsEvent>(_onLoadGroups);
+    // on<LoadGroupsEvent>(_onLoadGroups);
     on<SelectGroupEvent>(_onSelectGroup);
     on<ChangeGroupTypeEvent>(_onChangeGroupType);
     on<SelectDateEvent>(_onSelectDate);
@@ -50,69 +50,67 @@ class TripBloc extends Bloc<TripEvent, TripState> {
 
     emit(state.copyWith(isManager: isManager));
 
-    // Load initial groups for current date
-    add(const LoadGroupsEvent(date: ''));
   }
 
   // Load groups for specific date
-  Future<void> _onLoadGroups(
-    LoadGroupsEvent event,
-    Emitter<TripState> emit,
-  ) async {
-    emit(state.copyWith(
-      isLoadingGroups: true,
-      groupError: null,
-    ));
-
-    try {
-      String ngayChay = event.date;
-      if (ngayChay.isEmpty) {
-        final selectedDate =
-            DateTime.now().add(Duration(days: state.selectedDateOffset));
-        ngayChay =
-            "${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}";
-      }
-
-      final response = await _groupService.getGroupList(ngayChay: ngayChay);
-
-      if (response.isSuccess && response.data != null) {
-        final allGroups = response.data!;
-        final internalGroups =
-            allGroups.where((group) => group.isInternalGroup).toList();
-        final publicGroups =
-            allGroups.where((group) => group.isPublicGroup).toList();
-
-        // Auto-select first group if none selected
-        String? selectedGroup = state.selectedGroup;
-        if (selectedGroup == null) {
-          if (state.shareGroup == 'Nhóm nội bộ' && internalGroups.isNotEmpty) {
-            selectedGroup = internalGroups.first.tenNhom;
-          } else if (state.shareGroup == 'Nhóm công khai' &&
-              publicGroups.isNotEmpty) {
-            selectedGroup = publicGroups.first.tenNhom;
-          }
-        }
-
-        emit(state.copyWith(
-          allGroups: allGroups,
-          internalGroups: internalGroups,
-          publicGroups: publicGroups,
-          selectedGroup: selectedGroup,
-          isLoadingGroups: false,
-        ));
-      } else {
-        emit(state.copyWith(
-          groupError: response.message ?? 'Không thể tải danh sách nhóm',
-          isLoadingGroups: false,
-        ));
-      }
-    } catch (e) {
-      emit(state.copyWith(
-        groupError: 'Lỗi khi tải danh sách nhóm: $e',
-        isLoadingGroups: false,
-      ));
-    }
-  }
+  // Future<void> _onLoadGroups(
+  //   LoadGroupsEvent event,
+  //   Emitter<TripState> emit,
+  // ) async {
+  //   emit(state.copyWith(
+  //     isLoadingGroups: true,
+  //     groupError: null,
+  //   ));
+  //
+  //   try {
+  //     String ngayChay = event.date;
+  //     if (ngayChay.isEmpty) {
+  //       final selectedDate =
+  //           DateTime.now().add(Duration(days: state.selectedDateOffset));
+  //       ngayChay =
+  //           "${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}";
+  //     }
+  //
+  //     final response = await _groupService.getGroupList(ngayChay: ngayChay);
+  //
+  //     if (response.isSuccess && response.data != null) {
+  //       final allGroups = response.data!;
+  //       final internalGroups =
+  //           allGroups.where((group) => group.isInternalGroup).toList();
+  //       final publicGroups =
+  //           allGroups.where((group) => group.isPublicGroup).toList();
+  //
+  //       // Auto-select first group if none selected
+  //       String? selectedGroup = state.selectedGroup;
+  //       if (selectedGroup == null) {
+  //         if (state.shareGroup == 'Nhóm nội bộ' && internalGroups.isNotEmpty) {
+  //           selectedGroup = internalGroups.first.tenNhom;
+  //         } else if (state.shareGroup == 'Nhóm công khai' &&
+  //             publicGroups.isNotEmpty) {
+  //           selectedGroup = publicGroups.first.tenNhom;
+  //         }
+  //       }
+  //
+  //       emit(state.copyWith(
+  //         allGroups: allGroups,
+  //         internalGroups: internalGroups,
+  //         publicGroups: publicGroups,
+  //         selectedGroup: selectedGroup,
+  //         isLoadingGroups: false,
+  //       ));
+  //     } else {
+  //       emit(state.copyWith(
+  //         groupError: response.message ?? 'Không thể tải danh sách nhóm',
+  //         isLoadingGroups: false,
+  //       ));
+  //     }
+  //   } catch (e) {
+  //     emit(state.copyWith(
+  //       groupError: 'Lỗi khi tải danh sách nhóm: $e',
+  //       isLoadingGroups: false,
+  //     ));
+  //   }
+  // }
 
   // Select specific group
   void _onSelectGroup(
@@ -149,7 +147,7 @@ class TripBloc extends Bloc<TripEvent, TripState> {
     emit(state.copyWith(selectedDateOffset: event.dateOffset));
 
     // Reload groups for new date
-    add(const LoadGroupsEvent(date: ''));
+    // add(const LoadGroupsEvent(date: ''));
   }
 
   // Status filter handlers
