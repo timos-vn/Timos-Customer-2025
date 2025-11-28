@@ -1,7 +1,7 @@
 class CancelTicketRequest {
   CancelTicketRequest({
     required this.idLichXe,
-    required this.idKhachHang,
+    // required this.idKhachHang,
     required this.maDatCho,
     required this.ngayChay,
     required this.lyDoHuy,
@@ -10,7 +10,7 @@ class CancelTicketRequest {
   });
 
   final String idLichXe;
-  final String idKhachHang;
+  // final String idKhachHang;
   final int maDatCho;
   final DateTime? ngayChay;
   final String lyDoHuy;
@@ -20,7 +20,7 @@ class CancelTicketRequest {
   factory CancelTicketRequest.fromJson(Map<String, dynamic> json){
     return CancelTicketRequest(
       idLichXe: json["idLichXe"] ?? "",
-      idKhachHang: json["idKhachHang"] ?? "",
+      // idKhachHang: json["idKhachHang"] ?? "",
       maDatCho: json["maDatCho"] ?? 0,
       ngayChay: DateTime.tryParse(json["ngayChay"] ?? ""),
       lyDoHuy: json["lyDoHuy"] ?? "",
@@ -31,7 +31,7 @@ class CancelTicketRequest {
 
   Map<String, dynamic> toJson() => {
     "idLichXe": idLichXe,
-    "idKhachHang": idKhachHang,
+    // "idKhachHang": idKhachHang,
     "maDatCho": maDatCho,
     "ngayChay": ngayChay?.toIso8601String(),
     "lyDoHuy": lyDoHuy,

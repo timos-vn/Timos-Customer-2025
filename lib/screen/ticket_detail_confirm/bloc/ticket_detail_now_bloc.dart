@@ -135,7 +135,9 @@ class TicketDetailNowBloc
         isLoading: false,
         errorMessage: null,
         bookTicketResponse: response,
+        codeScreen: 1,
       ));
+
     } catch (e) {
       emit(state.copyWith(
         isLoading: false,
@@ -189,6 +191,7 @@ class TicketDetailNowBloc
         isLoading: false,
         errorMessage: null,
         bookTicketResponse: response,
+        codeScreen: 2,
       ));
     } catch (e) {
       emit(state.copyWith(

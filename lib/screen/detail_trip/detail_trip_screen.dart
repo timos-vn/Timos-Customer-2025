@@ -6,6 +6,7 @@ import 'package:timos_customer_2025/models/response/response.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/booking/model/ticket_detail_model.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_update_rquest.dart' show ChiTietGheUpdate;
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/cancel_ticket_request.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/tao_lich_nha_xe_request.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/service/signalr_service.dart';
 import 'package:timos_customer_2025/screen/detail_trip/ticket_detail_bottom_sheet.dart';
 import 'package:timos_customer_2025/screen/ticket_detail_confirm/ticket_detail_now_screen.dart';
@@ -42,11 +43,29 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<DetailTripBloc>().add(
-      LoadDetailCoachPaneTripEvent(
-            idLichXeLimousine: widget.idLichXeLimousine,
+
+    if(widget.idLichXeLimousine.isEmpty || widget.idLichXeLimousine == ""){
+      context.read<DetailTripBloc>().add(
+        IdTripEvent(
+         taoLichNhaXeRequest: TaoLichNhaXeRequest(
+           idNhaXe: widget.coachPaneTripItem.idNhaXe,
+           ngayChay: widget.coachPaneTripItem.ngayChay,
+           idTuyenDuong: widget.coachPaneTripItem.idTuyenDuong,
+           idLoaiXe: widget.coachPaneTripItem.idLoaiXe,
+           ghiChu: "Lịch xe limousine mới",
+           gioDi: widget.coachPaneTripItem.gioDi ?? "",
+           idLichChayXe: widget.coachPaneTripItem.idLichChayXe,
           ),
-        );
+        ),
+      );
+    } else {
+      context.read<DetailTripBloc>().add(
+        LoadDetailCoachPaneTripEvent(
+          idLichXeLimousine: widget.idLichXeLimousine,
+        ),
+      );
+    }
+
 
     signalRService.startConnection();
 
@@ -54,10 +73,10 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return  BlocListener<DetailTripBloc, DetailTripState>(
-      listenWhen: (prev, next) => prev.isCancelSuccess != next.isCancelSuccess,
+    return BlocListener<DetailTripBloc, DetailTripState>(
+      listenWhen: (prev, next) => prev.statusApp != next.statusApp,
       listener: (context, state) {
-        if (state.isCancelSuccess) {
+        if (state.statusApp == 1) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text(
@@ -70,7 +89,16 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
               idLichXeLimousine: widget.idLichXeLimousine,
             ),
           );
-        }},
+        }
+
+        if(state.statusApp == 2) {
+          context.read<DetailTripBloc>().add(
+            LoadDetailCoachPaneTripEvent(
+              idLichXeLimousine: state.idLichXeLimousineMoi ?? "",
+            ),
+          );
+        }
+        },
       child: BlocBuilder<DetailTripBloc, DetailTripState>(
         builder: (context, state) {
           final data = state.detailCoachPaneTrip;
@@ -615,7 +643,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                           CancelTripEvent(
                             cancelTicketRequest: CancelTicketRequest(
                               idLichXe: widget.idLichXeLimousine,
-                              idKhachHang: "",
+                              // idKhachHang: "",
                               maDatCho: seat.maDatCho.toInt(),
                               ngayChay: state.detailCoachPaneTrip?.ngayChay,
                               nguoiHuy: userId,

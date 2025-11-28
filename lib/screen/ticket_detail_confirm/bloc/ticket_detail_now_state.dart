@@ -8,13 +8,18 @@ class TicketDetailState {
   final String? errorMessage;
   final bool isLoading;
 
+  /// 1: Đặt vé thành công
+  /// 2: Cập nhật vé thành công
+  final int codeScreen;
+
   BookTicketResponse? bookTicketResponse;
 
   TicketDetailState({
     this.errorMessage,
     this.isLoading = false,
     required this.ticketDetailModel,
-    this.bookTicketResponse
+    this.bookTicketResponse,
+    this.codeScreen = 0,
   });
 
   TicketDetailState copyWith({
@@ -22,13 +27,15 @@ class TicketDetailState {
     bool? isLoading,
     bool? isSuccess,
     TicketDetailModel? ticketDetailModel,
-    BookTicketResponse? bookTicketResponse
+    BookTicketResponse? bookTicketResponse,
+    int? codeScreen,
   }) {
     return TicketDetailState(
       ticketDetailModel: ticketDetailModel ?? this.ticketDetailModel,
       errorMessage: errorMessage ?? this.errorMessage,
       isLoading: isLoading ?? this.isLoading,
       bookTicketResponse: bookTicketResponse ?? this.bookTicketResponse,
+      codeScreen: codeScreen ?? this.codeScreen,
     );
   }
 }

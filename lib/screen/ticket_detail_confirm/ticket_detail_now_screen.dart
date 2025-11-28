@@ -94,7 +94,11 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
               // Navigator.pop(context);
               // Navigator.popUntil(context, (route) => route.settings.name == "TRIP_DETAIL");
               Navigator.popUntil(context, (route) => route.isFirst);
-              Utils.showMyToast(context, 'Thành công! Đặt vé thành công.');
+              if(state.codeScreen == 1) {
+                Utils.showMyToast(context, 'Thành công! Đặt vé thành công.');
+              } else if(state.codeScreen == 2) {
+                Utils.showMyToast(context, 'Thành công! Cập nhật vé thành công.');
+              }
             }
             if (state.bookTicketResponse?.statusCode != 200 &&  state.bookTicketResponse != null && !state.isLoading) {
               Utils.showMyToast(context, 'Thất bại! Đặt vé không thành công.');
