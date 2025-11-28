@@ -10,6 +10,7 @@ class DetailTripBloc extends Bloc<DetailTripEvent, DetailTripState> {
   })  : _tripService = tripService ?? TripService(),
         super(DetailTripState()) {
     on<LoadDetailCoachPaneTripEvent>(_onLoadDetailCoachPaneTrip);
+    on<CancelTripEvent>(cancelTrip);
   }
 
   // Load detail coach pane trip from API
@@ -37,6 +38,35 @@ class DetailTripBloc extends Bloc<DetailTripEvent, DetailTripState> {
     } catch (e) {
       emit(state.copyWith(
         tripError: 'Lỗi khi tải thông tin chuyến đi: $e',
+        isLoadingTrips: false,
+      ));
+    }
+  }
+
+  Future<void> cancelTrip(CancelTripEvent event, Emitter emit) async {
+    emit(state.copyWith(isLoadingTrips: true, tripError: null));
+
+    try {
+      final response = await _tripService.cancelTicket(
+        cancelTicketRequest: event.cancelTicketRequest,
+      );
+
+      if (response.data == true) {
+        // Success effect
+        emit(state.copyWith(isLoadingTrips: false, isCancelSuccess: true));
+
+        // Reset effect state
+        emit(state.copyWith(isCancelSuccess: false));
+      } else {
+        emit(state.copyWith(
+          isLoadingTrips: false,
+          tripError: "Huỷ vé thất bại",
+        ));
+      }
+
+    } catch (e) {
+      emit(state.copyWith(
+        tripError: 'Lỗi khi huỷ vé $e',
         isLoadingTrips: false,
       ));
     }

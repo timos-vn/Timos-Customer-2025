@@ -5,22 +5,26 @@ class DetailTripState {
   DetailCoachPaneTripData? detailCoachPaneTrip;
   bool isLoadingTrips = false;
   String? tripError;
+  bool isCancelSuccess = false;
 
   DetailTripState({
     this.detailCoachPaneTrip,
     this.isLoadingTrips = false,
     this.tripError,
+    this.isCancelSuccess = false,
   });
 
   DetailTripState copyWith({
     DetailCoachPaneTripData? detailCoachPaneTrip,
     bool? isLoadingTrips,
     String? tripError,
+    bool? isCancelSuccess,
   }) {
     return DetailTripState(
       detailCoachPaneTrip: detailCoachPaneTrip ?? this.detailCoachPaneTrip,
       isLoadingTrips: isLoadingTrips ?? this.isLoadingTrips,
       tripError: tripError ?? this.tripError,
+      isCancelSuccess: isCancelSuccess ?? this.isCancelSuccess
     );
   }
 }

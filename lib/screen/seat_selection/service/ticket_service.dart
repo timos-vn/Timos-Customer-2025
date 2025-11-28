@@ -3,6 +3,7 @@ import 'package:timos_customer_2025/base_api/base_repository.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_model.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_request.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_response.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_update_rquest.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/seating_model.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/seating_request_model.dart';
 
@@ -21,7 +22,15 @@ class TicketService extends BaseRepository {
       "/api/v1/manage/chuyen-di/dat-ve-vang-lai",
       "POST",
       jsonMap: bookTicketModel.toJson(),
-      isToken: false,
+    );
+    return BookTicketResponse.fromJson(response);
+  }
+
+  Future<BookTicketResponse> updateTicket(BookTicketUpdateRequest bookTicketModel) async {
+    final response =  await baseCallApi(
+      "/api/v1/manage/chuyen-di/sua-ve-vang-lai",
+      "PUT",
+      jsonMap: bookTicketModel.toJson(),
     );
     return BookTicketResponse.fromJson(response);
   }

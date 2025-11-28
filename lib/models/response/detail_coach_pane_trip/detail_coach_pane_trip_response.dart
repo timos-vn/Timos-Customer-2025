@@ -40,8 +40,10 @@ class DetailCoachPaneTripData {
     required this.soGheDaDatCount,
     required this.soGheGiuChoCount,
     required this.soGheTrongCount,
+    required this.idLichChayXe,
     required this.danhSachTang,
     required this.tangHienTai,
+    required this.danhSachChangDuong,
   });
 
   final String idLichXeLimousine;
@@ -57,8 +59,10 @@ class DetailCoachPaneTripData {
   final int soGheDaDatCount;
   final int soGheGiuChoCount;
   final int soGheTrongCount;
+  final int idLichChayXe;
   final List<TangHienTai> danhSachTang;
   final TangHienTai? tangHienTai;
+  final List<DanhSachChangDuong> danhSachChangDuong;
 
   factory DetailCoachPaneTripData.fromJson(Map<String, dynamic> json){
     return DetailCoachPaneTripData(
@@ -75,8 +79,10 @@ class DetailCoachPaneTripData {
       soGheDaDatCount: json["soGheDaDatCount"] ?? 0,
       soGheGiuChoCount: json["soGheGiuChoCount"] ?? 0,
       soGheTrongCount: json["soGheTrongCount"] ?? 0,
+      idLichChayXe: json["idLichChayXe"] ?? 0,
       danhSachTang: json["danhSachTang"] == null ? [] : List<TangHienTai>.from(json["danhSachTang"]!.map((x) => TangHienTai.fromJson(x))),
       tangHienTai: json["tangHienTai"] == null ? null : TangHienTai.fromJson(json["tangHienTai"]),
+      danhSachChangDuong: json["danhSachChangDuong"] == null ? [] : List<DanhSachChangDuong>.from(json["danhSachChangDuong"]!.map((x) => DanhSachChangDuong.fromJson(x))),
     );
   }
 
@@ -94,8 +100,37 @@ class DetailCoachPaneTripData {
     "soGheDaDatCount": soGheDaDatCount,
     "soGheGiuChoCount": soGheGiuChoCount,
     "soGheTrongCount": soGheTrongCount,
+    "idLichChayXe": idLichChayXe,
     "danhSachTang": danhSachTang.map((x) => x?.toJson()).toList(),
     "tangHienTai": tangHienTai?.toJson(),
+    "danhSachChangDuong": danhSachChangDuong.map((x) => x?.toJson()).toList(),
+  };
+
+}
+
+class DanhSachChangDuong {
+  DanhSachChangDuong({
+    required this.id,
+    required this.tenChang,
+    required this.thuTu,
+  });
+
+  final int id;
+  final String tenChang;
+  final int thuTu;
+
+  factory DanhSachChangDuong.fromJson(Map<String, dynamic> json){
+    return DanhSachChangDuong(
+      id: json["id"] ?? 0,
+      tenChang: json["tenChang"] ?? "",
+      thuTu: json["thuTu"] ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "tenChang": tenChang,
+    "thuTu": thuTu,
   };
 
 }
@@ -145,6 +180,7 @@ class DanhSachGhe {
     required this.trangThaiGhe,
     required this.tenTrangThaiGhe,
     required this.giaVe,
+    required this.tenLoaiGhe,
     required this.mauSac,
     required this.idDatVe,
     required this.tenKhachHang,
@@ -165,6 +201,7 @@ class DanhSachGhe {
     required this.tenTaiXeTrungChuyen,
     required this.soDienThoaiTaiXeTrungChuyen,
     required this.bienSoXeTrungChuyen,
+    required this.maDatCho
   });
 
   final int idGhe;
@@ -175,6 +212,8 @@ class DanhSachGhe {
   final int trangThaiGhe;
   final String tenTrangThaiGhe;
   final num giaVe;
+  final num maDatCho;
+  final String tenLoaiGhe;
   final String mauSac;
   final String idDatVe;
   final String tenKhachHang;
@@ -184,8 +223,8 @@ class DanhSachGhe {
   final String diaChiKhachDen;
   final bool khachTrungChuyenDon;
   final bool khachTrungChuyenTra;
-  final dynamic idDiemDon;
-  final dynamic idDiemTra;
+  final int idDiemDon;
+  final int idDiemTra;
   final bool isGheAo;
   final bool isTrungChuyen;
   final String tenVanPhongDon;
@@ -206,6 +245,7 @@ class DanhSachGhe {
       trangThaiGhe: json["trangThaiGhe"] ?? 0,
       tenTrangThaiGhe: json["tenTrangThaiGhe"] ?? "",
       giaVe: json["giaVe"] ?? 0,
+      tenLoaiGhe: json["tenLoaiGhe"] ?? "",
       mauSac: json["mauSac"] ?? "",
       idDatVe: json["idDatVe"] ?? "",
       tenKhachHang: json["tenKhachHang"] ?? "",
@@ -215,8 +255,8 @@ class DanhSachGhe {
       diaChiKhachDen: json["diaChiKhachDen"] ?? "",
       khachTrungChuyenDon: json["khachTrungChuyenDon"] ?? false,
       khachTrungChuyenTra: json["khachTrungChuyenTra"] ?? false,
-      idDiemDon: json["idDiemDon"],
-      idDiemTra: json["idDiemTra"],
+      idDiemDon: json["idDiemDon"] ?? 0,
+      idDiemTra: json["idDiemTra"] ?? 0,
       isGheAo: json["isGheAo"] ?? false,
       isTrungChuyen: json["isTrungChuyen"] ?? false,
       tenVanPhongDon: json["tenVanPhongDon"] ?? "",
@@ -226,6 +266,7 @@ class DanhSachGhe {
       tenTaiXeTrungChuyen: json["tenTaiXeTrungChuyen"] ?? "",
       soDienThoaiTaiXeTrungChuyen: json["soDienThoaiTaiXeTrungChuyen"] ?? "",
       bienSoXeTrungChuyen: json["bienSoXeTrungChuyen"] ?? "",
+      maDatCho: json["maDatCho"] ?? 0,
     );
   }
 
@@ -238,6 +279,7 @@ class DanhSachGhe {
     "trangThaiGhe": trangThaiGhe,
     "tenTrangThaiGhe": tenTrangThaiGhe,
     "giaVe": giaVe,
+    "tenLoaiGhe": tenLoaiGhe,
     "mauSac": mauSac,
     "idDatVe": idDatVe,
     "tenKhachHang": tenKhachHang,

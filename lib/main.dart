@@ -18,6 +18,8 @@ void main() async {
   runApp(const MyApp());
 }
 
+final navigatorKey = GlobalKey<NavigatorState>();
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -48,6 +50,7 @@ class MyApp extends StatelessWidget {
     return BlocProvider(
       create: (context) => AuthBloc()..add(const AuthEvent.checkAuthStatus()),
       child: MaterialApp(
+        navigatorKey: navigatorKey,
         title: 'Quản lý Timos',
         theme: theme,
         home: const SplashScreen(),

@@ -8,7 +8,7 @@ class TripEvent with _$TripEvent {
   const factory TripEvent.initialize() = InitializeTripEvent;
 
   // Group management events
-  const factory TripEvent.loadGroups({required String date}) = LoadGroupsEvent;
+  // const factory TripEvent.loadGroups({required String date}) = LoadGroupsEvent;
   const factory TripEvent.selectGroup({String? groupName}) = SelectGroupEvent;
   const factory TripEvent.changeGroupType({required String groupType}) =
       ChangeGroupTypeEvent;
