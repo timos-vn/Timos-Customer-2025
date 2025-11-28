@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:timos_customer_2025/screen/routers/router_generator.dart';
 import 'package:timos_customer_2025/themes/colors.dart';
 import 'package:timos_customer_2025/screen/login/bloc/bloc.dart';
+import 'package:timos_customer_2025/services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,6 +18,48 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController orgCodeController = TextEditingController();
   bool isObscured = true;
   bool rememberMe = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Đợi widget build xong rồi mới load credentials
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadRememberedCredentials();
+    });
+  }
+
+  void _loadRememberedCredentials() {
+    try {
+      final isRememberMe = AuthService.isRememberMeEnabled;
+      if (isRememberMe) {
+        final savedUsername = AuthService.savedUsername;
+        final savedPassword = AuthService.savedPassword;
+        
+        if (savedUsername != null && savedPassword != null && savedUsername.isNotEmpty && savedPassword.isNotEmpty) {
+          setState(() {
+            phoneController.text = savedUsername;
+            passwordController.text = savedPassword;
+            rememberMe = true;
+          });
+        } else {
+          // Nếu không có thông tin đã lưu nhưng flag rememberMe vẫn true, reset lại
+          setState(() {
+            rememberMe = false;
+          });
+          AuthService.clearRememberMe();
+        }
+      } else {
+        setState(() {
+          rememberMe = false;
+        });
+      }
+    } catch (e) {
+      // Nếu có lỗi khi load, reset về trạng thái mặc định
+      setState(() {
+        rememberMe = false;
+      });
+    }
+  }
 
   void _handleLogin() {
     final username = phoneController.text.trim();
@@ -52,9 +95,21 @@ class _LoginScreenState extends State<LoginScreen> {
           initial: () {},
           loading: () {},
           authenticated: (user, token) {
-            Navigator.of(context).pushReplacementNamed(
-              RouterGenerator.routeDashboardScreen,
-            );
+            // Lưu hoặc xóa thông tin đăng nhập dựa trên rememberMe
+            final saveFuture = rememberMe
+                ? AuthService.saveRememberMe(
+                    username: phoneController.text.trim(),
+                    password: passwordController.text.trim(),
+                  )
+                : AuthService.clearRememberMe();
+            
+            saveFuture.then((_) {
+              if (mounted) {
+                Navigator.of(context).pushReplacementNamed(
+                  RouterGenerator.routeDashboardScreen,
+                );
+              }
+            });
           },
           unauthenticated: () {},
           error: (message) {
@@ -150,8 +205,14 @@ class _LoginScreenState extends State<LoginScreen> {
                               Row(children: [
                                 Checkbox(
                                     value: rememberMe,
-                                    onChanged: (v) =>
-                                        setState(() => rememberMe = v ?? true)),
+                                    onChanged: (v) {
+                                      final newValue = v ?? true;
+                                      setState(() => rememberMe = newValue);
+                                      // Xóa thông tin đã lưu nếu bỏ chọn rememberMe
+                                      if (!newValue) {
+                                        AuthService.clearRememberMe();
+                                      }
+                                    }),
                                 const Text('Ghi nhớ đăng nhập',
                                     style: TextStyle(fontSize: 13)),
                               ]),
