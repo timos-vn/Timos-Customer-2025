@@ -8,7 +8,7 @@ class Const {
   /// dev: https://dev.api.quanly.timos.vn
   // ignore: non_constant_identifier_names
   static String HOST_URL = "https://dev.api.quanly.timos.vn";
-  // static  String HOST_URL = "https://apicus.trungchuyenhn.com";
+
 
   static const String urlWebSocket = "https://devapicus.trungchuyenhn.com/hubs/ticket";
 
@@ -45,6 +45,7 @@ class Const {
   static const String USER_ID = 'UserId';
   static const String PASS_WORD = 'Password';
   static const String USER_NAME = "User name";
+  static const String REMEMBER_ME = "Remember Me";
   static const String CHUC_VU = "Full name";
   static String username = '';
   static int diemThuong = 0;

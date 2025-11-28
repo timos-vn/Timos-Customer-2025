@@ -108,12 +108,41 @@ class AuthService extends BaseRepository {
       await _storage.remove(Const.REFRESH_TOKEN);
       await _storage.remove('user_data');
       
+      // Không xóa thông tin rememberMe khi đăng xuất
+      // Thông tin rememberMe chỉ bị xóa khi user bỏ chọn checkbox hoặc đăng nhập với rememberMe = false
+      
       Const.username = '';
       Const.phoneNumber = '';
       Const.diemThuong = 0;
       Const.ID_NHA_XE = 0;
     }
   }
+
+  /// Lưu thông tin đăng nhập khi rememberMe = true
+  static Future<void> saveRememberMe({
+    required String username,
+    required String password,
+  }) async {
+    await _storage.write(Const.REMEMBER_ME, true);
+    await _storage.write(Const.USER_NAME, username);
+    await _storage.write(Const.PASS_WORD, password);
+  }
+
+  /// Xóa thông tin đăng nhập đã lưu
+  static Future<void> clearRememberMe() async {
+    await _storage.remove(Const.REMEMBER_ME);
+    await _storage.remove(Const.USER_NAME);
+    await _storage.remove(Const.PASS_WORD);
+  }
+
+  /// Kiểm tra xem có bật rememberMe không
+  static bool get isRememberMeEnabled => _storage.read(Const.REMEMBER_ME) ?? false;
+
+  /// Lấy username đã lưu
+  static String? get savedUsername => _storage.read(Const.USER_NAME);
+
+  /// Lấy password đã lưu
+  static String? get savedPassword => _storage.read(Const.PASS_WORD);
 
 
 
