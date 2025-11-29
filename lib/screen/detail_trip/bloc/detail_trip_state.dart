@@ -5,26 +5,34 @@ class DetailTripState {
   DetailCoachPaneTripData? detailCoachPaneTrip;
   bool isLoadingTrips = false;
   String? tripError;
-  bool isCancelSuccess = false;
+
+  /// 1: huỷ vé
+  /// 2: Lấy id thành công
+  int statusApp;
+
+  String? idLichXeLimousineMoi;
 
   DetailTripState({
     this.detailCoachPaneTrip,
     this.isLoadingTrips = false,
     this.tripError,
-    this.isCancelSuccess = false,
+    this.statusApp = 0,
+    this.idLichXeLimousineMoi,
   });
 
   DetailTripState copyWith({
     DetailCoachPaneTripData? detailCoachPaneTrip,
     bool? isLoadingTrips,
     String? tripError,
-    bool? isCancelSuccess,
+    int? statusApp,
+    String? idLichXeLimousineMoi,
   }) {
     return DetailTripState(
       detailCoachPaneTrip: detailCoachPaneTrip ?? this.detailCoachPaneTrip,
       isLoadingTrips: isLoadingTrips ?? this.isLoadingTrips,
       tripError: tripError ?? this.tripError,
-      isCancelSuccess: isCancelSuccess ?? this.isCancelSuccess
+        statusApp: statusApp ?? this.statusApp,
+      idLichXeLimousineMoi: idLichXeLimousineMoi ?? this.idLichXeLimousineMoi,
     );
   }
 }

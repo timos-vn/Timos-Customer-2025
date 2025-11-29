@@ -71,9 +71,9 @@ class _CoachPaneState extends State<CoachPane> {
         pageIndex: 1,
         pageSize: 50,
       );
-      if (response.isSuccess) {
+      if (response.statusCode == 200) {
         setState(() {
-          _trips = response.data ?? [];
+          _trips = response.data;
         });
       } else {
         if (!mounted) return;
@@ -463,7 +463,7 @@ class _TripCard extends StatelessWidget {
               children: [
                 _InfoChip(
                   icon: Icons.calendar_month,
-                  value: _formatTripDate(trip.ngayChay),
+                  value: _formatTripDate(trip.ngayChay.toString()),
                 ),
                 _InfoChip(
                   icon: Icons.schedule,

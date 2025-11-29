@@ -11,6 +11,7 @@ class DetailTripBloc extends Bloc<DetailTripEvent, DetailTripState> {
         super(DetailTripState()) {
     on<LoadDetailCoachPaneTripEvent>(_onLoadDetailCoachPaneTrip);
     on<CancelTripEvent>(cancelTrip);
+    on<IdTripEvent>(taoLichNhaXe);
   }
 
   // Load detail coach pane trip from API
@@ -53,7 +54,10 @@ class DetailTripBloc extends Bloc<DetailTripEvent, DetailTripState> {
 
       if (response.data == true) {
         // Success - set flag để listener reload
-        emit(state.copyWith(isLoadingTrips: false, isCancelSuccess: true));
+        emit(state.copyWith(isLoadingTrips: false, statusApp: 1));
+        // Reset effect state
+        emit(state.copyWith(statusApp: 0));
+
       } else {
         // Lỗi - giữ nguyên data cũ, chỉ set error để hiển thị toast
         emit(state.copyWith(
@@ -69,6 +73,35 @@ class DetailTripBloc extends Bloc<DetailTripEvent, DetailTripState> {
         tripError: 'Lỗi khi huỷ vé: $e',
         isLoadingTrips: false,
         // Giữ nguyên detailCoachPaneTrip để không hiển thị màn hình trắng
+      ));
+    }
+  }
+
+  Future<void> taoLichNhaXe(IdTripEvent event, Emitter emit) async {
+    emit(state.copyWith(isLoadingTrips: true, tripError: null));
+
+    try {
+      final response = await _tripService.layIdNhaXe(
+        taoLichNhaXeRequest: event.taoLichNhaXeRequest,
+      );
+
+      if (response.statusCode == 200) {
+        // Success effect
+        emit(state.copyWith(isLoadingTrips: false, statusApp: 2, idLichXeLimousineMoi: response.data));
+
+        // Reset effect state
+        emit(state.copyWith(statusApp: 0));
+      } else {
+        emit(state.copyWith(
+          isLoadingTrips: false,
+          tripError: "Lấy id thất bại",
+        ));
+      }
+
+    } catch (e) {
+      emit(state.copyWith(
+        tripError: 'Lỗi khi lấy id $e',
+        isLoadingTrips: false,
       ));
     }
   }

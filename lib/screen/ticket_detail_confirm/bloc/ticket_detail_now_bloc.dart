@@ -135,12 +135,15 @@ class TicketDetailNowBloc
         isLoading: false,
         errorMessage: null,
         bookTicketResponse: response,
+        codeScreen: 1,
       ));
+
     } catch (e) {
       emit(state.copyWith(
         isLoading: false,
         errorMessage: e.toString(),
         bookTicketResponse: null,
+        codeScreen: 1,
       ));
     }
   }
@@ -189,12 +192,14 @@ class TicketDetailNowBloc
         isLoading: false,
         errorMessage: null,
         bookTicketResponse: response,
+        codeScreen: 2,
       ));
     } catch (e) {
       emit(state.copyWith(
         isLoading: false,
         errorMessage: e.toString(),
         bookTicketResponse: null,
+        codeScreen: 2,
       ));
     }
   }

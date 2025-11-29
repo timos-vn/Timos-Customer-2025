@@ -4,6 +4,8 @@ import 'package:timos_customer_2025/models/response/response.dart';
 import 'package:timos_customer_2025/models/network/request.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/cancel_ticket_request.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/cancel_ticket_response.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/id_chuyen_nha_xe_response.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/tao_lich_nha_xe_request.dart';
 
 class TripService extends BaseRepository {
   static final TripService _instance = TripService._internal();
@@ -185,6 +187,29 @@ class TripService extends BaseRepository {
       }
 
       return CancelTicketResponse.fromJson(response);
+    } catch (e) {
+      throw Exception('Lỗi khi lấy chi tiết chuyến đi: $e');
+    }
+  }
+
+  Future<IdChuyenDiResponse> layIdNhaXe({required TaoLichNhaXeRequest taoLichNhaXeRequest}) async {
+    try {
+      final response = await baseCallApi(
+        '/api/v1/manage/chuyen-di/tao-moi-lich-xe-limousine',
+        EnumRequestMethod.post,
+        jsonMap: taoLichNhaXeRequest.toJson(),
+        isToken: true,
+      );
+      if (response == null) {
+        throw Exception('Response is null');
+      }
+
+      if (response is! Map<String, dynamic>) {
+        throw Exception(
+            'Response is not a valid JSON object: ${response.runtimeType}');
+      }
+
+      return IdChuyenDiResponse.fromJson(response);
     } catch (e) {
       throw Exception('Lỗi khi lấy chi tiết chuyến đi: $e');
     }
