@@ -75,7 +75,7 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
         backgroundColor: Colors.grey[100],
         appBar: AppBar(
           title: UtilsWidget.buildText(
-            text: "Chi tiết vé",
+            text: widget.isUpdate == true ? "Sửa vé" : "Đặt vé",
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
@@ -350,7 +350,7 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
                     }
                   },
                   child: state.isLoading ? CircularProgressIndicator(): UtilsWidget.buildText(
-                      text: "Đặt vé",
+                      text: widget.isUpdate == true ? "Sửa vé" : "Đặt vé",
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       textColor: whiteColor),
