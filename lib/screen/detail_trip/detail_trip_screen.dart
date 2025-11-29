@@ -732,7 +732,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                             numCustomers: 1,
                             price: seat.giaVe.toInt(),
                           );
-                          Navigator.push(
+                          final result = await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
@@ -750,6 +750,15 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                                   name: "TICKET_DETAIL_BOOK"),
                             ),
                           );
+                          // Reload dữ liệu nếu đặt vé thành công
+                          if (result == true && mounted) {
+                            context.read<DetailTripBloc>().add(
+                              LoadDetailCoachPaneTripEvent(
+                                idLichXeLimousine: widget.idLichXeLimousine,
+                                tang: selectedFloor,
+                              ),
+                            );
+                          }
                         }
                     }
                   }
@@ -948,7 +957,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
           height: 55,
           width: double.infinity,
           child: ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               Set<ChiTietGhe> chiTietGhes = {};
               for (var seat in soDuocChon) {
                 chiTietGhes.add(
@@ -971,7 +980,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                   numCustomers: 1,
                   price: soDuocChon.first.giaVe.toInt(),
                 );
-                Navigator.push(
+                final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => TicketDetailNowScreen(
@@ -983,6 +992,15 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                     settings: RouteSettings(name: "TICKET_DETAIL_BOOK"),
                   ),
                 );
+                // Reload dữ liệu nếu đặt vé thành công
+                if (result == true && mounted) {
+                  context.read<DetailTripBloc>().add(
+                    LoadDetailCoachPaneTripEvent(
+                      idLichXeLimousine: widget.idLichXeLimousine,
+                      tang: selectedFloor,
+                    ),
+                  );
+                }
               } else {
                 Utils.showMyToast(context, "Vui lòng chọn ghế để đặt vé");
               }

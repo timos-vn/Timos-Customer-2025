@@ -84,16 +84,8 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
         body: BlocListener<TicketDetailNowBloc, TicketDetailState>(
           listener: (context, state) {
             if (state.bookTicketResponse?.statusCode == 200) {
-              // Utils.showCustomToast(context, Icons.check_circle,
-              //     'Thành công! Đặt vé thành công.');
-
-              // Navigator.popUntil(context, (route) => route.isFirst);
-              // Future.delayed(const Duration(milliseconds: 300), () {
-              //
-              // });
-              // Navigator.pop(context);
-              // Navigator.popUntil(context, (route) => route.settings.name == "TRIP_DETAIL");
-              Navigator.popUntil(context, (route) => route.isFirst);
+              // Quay về màn chi tiết chuyến và reload dữ liệu
+              Navigator.pop(context, true); // Trả về true để báo hiệu cần reload
               if(state.codeScreen == 1) {
                 Utils.showMyToast(context, 'Thành công! Đặt vé thành công.');
               } else if(state.codeScreen == 2) {

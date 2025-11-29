@@ -173,8 +173,8 @@ class _CoachPaneState extends State<CoachPane> {
                 isLoading: _isLoading,
                 trips: _filteredTrips,
                 onOpenFilter: _openFilterBottomSheet,
-                onTripTap: (trip) {
-                  Navigator.push(
+                onTripTap: (trip) async {
+                  await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (_) => BlocProvider(
@@ -187,6 +187,10 @@ class _CoachPaneState extends State<CoachPane> {
                       settings: RouteSettings(name: "TRIP_DETAIL"),
                     ),
                   );
+                  // Reload dữ liệu khi quay lại từ màn chi tiết chuyến
+                  if (mounted) {
+                    _loadTrips();
+                  }
                 },
               ),
               const SizedBox(height: 32),
