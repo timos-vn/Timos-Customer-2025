@@ -8,9 +8,12 @@ class DetailTripState {
 
   /// 1: huỷ vé
   /// 2: Lấy id thành công
+  /// 3: Lâ
   int statusApp;
 
   String? idLichXeLimousineMoi;
+
+  int gheTrong;
 
   DetailTripState({
     this.detailCoachPaneTrip,
@@ -18,6 +21,7 @@ class DetailTripState {
     this.tripError,
     this.statusApp = 0,
     this.idLichXeLimousineMoi,
+    this.gheTrong = 0,
   });
 
   DetailTripState copyWith({
@@ -26,6 +30,7 @@ class DetailTripState {
     String? tripError,
     int? statusApp,
     String? idLichXeLimousineMoi,
+    int? gheTrong,
   }) {
     return DetailTripState(
       detailCoachPaneTrip: detailCoachPaneTrip ?? this.detailCoachPaneTrip,
@@ -33,6 +38,7 @@ class DetailTripState {
       tripError: tripError ?? this.tripError,
         statusApp: statusApp ?? this.statusApp,
       idLichXeLimousineMoi: idLichXeLimousineMoi ?? this.idLichXeLimousineMoi,
+      gheTrong: gheTrong ?? this.gheTrong,
     );
   }
 }
