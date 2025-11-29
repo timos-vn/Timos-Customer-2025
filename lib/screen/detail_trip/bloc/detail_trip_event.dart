@@ -17,10 +17,12 @@ abstract class DetailTripEvent extends Equatable {}
 class LoadDetailCoachPaneTripEvent extends DetailTripEvent {
   final String idLichXeLimousine;
 
-  LoadDetailCoachPaneTripEvent({required this.idLichXeLimousine});
+  final int tang;
+
+  LoadDetailCoachPaneTripEvent({required this.idLichXeLimousine, required this.tang});
 
   @override
-  List<Object?> get props => [idLichXeLimousine];
+  List<Object?> get props => [idLichXeLimousine, tang];
 }
 
 class CancelTripEvent extends DetailTripEvent {
@@ -44,4 +46,15 @@ class IdTripEvent extends DetailTripEvent {
 
   @override
   List<Object?> get props => [taoLichNhaXeRequest];
+}
+
+class TinhSoGheTrong extends DetailTripEvent {
+
+  final int tang;
+
+
+  TinhSoGheTrong({required this.tang});
+
+  @override
+  List<Object?> get props => [tang];
 }

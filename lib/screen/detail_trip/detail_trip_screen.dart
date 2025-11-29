@@ -62,6 +62,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
       context.read<DetailTripBloc>().add(
         LoadDetailCoachPaneTripEvent(
           idLichXeLimousine: widget.idLichXeLimousine,
+          tang: selectedFloor,
         ),
       );
     }
@@ -90,6 +91,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
           context.read<DetailTripBloc>().add(
             LoadDetailCoachPaneTripEvent(
               idLichXeLimousine: widget.idLichXeLimousine,
+              tang: selectedFloor,
             ),
           );
         }
@@ -115,6 +117,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
           context.read<DetailTripBloc>().add(
             LoadDetailCoachPaneTripEvent(
               idLichXeLimousine: state.idLichXeLimousineMoi ?? "",
+              tang: selectedFloor,
             ),
           );
         }
@@ -315,6 +318,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                   LoadDetailCoachPaneTripEvent(
                         idLichXeLimousine:
                             widget.idLichXeLimousine.toString(),
+                    tang: selectedFloor,
                       ),
                     );
               },
@@ -348,37 +352,12 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
         children: [
           _buildTripInfoCard(data, currentFloor),
           const SizedBox(height: 16),
-          _buildRevenueStats(currentFloor, data),
+          _buildRevenueStats(currentFloor, data, state.gheTrong),
           const SizedBox(height: 16),
           Text('Sơ đồ ghế', style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
           if (data.danhSachTang.isNotEmpty)
-            SizedBox(
-              height: 50,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: data.danhSachTang.length,
-                itemBuilder: (context, index) {
-                  final floor = data.danhSachTang[index];
-                  final bool isSelected = selectedFloor == floor.tang;
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: ChoiceChip(
-                      label: Text(
-                          "Tầng ${floor.tang + 1} (${floor.soGheDaDat} đặt, ${floor.soGheGiuCho} giữ)"),
-                      selected: isSelected,
-                      onSelected: (selected) {
-                        setState(() {
-                          selectedFloor = floor.tang;
-                        });
-                      },
-                      selectedColor: mainColor.withValues(alpha: 0.2),
-                      checkmarkColor: mainColor,
-                    ),
-                  );
-                },
-              ),
-            ),
+            _buildTang(data),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -455,6 +434,41 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
     );
   }
 
+
+  Widget _buildTang(DetailCoachPaneTripData data) {
+    return  SizedBox(
+      height: 50,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: data.danhSachTang.length,
+        itemBuilder: (context, index) {
+          final floor = data.danhSachTang[index];
+          final bool isSelected = selectedFloor == floor.tang;
+          return Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: ChoiceChip(
+              label: Text(
+                  "Tầng ${floor.tang + 1} (${floor.soGheDaDat} đặt, ${floor.soGheGiuCho} giữ)"),
+              selected: isSelected,
+              onSelected: (selected) {
+                setState(() {
+                  selectedFloor = floor.tang;
+                });
+                context.read<DetailTripBloc>().add(
+                  TinhSoGheTrong(
+                    tang: selectedFloor,
+                  ),
+                );
+              },
+              selectedColor: mainColor.withValues(alpha: 0.2),
+              checkmarkColor: mainColor,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   Widget _buildTripInfoCard(
     DetailCoachPaneTripData data,
     TangHienTai? currentFloor,
@@ -516,7 +530,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
   }
 
   Widget _buildRevenueStats(
-      TangHienTai? currentFloor, DetailCoachPaneTripData data) {
+      TangHienTai? currentFloor, DetailCoachPaneTripData data, int gheTrong) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -557,7 +571,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                   "Giữ chỗ", currentFloor?.soGheGiuCho ?? 0, Colors.orange.shade100),
               const SizedBox(width: 12),
               _buildStatItem(
-                  "Trống", currentFloor?.soGheTrong ?? 0, Colors.grey.shade100),
+                  "Trống", gheTrong, Colors.grey.shade100),
             ],
           ),
         ],

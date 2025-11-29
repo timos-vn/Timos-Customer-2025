@@ -12,6 +12,7 @@ class DetailTripBloc extends Bloc<DetailTripEvent, DetailTripState> {
     on<LoadDetailCoachPaneTripEvent>(_onLoadDetailCoachPaneTrip);
     on<CancelTripEvent>(cancelTrip);
     on<IdTripEvent>(taoLichNhaXe);
+    on<TinhSoGheTrong>(capNhatGheTrong);
   }
 
   // Load detail coach pane trip from API
@@ -26,8 +27,15 @@ class DetailTripBloc extends Bloc<DetailTripEvent, DetailTripState> {
         idLichXeLimousine: event.idLichXeLimousine,
       );
       if (response.data != null) {
+
+        int gheTrong = 0;
+        for(var tang in response.data!.danhSachTang[event.tang].danhSachGhe){
+          gheTrong += tang.isGheAo ? 0 : (tang.trangThaiGhe == 1 ? 1 : 0);
+        }
+
         emit(state.copyWith(
           detailCoachPaneTrip: response.data!,
+          gheTrong: gheTrong,
           isLoadingTrips: false,
         ));
       } else {
@@ -104,5 +112,17 @@ class DetailTripBloc extends Bloc<DetailTripEvent, DetailTripState> {
         isLoadingTrips: false,
       ));
     }
+  }
+
+
+  Future<void> capNhatGheTrong(TinhSoGheTrong event, Emitter emit) async {
+    int gheTrong = 0;
+    for(var tang in state.detailCoachPaneTrip!.danhSachTang[event.tang].danhSachGhe){
+      gheTrong += tang.isGheAo ? 0 : (tang.trangThaiGhe == 1 ? 1 : 0);
+    }
+
+    emit(state.copyWith(
+      gheTrong: gheTrong,
+    ));
   }
 }
