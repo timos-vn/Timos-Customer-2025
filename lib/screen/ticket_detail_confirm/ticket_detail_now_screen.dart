@@ -75,7 +75,7 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
         backgroundColor: Colors.grey[100],
         appBar: AppBar(
           title: UtilsWidget.buildText(
-            text: widget.isUpdate == true ? "Sửa vé" : "Đặt vé",
+            text: "Chi tiết vé",
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
@@ -84,7 +84,7 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
         body: BlocListener<TicketDetailNowBloc, TicketDetailState>(
           listener: (context, state) {
             if (state.bookTicketResponse?.statusCode == 200) {
-              // Quay về màn chi tiết chuyến và reload dữ liệu
+              // Quay về màn chi tiết chuyến và reload dữ liệu (cho cả đặt vé mới và sửa vé)
               Navigator.pop(context, true); // Trả về true để báo hiệu cần reload
               if(state.codeScreen == 1) {
                 Utils.showMyToast(context, 'Thành công! Đặt vé thành công.');
@@ -301,7 +301,7 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
                     ),
                     minimumSize: const Size(double.infinity, 50),
                   ),
-                  onPressed: () async {
+                  onPressed: state.isLoading ? null : () async {
                     if (_formKey.currentState?.validate() ?? false) {
 
                       if(widget.isUpdate ?? false) {
@@ -349,11 +349,20 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
                       );
                     }
                   },
-                  child: state.isLoading ? CircularProgressIndicator(): UtilsWidget.buildText(
-                      text: widget.isUpdate == true ? "Sửa vé" : "Đặt vé",
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      textColor: whiteColor),
+                  child: state.isLoading
+                      ? SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            valueColor: AlwaysStoppedAnimation<Color>(whiteColor),
+                          ),
+                        )
+                      : UtilsWidget.buildText(
+                          text: widget.isUpdate == true ? "Sửa vé" : "Đặt vé",
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          textColor: whiteColor),
                 ),
               ),
             );

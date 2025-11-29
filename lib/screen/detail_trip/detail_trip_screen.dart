@@ -692,7 +692,12 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                     }
                     setState(() {});
                   } else {
-                    final value = await TicketDetailBottomSheet.show(context, seat);
+                    final value = await TicketDetailBottomSheet.show(
+                      context,
+                      seat,
+                      ngayChay: state.detailCoachPaneTrip?.ngayChay,
+                      gioDi: state.detailCoachPaneTrip?.gioDi,
+                    );
 
                     if(value != null) {
                       if (value == 'cancel_ticket') {
