@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -20,6 +21,7 @@ import 'package:timos_customer_2025/themes/colors.dart';
 import 'package:timos_customer_2025/utils/date_utils.dart';
 import 'package:timos_customer_2025/utils/input_widget.dart';
 import 'package:timos_customer_2025/utils/utils.dart';
+import 'package:timos_customer_2025/themes/colors.dart' show disableColor, borderColor;
 
 class TicketDetailNowScreen extends StatefulWidget {
   final TicketDetailModel ticketDetail;
@@ -53,10 +55,11 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
   void initState() {
     _bloc.add(InitDataEvent(ticketDetailModel: widget.ticketDetail));
     if(widget.isUpdate ?? false) {
-      textNameController.text = widget.danhSachGhe?.tenKhachHang ?? "";
-      textNumberPhoneController.text = widget.danhSachGhe?.soDienThoaiKhachHang ?? "";
-      diaChiKhachDi.text = widget.danhSachGhe?.diaChiKhachDi ?? "";
-      diaChiKhachDen.text = widget.danhSachGhe?.diaChiKhachDen ?? "";
+      // Trim khoảng trắng khi fill dữ liệu trong mode sửa vé
+      textNameController.text = (widget.danhSachGhe?.tenKhachHang ?? "").trim();
+      textNumberPhoneController.text = (widget.danhSachGhe?.soDienThoaiKhachHang ?? "").trim();
+      diaChiKhachDi.text = (widget.danhSachGhe?.diaChiKhachDi ?? "").trim();
+      diaChiKhachDen.text = (widget.danhSachGhe?.diaChiKhachDen ?? "").trim();
     }
     super.initState();
   }
@@ -75,7 +78,7 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
         backgroundColor: Colors.grey[100],
         appBar: AppBar(
           title: UtilsWidget.buildText(
-            text: widget.isUpdate == true ? "Sửa vé" : "Đặt vé",
+            text: "Chi tiết vé",
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
@@ -84,7 +87,7 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
         body: BlocListener<TicketDetailNowBloc, TicketDetailState>(
           listener: (context, state) {
             if (state.bookTicketResponse?.statusCode == 200) {
-              // Quay về màn chi tiết chuyến và reload dữ liệu
+              // Quay về màn chi tiết chuyến và reload dữ liệu (cho cả đặt vé mới và sửa vé)
               Navigator.pop(context, true); // Trả về true để báo hiệu cần reload
               if(state.codeScreen == 1) {
                 Utils.showMyToast(context, 'Thành công! Đặt vé thành công.');
@@ -185,14 +188,40 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
                                   ],
                                 ),
                                 const SizedBox(height: 4),
-                                InputWidget(
+                                TextFormField(
                                   controller: textNumberPhoneController,
-                                  placeholder: 'Số điện thoại',
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        AppDimens.normalInputBorderRadius),
-                                    borderSide: const BorderSide(
-                                        color: colorApp, width: 1),
+                                  keyboardType: TextInputType.phone,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
+                                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                                  style: const TextStyle(fontSize: CustomTextStyle.normalFontSize),
+                                  decoration: InputDecoration(
+                                    hintText: 'Số điện thoại',
+                                    hintStyle: const TextStyle(color: disableColor, fontSize: 13),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          AppDimens.normalInputBorderRadius),
+                                      borderSide: const BorderSide(
+                                          color: colorApp, width: 1),
+                                    ),
+                                    focusedErrorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          AppDimens.normalInputBorderRadius),
+                                      borderSide: const BorderSide(
+                                          color: colorRed, width: 1),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          AppDimens.normalInputBorderRadius),
+                                      borderSide: const BorderSide(
+                                          color: colorRed, width: 1),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          AppDimens.normalInputBorderRadius),
+                                      borderSide: const BorderSide(color: borderColor, width: 1),
+                                    ),
                                   ),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
@@ -204,6 +233,9 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
                                       return 'Số điện thoại không hợp lệ';
                                     }
                                     return null;
+                                  },
+                                  onTapOutside: (event) {
+                                    FocusManager.instance.primaryFocus?.unfocus();
                                   },
                                 ),
                               ],
@@ -301,7 +333,7 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
                     ),
                     minimumSize: const Size(double.infinity, 50),
                   ),
-                  onPressed: () async {
+                  onPressed: state.isLoading ? null : () async {
                     if (_formKey.currentState?.validate() ?? false) {
 
                       if(widget.isUpdate ?? false) {
@@ -349,11 +381,20 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
                       );
                     }
                   },
-                  child: state.isLoading ? CircularProgressIndicator(): UtilsWidget.buildText(
-                      text: widget.isUpdate == true ? "Sửa vé" : "Đặt vé",
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      textColor: whiteColor),
+                  child: state.isLoading
+                      ? SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            valueColor: AlwaysStoppedAnimation<Color>(whiteColor),
+                          ),
+                        )
+                      : UtilsWidget.buildText(
+                          text: widget.isUpdate == true ? "Sửa vé" : "Đặt vé",
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          textColor: whiteColor),
                 ),
               ),
             );

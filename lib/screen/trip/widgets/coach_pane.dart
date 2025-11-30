@@ -20,6 +20,9 @@ class _CoachPaneState extends State<CoachPane> {
   final ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
   List<CoachPaneTripItem> _trips = [];
+  List<CoachPaneTripItem> _allTrips = []; // Lưu tất cả chuyến từ API
+  List<String> _availableRoutes = []; // Danh sách các tuyến có sẵn
+  String? _selectedRoute; // Tuyến được chọn (null = Tất cả)
   DateTime _selectedDate = DateTime.now();
   String _statusFilter = 'Tất cả';
   bool _showScrollToTop = false;
@@ -72,9 +75,23 @@ class _CoachPaneState extends State<CoachPane> {
         pageSize: 50,
       );
       if (response.statusCode == 200) {
+        final allTrips = response.data;
+        // Lấy danh sách các tuyến đường duy nhất
+        final uniqueRoutes = allTrips
+            .map((trip) => trip.tenTuyenDuong)
+            .where((route) => route.isNotEmpty)
+            .toSet()
+            .toList();
+        
         setState(() {
-          _trips = response.data;
+          _allTrips = allTrips;
+          _availableRoutes = uniqueRoutes;
+          // Nếu đã có tuyến được chọn trước đó, giữ nguyên
+          // Nếu chưa có, để null để hiển thị tất cả các tuyến
         });
+        
+        // Áp dụng bộ lọc
+        _applyFilters();
       } else {
         if (!mounted) return;
         if(response.statusCode == 401) {
@@ -108,49 +125,64 @@ class _CoachPaneState extends State<CoachPane> {
       builder: (_) => _FilterBottomSheet(
         initialDate: _selectedDate,
         initialStatus: _statusFilter,
+        initialRoute: _selectedRoute,
+        availableRoutes: _availableRoutes,
       ),
     );
 
     if (result != null && mounted) {
       final dateChanged = !result.selectedDate.isAtSameMomentAs(_selectedDate);
       final statusChanged = result.status != _statusFilter;
+      final routeChanged = result.selectedRoute != _selectedRoute;
       
       setState(() {
         _selectedDate = result.selectedDate;
         _statusFilter = result.status;
+        _selectedRoute = result.selectedRoute;
       });
       
       // Reload nếu thay đổi ngày, filter chỉ áp dụng trên client-side
       if (dateChanged) {
         _loadTrips();
+      } else if (statusChanged || routeChanged) {
+        _applyFilters();
       }
     }
   }
-
-  List<CoachPaneTripItem> get _filteredTrips {
-    if (_statusFilter == 'Tất cả') {
-      return _trips;
+  
+  void _applyFilters() {
+    // Lọc theo tuyến
+    List<CoachPaneTripItem> filtered = _allTrips;
+    if (_selectedRoute != null) {
+      filtered = filtered.where((trip) => trip.tenTuyenDuong == _selectedRoute).toList();
     }
     
-    return _trips.where((trip) {
-      switch (_statusFilter) {
-        case 'Chưa có tài xế':
-          // Kiểm tra cả idTaiXe và tenTaiXe
-          final hasNoDriver = (trip.idTaiXe == null || 
-                              trip.idTaiXe?.isEmpty == true) && 
-                             trip.tenTaiXe.isEmpty;
-          return hasNoDriver;
-        case 'Đã full':
-          // Chỉ tính khi có tổng số ghế > 0 và số ghế đã đặt >= tổng số ghế
-          return trip.tongSoGhe > 0 && trip.soGheDaDat >= trip.tongSoGhe;
-        case 'Còn trống':
-          // Phải có tổng số ghế > 0 và số ghế đã đặt < tổng số ghế
-          // Nếu tongSoGhe == 0 thì không tính là còn trống (chưa có thông tin)
-          return trip.tongSoGhe > 0 && trip.soGheDaDat < trip.tongSoGhe;
-        default:
-          return true;
-      }
-    }).toList();
+    // Lọc theo trạng thái
+    if (_statusFilter != 'Tất cả') {
+      filtered = filtered.where((trip) {
+        switch (_statusFilter) {
+          case 'Chưa có tài xế':
+            final hasNoDriver = (trip.idTaiXe == null || 
+                                trip.idTaiXe?.isEmpty == true) && 
+                               trip.tenTaiXe.isEmpty;
+            return hasNoDriver;
+          case 'Đã full':
+            return trip.tongSoGhe > 0 && trip.soGheDaDat >= trip.tongSoGhe;
+          case 'Còn trống':
+            return trip.tongSoGhe > 0 && trip.soGheDaDat < trip.tongSoGhe;
+          default:
+            return true;
+        }
+      }).toList();
+    }
+    
+    setState(() {
+      _trips = filtered;
+    });
+  }
+
+  List<CoachPaneTripItem> get _filteredTrips {
+    return _trips;
   }
 
   @override
@@ -448,7 +480,7 @@ class _TripCard extends StatelessWidget {
           children: [
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: [ 
                 Expanded(
                   child: Text(
                     trip.tenTuyenDuong,
@@ -669,10 +701,14 @@ class _DriverRow extends StatelessWidget {
 class _FilterBottomSheet extends StatefulWidget {
   final DateTime initialDate;
   final String initialStatus;
+  final String? initialRoute;
+  final List<String> availableRoutes;
 
   const _FilterBottomSheet({
     required this.initialDate,
     required this.initialStatus,
+    required this.initialRoute,
+    required this.availableRoutes,
   });
 
   @override
@@ -689,6 +725,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
 
   late DateTime _tempDate = widget.initialDate;
   late String _tempStatus = widget.initialStatus;
+  late String? _tempRoute = widget.initialRoute;
 
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
@@ -720,6 +757,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
       _FilterResult(
         selectedDate: _tempDate,
         status: _tempStatus,
+        selectedRoute: _tempRoute,
       ),
     );
   }
@@ -798,6 +836,36 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                     ],
                   ),
                 ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Tuyến đường',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Colors.grey.shade600,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 10,
+                runSpacing: 8,
+                children: [
+                  _RouteFilterChip(
+                    label: 'Tất cả',
+                    isSelected: _tempRoute == null,
+                    onTap: () => setState(() {
+                      _tempRoute = null;
+                    }),
+                  ),
+                  ...widget.availableRoutes.map(
+                    (route) => _RouteFilterChip(
+                      label: route,
+                      isSelected: _tempRoute == route,
+                      onTap: () => setState(() {
+                        _tempRoute = route;
+                      }),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
               Text(
@@ -892,11 +960,50 @@ class _StatusFilterChip extends StatelessWidget {
 class _FilterResult {
   final DateTime selectedDate;
   final String status;
+  final String? selectedRoute;
 
   const _FilterResult({
     required this.selectedDate,
     required this.status,
+    required this.selectedRoute,
   });
+}
+
+class _RouteFilterChip extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _RouteFilterChip({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? mainColor.withValues(alpha: 0.1) : Colors.grey.shade200,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? mainColor : Colors.transparent,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: isSelected ? mainColor : Colors.grey.shade700,
+          ),
+        ),
+      ),
+    );
+  }
 }
 class _StatusPill extends StatelessWidget {
   final String label;
