@@ -345,91 +345,116 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
           )
         : null;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildTripInfoCard(data, currentFloor),
-          const SizedBox(height: 16),
-          _buildRevenueStats(currentFloor, data, state.gheTrong),
-          const SizedBox(height: 16),
-          Text('Sơ đồ ghế', style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          if (data.danhSachTang.isNotEmpty)
-            _buildTang(data),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              _buildLegendBox(
-                  color: Colors.white,
-                  borderColor: Colors.grey,
-                  label: "Trống"),
-              const SizedBox(width: 16),
-              _buildLegendBox(
-                  color: mainColor, borderColor: mainColor, label: "Đã đặt"),
-              const SizedBox(width: 16),
-              _buildLegendBox(
-                  color: Colors.orange.shade100,
-                  borderColor: Colors.orange,
-                  label: "Giữ chỗ"),
-              const SizedBox(width: 16),
-              _buildLegendBox(
-                  color: Colors.green.shade100,
-                  borderColor: Colors.green,
-                  label: "Vé trung chuyển"),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            "* Chọn ghế để xem chi tiết hành khách",
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall
-                ?.copyWith(fontStyle: FontStyle.italic),
-          ),
-          Text(
-            "* Chọn ghế trống để đặt thêm vé",
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall
-                ?.copyWith(fontStyle: FontStyle.italic),
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            height: 1000,
-            width: double.infinity,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return RefreshIndicator(
+      onRefresh: () async {
+        // Lấy idLichXeLimousine hiện tại từ state hoặc widget
+        final currentState = context.read<DetailTripBloc>().state;
+        final idToLoad = currentState.idLichXeLimousineMoi?.isNotEmpty == true
+            ? currentState.idLichXeLimousineMoi!
+            : (widget.idLichXeLimousine.isNotEmpty
+                ? widget.idLichXeLimousine
+                : null);
+        
+        if (idToLoad != null) {
+          // Reload chi tiết chuyến đi
+          context.read<DetailTripBloc>().add(
+            LoadDetailCoachPaneTripEvent(
+              idLichXeLimousine: idToLoad,
+              tang: selectedFloor,
+            ),
+          );
+          // Đợi một chút để đảm bảo bloc xử lý xong
+          await Future.delayed(const Duration(milliseconds: 500));
+        }
+      },
+      color: mainColor,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(), // Cho phép scroll ngay cả khi nội dung ngắn
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildTripInfoCard(data, currentFloor),
+            const SizedBox(height: 16),
+            _buildRevenueStats(currentFloor, data, state.gheTrong),
+            const SizedBox(height: 16),
+            Text('Sơ đồ ghế', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            if (data.danhSachTang.isNotEmpty)
+              _buildTang(data),
+            const SizedBox(height: 12),
+            Row(
               children: [
-                _buildSeat(currentFloor, state),
+                _buildLegendBox(
+                    color: Colors.white,
+                    borderColor: Colors.grey,
+                    label: "Trống"),
+                const SizedBox(width: 16),
+                _buildLegendBox(
+                    color: mainColor, borderColor: mainColor, label: "Đã đặt"),
+                const SizedBox(width: 16),
+                _buildLegendBox(
+                    color: Colors.orange.shade100,
+                    borderColor: Colors.orange,
+                    label: "Giữ chỗ"),
+                const SizedBox(width: 16),
+                _buildLegendBox(
+                    color: Colors.green.shade100,
+                    borderColor: Colors.green,
+                    label: "Vé trung chuyển"),
               ],
             ),
-          ),
-          // const SizedBox(height: 16),
-          // Container(
-          //   padding: const EdgeInsets.all(16),
-          //   decoration: BoxDecoration(
-          //     color: mainColor.withValues(alpha: 0.1),
-          //     borderRadius: BorderRadius.circular(12),
-          //     border: Border.all(color: mainColor.withValues(alpha: 0.3)),
-          //   ),
-          //   child: Row(
-          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //     children: [
-          //       Text('Tổng tiền', style: Theme.of(context).textTheme.titleMedium),
-          //       Text(
-          //         _formatCurrency(data.tongDoanhThu.toDouble()),
-          //         style: Theme.of(context)
-          //             .textTheme
-          //             .titleLarge
-          //             ?.copyWith(fontWeight: FontWeight.bold, color: mainColor),
-          //       ),
-          //     ],
-          //   ),
-          // ),
-          // const SizedBox(height: 16),
-        ],
+            const SizedBox(height: 12),
+            Text(
+              "* Chọn ghế để xem chi tiết hành khách",
+              style: Theme.of(context)
+                  .textTheme
+                  .bodySmall
+                  ?.copyWith(fontStyle: FontStyle.italic),
+            ),
+            Text(
+              "* Chọn ghế trống để đặt thêm vé",
+              style: Theme.of(context)
+                  .textTheme
+                  .bodySmall
+                  ?.copyWith(fontStyle: FontStyle.italic),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 1000,
+              width: double.infinity,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSeat(currentFloor, state),
+                ],
+              ),
+            ),
+            // const SizedBox(height: 16),
+            // Container(
+            //   padding: const EdgeInsets.all(16),
+            //   decoration: BoxDecoration(
+            //     color: mainColor.withValues(alpha: 0.1),
+            //     borderRadius: BorderRadius.circular(12),
+            //     border: Border.all(color: mainColor.withValues(alpha: 0.3)),
+            //   ),
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //     children: [
+            //       Text('Tổng tiền', style: Theme.of(context).textTheme.titleMedium),
+            //       Text(
+            //         _formatCurrency(data.tongDoanhThu.toDouble()),
+            //         style: Theme.of(context)
+            //             .textTheme
+            //             .titleLarge
+            //             ?.copyWith(fontWeight: FontWeight.bold, color: mainColor),
+            //       ),
+            //     ],
+            //   ),
+            // ),
+            // const SizedBox(height: 16),
+          ],
+        ),
       ),
     );
   }
@@ -1114,3 +1139,4 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
     return value;
   }
 }
+  
