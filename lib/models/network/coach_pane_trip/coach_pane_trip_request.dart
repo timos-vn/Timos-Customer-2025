@@ -8,7 +8,7 @@ class CoachPaneTripRequest with _$CoachPaneTripRequest {
   const factory CoachPaneTripRequest({
     required int idNhaXe,
     required int idLoaiNhaXe,
-    required String idNhanVien,
+    String? idNhanVien, // Optional: không truyền nếu chucVu = 5 hoặc 6
     required String ngayBatDau,
     required String ngayKetThuc,
     required int pageIndex,

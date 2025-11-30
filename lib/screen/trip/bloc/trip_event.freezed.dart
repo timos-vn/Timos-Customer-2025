@@ -19,7 +19,6 @@ mixin _$TripEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initialize,
-    required TResult Function(String date) loadGroups,
     required TResult Function(String? groupName) selectGroup,
     required TResult Function(String groupType) changeGroupType,
     required TResult Function(int dateOffset) selectDate,
@@ -48,7 +47,6 @@ mixin _$TripEvent {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initialize,
-    TResult? Function(String date)? loadGroups,
     TResult? Function(String? groupName)? selectGroup,
     TResult? Function(String groupType)? changeGroupType,
     TResult? Function(int dateOffset)? selectDate,
@@ -77,7 +75,6 @@ mixin _$TripEvent {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initialize,
-    TResult Function(String date)? loadGroups,
     TResult Function(String? groupName)? selectGroup,
     TResult Function(String groupType)? changeGroupType,
     TResult Function(int dateOffset)? selectDate,
@@ -107,7 +104,6 @@ mixin _$TripEvent {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(InitializeTripEvent value) initialize,
-    required TResult Function(LoadGroupsEvent value) loadGroups,
     required TResult Function(SelectGroupEvent value) selectGroup,
     required TResult Function(ChangeGroupTypeEvent value) changeGroupType,
     required TResult Function(SelectDateEvent value) selectDate,
@@ -136,7 +132,6 @@ mixin _$TripEvent {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InitializeTripEvent value)? initialize,
-    TResult? Function(LoadGroupsEvent value)? loadGroups,
     TResult? Function(SelectGroupEvent value)? selectGroup,
     TResult? Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult? Function(SelectDateEvent value)? selectDate,
@@ -163,7 +158,6 @@ mixin _$TripEvent {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InitializeTripEvent value)? initialize,
-    TResult Function(LoadGroupsEvent value)? loadGroups,
     TResult Function(SelectGroupEvent value)? selectGroup,
     TResult Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult Function(SelectDateEvent value)? selectDate,
@@ -251,7 +245,6 @@ class _$InitializeTripEventImpl implements InitializeTripEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initialize,
-    required TResult Function(String date) loadGroups,
     required TResult Function(String? groupName) selectGroup,
     required TResult Function(String groupType) changeGroupType,
     required TResult Function(int dateOffset) selectDate,
@@ -283,7 +276,6 @@ class _$InitializeTripEventImpl implements InitializeTripEvent {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initialize,
-    TResult? Function(String date)? loadGroups,
     TResult? Function(String? groupName)? selectGroup,
     TResult? Function(String groupType)? changeGroupType,
     TResult? Function(int dateOffset)? selectDate,
@@ -315,7 +307,6 @@ class _$InitializeTripEventImpl implements InitializeTripEvent {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initialize,
-    TResult Function(String date)? loadGroups,
     TResult Function(String? groupName)? selectGroup,
     TResult Function(String groupType)? changeGroupType,
     TResult Function(int dateOffset)? selectDate,
@@ -351,7 +342,6 @@ class _$InitializeTripEventImpl implements InitializeTripEvent {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(InitializeTripEvent value) initialize,
-    required TResult Function(LoadGroupsEvent value) loadGroups,
     required TResult Function(SelectGroupEvent value) selectGroup,
     required TResult Function(ChangeGroupTypeEvent value) changeGroupType,
     required TResult Function(SelectDateEvent value) selectDate,
@@ -383,7 +373,6 @@ class _$InitializeTripEventImpl implements InitializeTripEvent {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InitializeTripEvent value)? initialize,
-    TResult? Function(LoadGroupsEvent value)? loadGroups,
     TResult? Function(SelectGroupEvent value)? selectGroup,
     TResult? Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult? Function(SelectDateEvent value)? selectDate,
@@ -413,7 +402,6 @@ class _$InitializeTripEventImpl implements InitializeTripEvent {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InitializeTripEvent value)? initialize,
-    TResult Function(LoadGroupsEvent value)? loadGroups,
     TResult Function(SelectGroupEvent value)? selectGroup,
     TResult Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult Function(SelectDateEvent value)? selectDate,
@@ -444,280 +432,6 @@ class _$InitializeTripEventImpl implements InitializeTripEvent {
 
 abstract class InitializeTripEvent implements TripEvent {
   const factory InitializeTripEvent() = _$InitializeTripEventImpl;
-}
-
-/// @nodoc
-abstract class _$$LoadGroupsEventImplCopyWith<$Res> {
-  factory _$$LoadGroupsEventImplCopyWith(_$LoadGroupsEventImpl value,
-          $Res Function(_$LoadGroupsEventImpl) then) =
-      __$$LoadGroupsEventImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({String date});
-}
-
-/// @nodoc
-class __$$LoadGroupsEventImplCopyWithImpl<$Res>
-    extends _$TripEventCopyWithImpl<$Res, _$LoadGroupsEventImpl>
-    implements _$$LoadGroupsEventImplCopyWith<$Res> {
-  __$$LoadGroupsEventImplCopyWithImpl(
-      _$LoadGroupsEventImpl _value, $Res Function(_$LoadGroupsEventImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of TripEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? date = null,
-  }) {
-    return _then(_$LoadGroupsEventImpl(
-      date: null == date
-          ? _value.date
-          : date // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-}
-
-/// @nodoc
-
-class _$LoadGroupsEventImpl implements LoadGroupsEvent {
-  const _$LoadGroupsEventImpl({required this.date});
-
-  @override
-  final String date;
-
-  @override
-  String toString() {
-    return 'TripEvent.loadGroups(date: $date)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$LoadGroupsEventImpl &&
-            (identical(other.date, date) || other.date == date));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, date);
-
-  /// Create a copy of TripEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$LoadGroupsEventImplCopyWith<_$LoadGroupsEventImpl> get copyWith =>
-      __$$LoadGroupsEventImplCopyWithImpl<_$LoadGroupsEventImpl>(
-          this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initialize,
-    required TResult Function(String date) loadGroups,
-    required TResult Function(String? groupName) selectGroup,
-    required TResult Function(String groupType) changeGroupType,
-    required TResult Function(int dateOffset) selectDate,
-    required TResult Function(String status) changeShareStatus,
-    required TResult Function(String status) changeTransferStatus,
-    required TResult Function(String status) changeDispatcherStatus,
-    required TResult Function(String type) changeVehicleType,
-    required TResult Function(String slot) changeTimeSlot,
-    required TResult Function(String type) changeTransferType,
-    required TResult Function(String type) changeDispatcherTripType,
-    required TResult Function(String customerId) selectCustomer,
-    required TResult Function(String customerId) deselectCustomer,
-    required TResult Function() clearSelectedCustomers,
-    required TResult Function(List<String> customerIds) selectAllCustomers,
-    required TResult Function(List<String> customerIds, String groupName)
-        groupCustomers,
-    required TResult Function() loadTrips,
-    required TResult Function(
-            String ngayChay, String idNhanVien, int idNhom, String? idDoiTac)
-        loadPendingTrips,
-    required TResult Function(
-            String ngayChay, String idNhanVien, int idNhom, String? idDoiTac)
-        loadProcessingTrips,
-  }) {
-    return loadGroups(date);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initialize,
-    TResult? Function(String date)? loadGroups,
-    TResult? Function(String? groupName)? selectGroup,
-    TResult? Function(String groupType)? changeGroupType,
-    TResult? Function(int dateOffset)? selectDate,
-    TResult? Function(String status)? changeShareStatus,
-    TResult? Function(String status)? changeTransferStatus,
-    TResult? Function(String status)? changeDispatcherStatus,
-    TResult? Function(String type)? changeVehicleType,
-    TResult? Function(String slot)? changeTimeSlot,
-    TResult? Function(String type)? changeTransferType,
-    TResult? Function(String type)? changeDispatcherTripType,
-    TResult? Function(String customerId)? selectCustomer,
-    TResult? Function(String customerId)? deselectCustomer,
-    TResult? Function()? clearSelectedCustomers,
-    TResult? Function(List<String> customerIds)? selectAllCustomers,
-    TResult? Function(List<String> customerIds, String groupName)?
-        groupCustomers,
-    TResult? Function()? loadTrips,
-    TResult? Function(
-            String ngayChay, String idNhanVien, int idNhom, String? idDoiTac)?
-        loadPendingTrips,
-    TResult? Function(
-            String ngayChay, String idNhanVien, int idNhom, String? idDoiTac)?
-        loadProcessingTrips,
-  }) {
-    return loadGroups?.call(date);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initialize,
-    TResult Function(String date)? loadGroups,
-    TResult Function(String? groupName)? selectGroup,
-    TResult Function(String groupType)? changeGroupType,
-    TResult Function(int dateOffset)? selectDate,
-    TResult Function(String status)? changeShareStatus,
-    TResult Function(String status)? changeTransferStatus,
-    TResult Function(String status)? changeDispatcherStatus,
-    TResult Function(String type)? changeVehicleType,
-    TResult Function(String slot)? changeTimeSlot,
-    TResult Function(String type)? changeTransferType,
-    TResult Function(String type)? changeDispatcherTripType,
-    TResult Function(String customerId)? selectCustomer,
-    TResult Function(String customerId)? deselectCustomer,
-    TResult Function()? clearSelectedCustomers,
-    TResult Function(List<String> customerIds)? selectAllCustomers,
-    TResult Function(List<String> customerIds, String groupName)?
-        groupCustomers,
-    TResult Function()? loadTrips,
-    TResult Function(
-            String ngayChay, String idNhanVien, int idNhom, String? idDoiTac)?
-        loadPendingTrips,
-    TResult Function(
-            String ngayChay, String idNhanVien, int idNhom, String? idDoiTac)?
-        loadProcessingTrips,
-    required TResult orElse(),
-  }) {
-    if (loadGroups != null) {
-      return loadGroups(date);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(InitializeTripEvent value) initialize,
-    required TResult Function(LoadGroupsEvent value) loadGroups,
-    required TResult Function(SelectGroupEvent value) selectGroup,
-    required TResult Function(ChangeGroupTypeEvent value) changeGroupType,
-    required TResult Function(SelectDateEvent value) selectDate,
-    required TResult Function(ChangeShareStatusEvent value) changeShareStatus,
-    required TResult Function(ChangeTransferStatusEvent value)
-        changeTransferStatus,
-    required TResult Function(ChangeDispatcherStatusEvent value)
-        changeDispatcherStatus,
-    required TResult Function(ChangeVehicleTypeEvent value) changeVehicleType,
-    required TResult Function(ChangeTimeSlotEvent value) changeTimeSlot,
-    required TResult Function(ChangeTransferTypeEvent value) changeTransferType,
-    required TResult Function(ChangeDispatcherTripTypeEvent value)
-        changeDispatcherTripType,
-    required TResult Function(SelectCustomerEvent value) selectCustomer,
-    required TResult Function(DeselectCustomerEvent value) deselectCustomer,
-    required TResult Function(ClearSelectedCustomersEvent value)
-        clearSelectedCustomers,
-    required TResult Function(SelectAllCustomersEvent value) selectAllCustomers,
-    required TResult Function(GroupCustomersEvent value) groupCustomers,
-    required TResult Function(LoadTripsEvent value) loadTrips,
-    required TResult Function(LoadPendingTripsEvent value) loadPendingTrips,
-    required TResult Function(LoadProcessingTripsEvent value)
-        loadProcessingTrips,
-  }) {
-    return loadGroups(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(InitializeTripEvent value)? initialize,
-    TResult? Function(LoadGroupsEvent value)? loadGroups,
-    TResult? Function(SelectGroupEvent value)? selectGroup,
-    TResult? Function(ChangeGroupTypeEvent value)? changeGroupType,
-    TResult? Function(SelectDateEvent value)? selectDate,
-    TResult? Function(ChangeShareStatusEvent value)? changeShareStatus,
-    TResult? Function(ChangeTransferStatusEvent value)? changeTransferStatus,
-    TResult? Function(ChangeDispatcherStatusEvent value)?
-        changeDispatcherStatus,
-    TResult? Function(ChangeVehicleTypeEvent value)? changeVehicleType,
-    TResult? Function(ChangeTimeSlotEvent value)? changeTimeSlot,
-    TResult? Function(ChangeTransferTypeEvent value)? changeTransferType,
-    TResult? Function(ChangeDispatcherTripTypeEvent value)?
-        changeDispatcherTripType,
-    TResult? Function(SelectCustomerEvent value)? selectCustomer,
-    TResult? Function(DeselectCustomerEvent value)? deselectCustomer,
-    TResult? Function(ClearSelectedCustomersEvent value)?
-        clearSelectedCustomers,
-    TResult? Function(SelectAllCustomersEvent value)? selectAllCustomers,
-    TResult? Function(GroupCustomersEvent value)? groupCustomers,
-    TResult? Function(LoadTripsEvent value)? loadTrips,
-    TResult? Function(LoadPendingTripsEvent value)? loadPendingTrips,
-    TResult? Function(LoadProcessingTripsEvent value)? loadProcessingTrips,
-  }) {
-    return loadGroups?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(InitializeTripEvent value)? initialize,
-    TResult Function(LoadGroupsEvent value)? loadGroups,
-    TResult Function(SelectGroupEvent value)? selectGroup,
-    TResult Function(ChangeGroupTypeEvent value)? changeGroupType,
-    TResult Function(SelectDateEvent value)? selectDate,
-    TResult Function(ChangeShareStatusEvent value)? changeShareStatus,
-    TResult Function(ChangeTransferStatusEvent value)? changeTransferStatus,
-    TResult Function(ChangeDispatcherStatusEvent value)? changeDispatcherStatus,
-    TResult Function(ChangeVehicleTypeEvent value)? changeVehicleType,
-    TResult Function(ChangeTimeSlotEvent value)? changeTimeSlot,
-    TResult Function(ChangeTransferTypeEvent value)? changeTransferType,
-    TResult Function(ChangeDispatcherTripTypeEvent value)?
-        changeDispatcherTripType,
-    TResult Function(SelectCustomerEvent value)? selectCustomer,
-    TResult Function(DeselectCustomerEvent value)? deselectCustomer,
-    TResult Function(ClearSelectedCustomersEvent value)? clearSelectedCustomers,
-    TResult Function(SelectAllCustomersEvent value)? selectAllCustomers,
-    TResult Function(GroupCustomersEvent value)? groupCustomers,
-    TResult Function(LoadTripsEvent value)? loadTrips,
-    TResult Function(LoadPendingTripsEvent value)? loadPendingTrips,
-    TResult Function(LoadProcessingTripsEvent value)? loadProcessingTrips,
-    required TResult orElse(),
-  }) {
-    if (loadGroups != null) {
-      return loadGroups(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class LoadGroupsEvent implements TripEvent {
-  const factory LoadGroupsEvent({required final String date}) =
-      _$LoadGroupsEventImpl;
-
-  String get date;
-
-  /// Create a copy of TripEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$LoadGroupsEventImplCopyWith<_$LoadGroupsEventImpl> get copyWith =>
-      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -791,7 +505,6 @@ class _$SelectGroupEventImpl implements SelectGroupEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initialize,
-    required TResult Function(String date) loadGroups,
     required TResult Function(String? groupName) selectGroup,
     required TResult Function(String groupType) changeGroupType,
     required TResult Function(int dateOffset) selectDate,
@@ -823,7 +536,6 @@ class _$SelectGroupEventImpl implements SelectGroupEvent {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initialize,
-    TResult? Function(String date)? loadGroups,
     TResult? Function(String? groupName)? selectGroup,
     TResult? Function(String groupType)? changeGroupType,
     TResult? Function(int dateOffset)? selectDate,
@@ -855,7 +567,6 @@ class _$SelectGroupEventImpl implements SelectGroupEvent {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initialize,
-    TResult Function(String date)? loadGroups,
     TResult Function(String? groupName)? selectGroup,
     TResult Function(String groupType)? changeGroupType,
     TResult Function(int dateOffset)? selectDate,
@@ -891,7 +602,6 @@ class _$SelectGroupEventImpl implements SelectGroupEvent {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(InitializeTripEvent value) initialize,
-    required TResult Function(LoadGroupsEvent value) loadGroups,
     required TResult Function(SelectGroupEvent value) selectGroup,
     required TResult Function(ChangeGroupTypeEvent value) changeGroupType,
     required TResult Function(SelectDateEvent value) selectDate,
@@ -923,7 +633,6 @@ class _$SelectGroupEventImpl implements SelectGroupEvent {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InitializeTripEvent value)? initialize,
-    TResult? Function(LoadGroupsEvent value)? loadGroups,
     TResult? Function(SelectGroupEvent value)? selectGroup,
     TResult? Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult? Function(SelectDateEvent value)? selectDate,
@@ -953,7 +662,6 @@ class _$SelectGroupEventImpl implements SelectGroupEvent {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InitializeTripEvent value)? initialize,
-    TResult Function(LoadGroupsEvent value)? loadGroups,
     TResult Function(SelectGroupEvent value)? selectGroup,
     TResult Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult Function(SelectDateEvent value)? selectDate,
@@ -1067,7 +775,6 @@ class _$ChangeGroupTypeEventImpl implements ChangeGroupTypeEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initialize,
-    required TResult Function(String date) loadGroups,
     required TResult Function(String? groupName) selectGroup,
     required TResult Function(String groupType) changeGroupType,
     required TResult Function(int dateOffset) selectDate,
@@ -1099,7 +806,6 @@ class _$ChangeGroupTypeEventImpl implements ChangeGroupTypeEvent {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initialize,
-    TResult? Function(String date)? loadGroups,
     TResult? Function(String? groupName)? selectGroup,
     TResult? Function(String groupType)? changeGroupType,
     TResult? Function(int dateOffset)? selectDate,
@@ -1131,7 +837,6 @@ class _$ChangeGroupTypeEventImpl implements ChangeGroupTypeEvent {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initialize,
-    TResult Function(String date)? loadGroups,
     TResult Function(String? groupName)? selectGroup,
     TResult Function(String groupType)? changeGroupType,
     TResult Function(int dateOffset)? selectDate,
@@ -1167,7 +872,6 @@ class _$ChangeGroupTypeEventImpl implements ChangeGroupTypeEvent {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(InitializeTripEvent value) initialize,
-    required TResult Function(LoadGroupsEvent value) loadGroups,
     required TResult Function(SelectGroupEvent value) selectGroup,
     required TResult Function(ChangeGroupTypeEvent value) changeGroupType,
     required TResult Function(SelectDateEvent value) selectDate,
@@ -1199,7 +903,6 @@ class _$ChangeGroupTypeEventImpl implements ChangeGroupTypeEvent {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InitializeTripEvent value)? initialize,
-    TResult? Function(LoadGroupsEvent value)? loadGroups,
     TResult? Function(SelectGroupEvent value)? selectGroup,
     TResult? Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult? Function(SelectDateEvent value)? selectDate,
@@ -1229,7 +932,6 @@ class _$ChangeGroupTypeEventImpl implements ChangeGroupTypeEvent {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InitializeTripEvent value)? initialize,
-    TResult Function(LoadGroupsEvent value)? loadGroups,
     TResult Function(SelectGroupEvent value)? selectGroup,
     TResult Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult Function(SelectDateEvent value)? selectDate,
@@ -1342,7 +1044,6 @@ class _$SelectDateEventImpl implements SelectDateEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initialize,
-    required TResult Function(String date) loadGroups,
     required TResult Function(String? groupName) selectGroup,
     required TResult Function(String groupType) changeGroupType,
     required TResult Function(int dateOffset) selectDate,
@@ -1374,7 +1075,6 @@ class _$SelectDateEventImpl implements SelectDateEvent {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initialize,
-    TResult? Function(String date)? loadGroups,
     TResult? Function(String? groupName)? selectGroup,
     TResult? Function(String groupType)? changeGroupType,
     TResult? Function(int dateOffset)? selectDate,
@@ -1406,7 +1106,6 @@ class _$SelectDateEventImpl implements SelectDateEvent {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initialize,
-    TResult Function(String date)? loadGroups,
     TResult Function(String? groupName)? selectGroup,
     TResult Function(String groupType)? changeGroupType,
     TResult Function(int dateOffset)? selectDate,
@@ -1442,7 +1141,6 @@ class _$SelectDateEventImpl implements SelectDateEvent {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(InitializeTripEvent value) initialize,
-    required TResult Function(LoadGroupsEvent value) loadGroups,
     required TResult Function(SelectGroupEvent value) selectGroup,
     required TResult Function(ChangeGroupTypeEvent value) changeGroupType,
     required TResult Function(SelectDateEvent value) selectDate,
@@ -1474,7 +1172,6 @@ class _$SelectDateEventImpl implements SelectDateEvent {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InitializeTripEvent value)? initialize,
-    TResult? Function(LoadGroupsEvent value)? loadGroups,
     TResult? Function(SelectGroupEvent value)? selectGroup,
     TResult? Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult? Function(SelectDateEvent value)? selectDate,
@@ -1504,7 +1201,6 @@ class _$SelectDateEventImpl implements SelectDateEvent {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InitializeTripEvent value)? initialize,
-    TResult Function(LoadGroupsEvent value)? loadGroups,
     TResult Function(SelectGroupEvent value)? selectGroup,
     TResult Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult Function(SelectDateEvent value)? selectDate,
@@ -1618,7 +1314,6 @@ class _$ChangeShareStatusEventImpl implements ChangeShareStatusEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initialize,
-    required TResult Function(String date) loadGroups,
     required TResult Function(String? groupName) selectGroup,
     required TResult Function(String groupType) changeGroupType,
     required TResult Function(int dateOffset) selectDate,
@@ -1650,7 +1345,6 @@ class _$ChangeShareStatusEventImpl implements ChangeShareStatusEvent {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initialize,
-    TResult? Function(String date)? loadGroups,
     TResult? Function(String? groupName)? selectGroup,
     TResult? Function(String groupType)? changeGroupType,
     TResult? Function(int dateOffset)? selectDate,
@@ -1682,7 +1376,6 @@ class _$ChangeShareStatusEventImpl implements ChangeShareStatusEvent {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initialize,
-    TResult Function(String date)? loadGroups,
     TResult Function(String? groupName)? selectGroup,
     TResult Function(String groupType)? changeGroupType,
     TResult Function(int dateOffset)? selectDate,
@@ -1718,7 +1411,6 @@ class _$ChangeShareStatusEventImpl implements ChangeShareStatusEvent {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(InitializeTripEvent value) initialize,
-    required TResult Function(LoadGroupsEvent value) loadGroups,
     required TResult Function(SelectGroupEvent value) selectGroup,
     required TResult Function(ChangeGroupTypeEvent value) changeGroupType,
     required TResult Function(SelectDateEvent value) selectDate,
@@ -1750,7 +1442,6 @@ class _$ChangeShareStatusEventImpl implements ChangeShareStatusEvent {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InitializeTripEvent value)? initialize,
-    TResult? Function(LoadGroupsEvent value)? loadGroups,
     TResult? Function(SelectGroupEvent value)? selectGroup,
     TResult? Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult? Function(SelectDateEvent value)? selectDate,
@@ -1780,7 +1471,6 @@ class _$ChangeShareStatusEventImpl implements ChangeShareStatusEvent {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InitializeTripEvent value)? initialize,
-    TResult Function(LoadGroupsEvent value)? loadGroups,
     TResult Function(SelectGroupEvent value)? selectGroup,
     TResult Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult Function(SelectDateEvent value)? selectDate,
@@ -1894,7 +1584,6 @@ class _$ChangeTransferStatusEventImpl implements ChangeTransferStatusEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initialize,
-    required TResult Function(String date) loadGroups,
     required TResult Function(String? groupName) selectGroup,
     required TResult Function(String groupType) changeGroupType,
     required TResult Function(int dateOffset) selectDate,
@@ -1926,7 +1615,6 @@ class _$ChangeTransferStatusEventImpl implements ChangeTransferStatusEvent {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initialize,
-    TResult? Function(String date)? loadGroups,
     TResult? Function(String? groupName)? selectGroup,
     TResult? Function(String groupType)? changeGroupType,
     TResult? Function(int dateOffset)? selectDate,
@@ -1958,7 +1646,6 @@ class _$ChangeTransferStatusEventImpl implements ChangeTransferStatusEvent {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initialize,
-    TResult Function(String date)? loadGroups,
     TResult Function(String? groupName)? selectGroup,
     TResult Function(String groupType)? changeGroupType,
     TResult Function(int dateOffset)? selectDate,
@@ -1994,7 +1681,6 @@ class _$ChangeTransferStatusEventImpl implements ChangeTransferStatusEvent {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(InitializeTripEvent value) initialize,
-    required TResult Function(LoadGroupsEvent value) loadGroups,
     required TResult Function(SelectGroupEvent value) selectGroup,
     required TResult Function(ChangeGroupTypeEvent value) changeGroupType,
     required TResult Function(SelectDateEvent value) selectDate,
@@ -2026,7 +1712,6 @@ class _$ChangeTransferStatusEventImpl implements ChangeTransferStatusEvent {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InitializeTripEvent value)? initialize,
-    TResult? Function(LoadGroupsEvent value)? loadGroups,
     TResult? Function(SelectGroupEvent value)? selectGroup,
     TResult? Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult? Function(SelectDateEvent value)? selectDate,
@@ -2056,7 +1741,6 @@ class _$ChangeTransferStatusEventImpl implements ChangeTransferStatusEvent {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InitializeTripEvent value)? initialize,
-    TResult Function(LoadGroupsEvent value)? loadGroups,
     TResult Function(SelectGroupEvent value)? selectGroup,
     TResult Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult Function(SelectDateEvent value)? selectDate,
@@ -2170,7 +1854,6 @@ class _$ChangeDispatcherStatusEventImpl implements ChangeDispatcherStatusEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initialize,
-    required TResult Function(String date) loadGroups,
     required TResult Function(String? groupName) selectGroup,
     required TResult Function(String groupType) changeGroupType,
     required TResult Function(int dateOffset) selectDate,
@@ -2202,7 +1885,6 @@ class _$ChangeDispatcherStatusEventImpl implements ChangeDispatcherStatusEvent {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initialize,
-    TResult? Function(String date)? loadGroups,
     TResult? Function(String? groupName)? selectGroup,
     TResult? Function(String groupType)? changeGroupType,
     TResult? Function(int dateOffset)? selectDate,
@@ -2234,7 +1916,6 @@ class _$ChangeDispatcherStatusEventImpl implements ChangeDispatcherStatusEvent {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initialize,
-    TResult Function(String date)? loadGroups,
     TResult Function(String? groupName)? selectGroup,
     TResult Function(String groupType)? changeGroupType,
     TResult Function(int dateOffset)? selectDate,
@@ -2270,7 +1951,6 @@ class _$ChangeDispatcherStatusEventImpl implements ChangeDispatcherStatusEvent {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(InitializeTripEvent value) initialize,
-    required TResult Function(LoadGroupsEvent value) loadGroups,
     required TResult Function(SelectGroupEvent value) selectGroup,
     required TResult Function(ChangeGroupTypeEvent value) changeGroupType,
     required TResult Function(SelectDateEvent value) selectDate,
@@ -2302,7 +1982,6 @@ class _$ChangeDispatcherStatusEventImpl implements ChangeDispatcherStatusEvent {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InitializeTripEvent value)? initialize,
-    TResult? Function(LoadGroupsEvent value)? loadGroups,
     TResult? Function(SelectGroupEvent value)? selectGroup,
     TResult? Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult? Function(SelectDateEvent value)? selectDate,
@@ -2332,7 +2011,6 @@ class _$ChangeDispatcherStatusEventImpl implements ChangeDispatcherStatusEvent {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InitializeTripEvent value)? initialize,
-    TResult Function(LoadGroupsEvent value)? loadGroups,
     TResult Function(SelectGroupEvent value)? selectGroup,
     TResult Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult Function(SelectDateEvent value)? selectDate,
@@ -2446,7 +2124,6 @@ class _$ChangeVehicleTypeEventImpl implements ChangeVehicleTypeEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initialize,
-    required TResult Function(String date) loadGroups,
     required TResult Function(String? groupName) selectGroup,
     required TResult Function(String groupType) changeGroupType,
     required TResult Function(int dateOffset) selectDate,
@@ -2478,7 +2155,6 @@ class _$ChangeVehicleTypeEventImpl implements ChangeVehicleTypeEvent {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initialize,
-    TResult? Function(String date)? loadGroups,
     TResult? Function(String? groupName)? selectGroup,
     TResult? Function(String groupType)? changeGroupType,
     TResult? Function(int dateOffset)? selectDate,
@@ -2510,7 +2186,6 @@ class _$ChangeVehicleTypeEventImpl implements ChangeVehicleTypeEvent {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initialize,
-    TResult Function(String date)? loadGroups,
     TResult Function(String? groupName)? selectGroup,
     TResult Function(String groupType)? changeGroupType,
     TResult Function(int dateOffset)? selectDate,
@@ -2546,7 +2221,6 @@ class _$ChangeVehicleTypeEventImpl implements ChangeVehicleTypeEvent {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(InitializeTripEvent value) initialize,
-    required TResult Function(LoadGroupsEvent value) loadGroups,
     required TResult Function(SelectGroupEvent value) selectGroup,
     required TResult Function(ChangeGroupTypeEvent value) changeGroupType,
     required TResult Function(SelectDateEvent value) selectDate,
@@ -2578,7 +2252,6 @@ class _$ChangeVehicleTypeEventImpl implements ChangeVehicleTypeEvent {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InitializeTripEvent value)? initialize,
-    TResult? Function(LoadGroupsEvent value)? loadGroups,
     TResult? Function(SelectGroupEvent value)? selectGroup,
     TResult? Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult? Function(SelectDateEvent value)? selectDate,
@@ -2608,7 +2281,6 @@ class _$ChangeVehicleTypeEventImpl implements ChangeVehicleTypeEvent {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InitializeTripEvent value)? initialize,
-    TResult Function(LoadGroupsEvent value)? loadGroups,
     TResult Function(SelectGroupEvent value)? selectGroup,
     TResult Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult Function(SelectDateEvent value)? selectDate,
@@ -2720,7 +2392,6 @@ class _$ChangeTimeSlotEventImpl implements ChangeTimeSlotEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initialize,
-    required TResult Function(String date) loadGroups,
     required TResult Function(String? groupName) selectGroup,
     required TResult Function(String groupType) changeGroupType,
     required TResult Function(int dateOffset) selectDate,
@@ -2752,7 +2423,6 @@ class _$ChangeTimeSlotEventImpl implements ChangeTimeSlotEvent {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initialize,
-    TResult? Function(String date)? loadGroups,
     TResult? Function(String? groupName)? selectGroup,
     TResult? Function(String groupType)? changeGroupType,
     TResult? Function(int dateOffset)? selectDate,
@@ -2784,7 +2454,6 @@ class _$ChangeTimeSlotEventImpl implements ChangeTimeSlotEvent {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initialize,
-    TResult Function(String date)? loadGroups,
     TResult Function(String? groupName)? selectGroup,
     TResult Function(String groupType)? changeGroupType,
     TResult Function(int dateOffset)? selectDate,
@@ -2820,7 +2489,6 @@ class _$ChangeTimeSlotEventImpl implements ChangeTimeSlotEvent {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(InitializeTripEvent value) initialize,
-    required TResult Function(LoadGroupsEvent value) loadGroups,
     required TResult Function(SelectGroupEvent value) selectGroup,
     required TResult Function(ChangeGroupTypeEvent value) changeGroupType,
     required TResult Function(SelectDateEvent value) selectDate,
@@ -2852,7 +2520,6 @@ class _$ChangeTimeSlotEventImpl implements ChangeTimeSlotEvent {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InitializeTripEvent value)? initialize,
-    TResult? Function(LoadGroupsEvent value)? loadGroups,
     TResult? Function(SelectGroupEvent value)? selectGroup,
     TResult? Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult? Function(SelectDateEvent value)? selectDate,
@@ -2882,7 +2549,6 @@ class _$ChangeTimeSlotEventImpl implements ChangeTimeSlotEvent {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InitializeTripEvent value)? initialize,
-    TResult Function(LoadGroupsEvent value)? loadGroups,
     TResult Function(SelectGroupEvent value)? selectGroup,
     TResult Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult Function(SelectDateEvent value)? selectDate,
@@ -2996,7 +2662,6 @@ class _$ChangeTransferTypeEventImpl implements ChangeTransferTypeEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initialize,
-    required TResult Function(String date) loadGroups,
     required TResult Function(String? groupName) selectGroup,
     required TResult Function(String groupType) changeGroupType,
     required TResult Function(int dateOffset) selectDate,
@@ -3028,7 +2693,6 @@ class _$ChangeTransferTypeEventImpl implements ChangeTransferTypeEvent {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initialize,
-    TResult? Function(String date)? loadGroups,
     TResult? Function(String? groupName)? selectGroup,
     TResult? Function(String groupType)? changeGroupType,
     TResult? Function(int dateOffset)? selectDate,
@@ -3060,7 +2724,6 @@ class _$ChangeTransferTypeEventImpl implements ChangeTransferTypeEvent {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initialize,
-    TResult Function(String date)? loadGroups,
     TResult Function(String? groupName)? selectGroup,
     TResult Function(String groupType)? changeGroupType,
     TResult Function(int dateOffset)? selectDate,
@@ -3096,7 +2759,6 @@ class _$ChangeTransferTypeEventImpl implements ChangeTransferTypeEvent {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(InitializeTripEvent value) initialize,
-    required TResult Function(LoadGroupsEvent value) loadGroups,
     required TResult Function(SelectGroupEvent value) selectGroup,
     required TResult Function(ChangeGroupTypeEvent value) changeGroupType,
     required TResult Function(SelectDateEvent value) selectDate,
@@ -3128,7 +2790,6 @@ class _$ChangeTransferTypeEventImpl implements ChangeTransferTypeEvent {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InitializeTripEvent value)? initialize,
-    TResult? Function(LoadGroupsEvent value)? loadGroups,
     TResult? Function(SelectGroupEvent value)? selectGroup,
     TResult? Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult? Function(SelectDateEvent value)? selectDate,
@@ -3158,7 +2819,6 @@ class _$ChangeTransferTypeEventImpl implements ChangeTransferTypeEvent {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InitializeTripEvent value)? initialize,
-    TResult Function(LoadGroupsEvent value)? loadGroups,
     TResult Function(SelectGroupEvent value)? selectGroup,
     TResult Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult Function(SelectDateEvent value)? selectDate,
@@ -3274,7 +2934,6 @@ class _$ChangeDispatcherTripTypeEventImpl
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initialize,
-    required TResult Function(String date) loadGroups,
     required TResult Function(String? groupName) selectGroup,
     required TResult Function(String groupType) changeGroupType,
     required TResult Function(int dateOffset) selectDate,
@@ -3306,7 +2965,6 @@ class _$ChangeDispatcherTripTypeEventImpl
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initialize,
-    TResult? Function(String date)? loadGroups,
     TResult? Function(String? groupName)? selectGroup,
     TResult? Function(String groupType)? changeGroupType,
     TResult? Function(int dateOffset)? selectDate,
@@ -3338,7 +2996,6 @@ class _$ChangeDispatcherTripTypeEventImpl
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initialize,
-    TResult Function(String date)? loadGroups,
     TResult Function(String? groupName)? selectGroup,
     TResult Function(String groupType)? changeGroupType,
     TResult Function(int dateOffset)? selectDate,
@@ -3374,7 +3031,6 @@ class _$ChangeDispatcherTripTypeEventImpl
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(InitializeTripEvent value) initialize,
-    required TResult Function(LoadGroupsEvent value) loadGroups,
     required TResult Function(SelectGroupEvent value) selectGroup,
     required TResult Function(ChangeGroupTypeEvent value) changeGroupType,
     required TResult Function(SelectDateEvent value) selectDate,
@@ -3406,7 +3062,6 @@ class _$ChangeDispatcherTripTypeEventImpl
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InitializeTripEvent value)? initialize,
-    TResult? Function(LoadGroupsEvent value)? loadGroups,
     TResult? Function(SelectGroupEvent value)? selectGroup,
     TResult? Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult? Function(SelectDateEvent value)? selectDate,
@@ -3436,7 +3091,6 @@ class _$ChangeDispatcherTripTypeEventImpl
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InitializeTripEvent value)? initialize,
-    TResult Function(LoadGroupsEvent value)? loadGroups,
     TResult Function(SelectGroupEvent value)? selectGroup,
     TResult Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult Function(SelectDateEvent value)? selectDate,
@@ -3550,7 +3204,6 @@ class _$SelectCustomerEventImpl implements SelectCustomerEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initialize,
-    required TResult Function(String date) loadGroups,
     required TResult Function(String? groupName) selectGroup,
     required TResult Function(String groupType) changeGroupType,
     required TResult Function(int dateOffset) selectDate,
@@ -3582,7 +3235,6 @@ class _$SelectCustomerEventImpl implements SelectCustomerEvent {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initialize,
-    TResult? Function(String date)? loadGroups,
     TResult? Function(String? groupName)? selectGroup,
     TResult? Function(String groupType)? changeGroupType,
     TResult? Function(int dateOffset)? selectDate,
@@ -3614,7 +3266,6 @@ class _$SelectCustomerEventImpl implements SelectCustomerEvent {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initialize,
-    TResult Function(String date)? loadGroups,
     TResult Function(String? groupName)? selectGroup,
     TResult Function(String groupType)? changeGroupType,
     TResult Function(int dateOffset)? selectDate,
@@ -3650,7 +3301,6 @@ class _$SelectCustomerEventImpl implements SelectCustomerEvent {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(InitializeTripEvent value) initialize,
-    required TResult Function(LoadGroupsEvent value) loadGroups,
     required TResult Function(SelectGroupEvent value) selectGroup,
     required TResult Function(ChangeGroupTypeEvent value) changeGroupType,
     required TResult Function(SelectDateEvent value) selectDate,
@@ -3682,7 +3332,6 @@ class _$SelectCustomerEventImpl implements SelectCustomerEvent {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InitializeTripEvent value)? initialize,
-    TResult? Function(LoadGroupsEvent value)? loadGroups,
     TResult? Function(SelectGroupEvent value)? selectGroup,
     TResult? Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult? Function(SelectDateEvent value)? selectDate,
@@ -3712,7 +3361,6 @@ class _$SelectCustomerEventImpl implements SelectCustomerEvent {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InitializeTripEvent value)? initialize,
-    TResult Function(LoadGroupsEvent value)? loadGroups,
     TResult Function(SelectGroupEvent value)? selectGroup,
     TResult Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult Function(SelectDateEvent value)? selectDate,
@@ -3826,7 +3474,6 @@ class _$DeselectCustomerEventImpl implements DeselectCustomerEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initialize,
-    required TResult Function(String date) loadGroups,
     required TResult Function(String? groupName) selectGroup,
     required TResult Function(String groupType) changeGroupType,
     required TResult Function(int dateOffset) selectDate,
@@ -3858,7 +3505,6 @@ class _$DeselectCustomerEventImpl implements DeselectCustomerEvent {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initialize,
-    TResult? Function(String date)? loadGroups,
     TResult? Function(String? groupName)? selectGroup,
     TResult? Function(String groupType)? changeGroupType,
     TResult? Function(int dateOffset)? selectDate,
@@ -3890,7 +3536,6 @@ class _$DeselectCustomerEventImpl implements DeselectCustomerEvent {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initialize,
-    TResult Function(String date)? loadGroups,
     TResult Function(String? groupName)? selectGroup,
     TResult Function(String groupType)? changeGroupType,
     TResult Function(int dateOffset)? selectDate,
@@ -3926,7 +3571,6 @@ class _$DeselectCustomerEventImpl implements DeselectCustomerEvent {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(InitializeTripEvent value) initialize,
-    required TResult Function(LoadGroupsEvent value) loadGroups,
     required TResult Function(SelectGroupEvent value) selectGroup,
     required TResult Function(ChangeGroupTypeEvent value) changeGroupType,
     required TResult Function(SelectDateEvent value) selectDate,
@@ -3958,7 +3602,6 @@ class _$DeselectCustomerEventImpl implements DeselectCustomerEvent {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InitializeTripEvent value)? initialize,
-    TResult? Function(LoadGroupsEvent value)? loadGroups,
     TResult? Function(SelectGroupEvent value)? selectGroup,
     TResult? Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult? Function(SelectDateEvent value)? selectDate,
@@ -3988,7 +3631,6 @@ class _$DeselectCustomerEventImpl implements DeselectCustomerEvent {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InitializeTripEvent value)? initialize,
-    TResult Function(LoadGroupsEvent value)? loadGroups,
     TResult Function(SelectGroupEvent value)? selectGroup,
     TResult Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult Function(SelectDateEvent value)? selectDate,
@@ -4075,7 +3717,6 @@ class _$ClearSelectedCustomersEventImpl implements ClearSelectedCustomersEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initialize,
-    required TResult Function(String date) loadGroups,
     required TResult Function(String? groupName) selectGroup,
     required TResult Function(String groupType) changeGroupType,
     required TResult Function(int dateOffset) selectDate,
@@ -4107,7 +3748,6 @@ class _$ClearSelectedCustomersEventImpl implements ClearSelectedCustomersEvent {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initialize,
-    TResult? Function(String date)? loadGroups,
     TResult? Function(String? groupName)? selectGroup,
     TResult? Function(String groupType)? changeGroupType,
     TResult? Function(int dateOffset)? selectDate,
@@ -4139,7 +3779,6 @@ class _$ClearSelectedCustomersEventImpl implements ClearSelectedCustomersEvent {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initialize,
-    TResult Function(String date)? loadGroups,
     TResult Function(String? groupName)? selectGroup,
     TResult Function(String groupType)? changeGroupType,
     TResult Function(int dateOffset)? selectDate,
@@ -4175,7 +3814,6 @@ class _$ClearSelectedCustomersEventImpl implements ClearSelectedCustomersEvent {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(InitializeTripEvent value) initialize,
-    required TResult Function(LoadGroupsEvent value) loadGroups,
     required TResult Function(SelectGroupEvent value) selectGroup,
     required TResult Function(ChangeGroupTypeEvent value) changeGroupType,
     required TResult Function(SelectDateEvent value) selectDate,
@@ -4207,7 +3845,6 @@ class _$ClearSelectedCustomersEventImpl implements ClearSelectedCustomersEvent {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InitializeTripEvent value)? initialize,
-    TResult? Function(LoadGroupsEvent value)? loadGroups,
     TResult? Function(SelectGroupEvent value)? selectGroup,
     TResult? Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult? Function(SelectDateEvent value)? selectDate,
@@ -4237,7 +3874,6 @@ class _$ClearSelectedCustomersEventImpl implements ClearSelectedCustomersEvent {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InitializeTripEvent value)? initialize,
-    TResult Function(LoadGroupsEvent value)? loadGroups,
     TResult Function(SelectGroupEvent value)? selectGroup,
     TResult Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult Function(SelectDateEvent value)? selectDate,
@@ -4351,7 +3987,6 @@ class _$SelectAllCustomersEventImpl implements SelectAllCustomersEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initialize,
-    required TResult Function(String date) loadGroups,
     required TResult Function(String? groupName) selectGroup,
     required TResult Function(String groupType) changeGroupType,
     required TResult Function(int dateOffset) selectDate,
@@ -4383,7 +4018,6 @@ class _$SelectAllCustomersEventImpl implements SelectAllCustomersEvent {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initialize,
-    TResult? Function(String date)? loadGroups,
     TResult? Function(String? groupName)? selectGroup,
     TResult? Function(String groupType)? changeGroupType,
     TResult? Function(int dateOffset)? selectDate,
@@ -4415,7 +4049,6 @@ class _$SelectAllCustomersEventImpl implements SelectAllCustomersEvent {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initialize,
-    TResult Function(String date)? loadGroups,
     TResult Function(String? groupName)? selectGroup,
     TResult Function(String groupType)? changeGroupType,
     TResult Function(int dateOffset)? selectDate,
@@ -4451,7 +4084,6 @@ class _$SelectAllCustomersEventImpl implements SelectAllCustomersEvent {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(InitializeTripEvent value) initialize,
-    required TResult Function(LoadGroupsEvent value) loadGroups,
     required TResult Function(SelectGroupEvent value) selectGroup,
     required TResult Function(ChangeGroupTypeEvent value) changeGroupType,
     required TResult Function(SelectDateEvent value) selectDate,
@@ -4483,7 +4115,6 @@ class _$SelectAllCustomersEventImpl implements SelectAllCustomersEvent {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InitializeTripEvent value)? initialize,
-    TResult? Function(LoadGroupsEvent value)? loadGroups,
     TResult? Function(SelectGroupEvent value)? selectGroup,
     TResult? Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult? Function(SelectDateEvent value)? selectDate,
@@ -4513,7 +4144,6 @@ class _$SelectAllCustomersEventImpl implements SelectAllCustomersEvent {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InitializeTripEvent value)? initialize,
-    TResult Function(LoadGroupsEvent value)? loadGroups,
     TResult Function(SelectGroupEvent value)? selectGroup,
     TResult Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult Function(SelectDateEvent value)? selectDate,
@@ -4645,7 +4275,6 @@ class _$GroupCustomersEventImpl implements GroupCustomersEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initialize,
-    required TResult Function(String date) loadGroups,
     required TResult Function(String? groupName) selectGroup,
     required TResult Function(String groupType) changeGroupType,
     required TResult Function(int dateOffset) selectDate,
@@ -4677,7 +4306,6 @@ class _$GroupCustomersEventImpl implements GroupCustomersEvent {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initialize,
-    TResult? Function(String date)? loadGroups,
     TResult? Function(String? groupName)? selectGroup,
     TResult? Function(String groupType)? changeGroupType,
     TResult? Function(int dateOffset)? selectDate,
@@ -4709,7 +4337,6 @@ class _$GroupCustomersEventImpl implements GroupCustomersEvent {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initialize,
-    TResult Function(String date)? loadGroups,
     TResult Function(String? groupName)? selectGroup,
     TResult Function(String groupType)? changeGroupType,
     TResult Function(int dateOffset)? selectDate,
@@ -4745,7 +4372,6 @@ class _$GroupCustomersEventImpl implements GroupCustomersEvent {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(InitializeTripEvent value) initialize,
-    required TResult Function(LoadGroupsEvent value) loadGroups,
     required TResult Function(SelectGroupEvent value) selectGroup,
     required TResult Function(ChangeGroupTypeEvent value) changeGroupType,
     required TResult Function(SelectDateEvent value) selectDate,
@@ -4777,7 +4403,6 @@ class _$GroupCustomersEventImpl implements GroupCustomersEvent {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InitializeTripEvent value)? initialize,
-    TResult? Function(LoadGroupsEvent value)? loadGroups,
     TResult? Function(SelectGroupEvent value)? selectGroup,
     TResult? Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult? Function(SelectDateEvent value)? selectDate,
@@ -4807,7 +4432,6 @@ class _$GroupCustomersEventImpl implements GroupCustomersEvent {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InitializeTripEvent value)? initialize,
-    TResult Function(LoadGroupsEvent value)? loadGroups,
     TResult Function(SelectGroupEvent value)? selectGroup,
     TResult Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult Function(SelectDateEvent value)? selectDate,
@@ -4893,7 +4517,6 @@ class _$LoadTripsEventImpl implements LoadTripsEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initialize,
-    required TResult Function(String date) loadGroups,
     required TResult Function(String? groupName) selectGroup,
     required TResult Function(String groupType) changeGroupType,
     required TResult Function(int dateOffset) selectDate,
@@ -4925,7 +4548,6 @@ class _$LoadTripsEventImpl implements LoadTripsEvent {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initialize,
-    TResult? Function(String date)? loadGroups,
     TResult? Function(String? groupName)? selectGroup,
     TResult? Function(String groupType)? changeGroupType,
     TResult? Function(int dateOffset)? selectDate,
@@ -4957,7 +4579,6 @@ class _$LoadTripsEventImpl implements LoadTripsEvent {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initialize,
-    TResult Function(String date)? loadGroups,
     TResult Function(String? groupName)? selectGroup,
     TResult Function(String groupType)? changeGroupType,
     TResult Function(int dateOffset)? selectDate,
@@ -4993,7 +4614,6 @@ class _$LoadTripsEventImpl implements LoadTripsEvent {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(InitializeTripEvent value) initialize,
-    required TResult Function(LoadGroupsEvent value) loadGroups,
     required TResult Function(SelectGroupEvent value) selectGroup,
     required TResult Function(ChangeGroupTypeEvent value) changeGroupType,
     required TResult Function(SelectDateEvent value) selectDate,
@@ -5025,7 +4645,6 @@ class _$LoadTripsEventImpl implements LoadTripsEvent {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InitializeTripEvent value)? initialize,
-    TResult? Function(LoadGroupsEvent value)? loadGroups,
     TResult? Function(SelectGroupEvent value)? selectGroup,
     TResult? Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult? Function(SelectDateEvent value)? selectDate,
@@ -5055,7 +4674,6 @@ class _$LoadTripsEventImpl implements LoadTripsEvent {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InitializeTripEvent value)? initialize,
-    TResult Function(LoadGroupsEvent value)? loadGroups,
     TResult Function(SelectGroupEvent value)? selectGroup,
     TResult Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult Function(SelectDateEvent value)? selectDate,
@@ -5191,7 +4809,6 @@ class _$LoadPendingTripsEventImpl implements LoadPendingTripsEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initialize,
-    required TResult Function(String date) loadGroups,
     required TResult Function(String? groupName) selectGroup,
     required TResult Function(String groupType) changeGroupType,
     required TResult Function(int dateOffset) selectDate,
@@ -5223,7 +4840,6 @@ class _$LoadPendingTripsEventImpl implements LoadPendingTripsEvent {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initialize,
-    TResult? Function(String date)? loadGroups,
     TResult? Function(String? groupName)? selectGroup,
     TResult? Function(String groupType)? changeGroupType,
     TResult? Function(int dateOffset)? selectDate,
@@ -5255,7 +4871,6 @@ class _$LoadPendingTripsEventImpl implements LoadPendingTripsEvent {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initialize,
-    TResult Function(String date)? loadGroups,
     TResult Function(String? groupName)? selectGroup,
     TResult Function(String groupType)? changeGroupType,
     TResult Function(int dateOffset)? selectDate,
@@ -5291,7 +4906,6 @@ class _$LoadPendingTripsEventImpl implements LoadPendingTripsEvent {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(InitializeTripEvent value) initialize,
-    required TResult Function(LoadGroupsEvent value) loadGroups,
     required TResult Function(SelectGroupEvent value) selectGroup,
     required TResult Function(ChangeGroupTypeEvent value) changeGroupType,
     required TResult Function(SelectDateEvent value) selectDate,
@@ -5323,7 +4937,6 @@ class _$LoadPendingTripsEventImpl implements LoadPendingTripsEvent {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InitializeTripEvent value)? initialize,
-    TResult? Function(LoadGroupsEvent value)? loadGroups,
     TResult? Function(SelectGroupEvent value)? selectGroup,
     TResult? Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult? Function(SelectDateEvent value)? selectDate,
@@ -5353,7 +4966,6 @@ class _$LoadPendingTripsEventImpl implements LoadPendingTripsEvent {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InitializeTripEvent value)? initialize,
-    TResult Function(LoadGroupsEvent value)? loadGroups,
     TResult Function(SelectGroupEvent value)? selectGroup,
     TResult Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult Function(SelectDateEvent value)? selectDate,
@@ -5505,7 +5117,6 @@ class _$LoadProcessingTripsEventImpl implements LoadProcessingTripsEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initialize,
-    required TResult Function(String date) loadGroups,
     required TResult Function(String? groupName) selectGroup,
     required TResult Function(String groupType) changeGroupType,
     required TResult Function(int dateOffset) selectDate,
@@ -5537,7 +5148,6 @@ class _$LoadProcessingTripsEventImpl implements LoadProcessingTripsEvent {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initialize,
-    TResult? Function(String date)? loadGroups,
     TResult? Function(String? groupName)? selectGroup,
     TResult? Function(String groupType)? changeGroupType,
     TResult? Function(int dateOffset)? selectDate,
@@ -5569,7 +5179,6 @@ class _$LoadProcessingTripsEventImpl implements LoadProcessingTripsEvent {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initialize,
-    TResult Function(String date)? loadGroups,
     TResult Function(String? groupName)? selectGroup,
     TResult Function(String groupType)? changeGroupType,
     TResult Function(int dateOffset)? selectDate,
@@ -5605,7 +5214,6 @@ class _$LoadProcessingTripsEventImpl implements LoadProcessingTripsEvent {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(InitializeTripEvent value) initialize,
-    required TResult Function(LoadGroupsEvent value) loadGroups,
     required TResult Function(SelectGroupEvent value) selectGroup,
     required TResult Function(ChangeGroupTypeEvent value) changeGroupType,
     required TResult Function(SelectDateEvent value) selectDate,
@@ -5637,7 +5245,6 @@ class _$LoadProcessingTripsEventImpl implements LoadProcessingTripsEvent {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InitializeTripEvent value)? initialize,
-    TResult? Function(LoadGroupsEvent value)? loadGroups,
     TResult? Function(SelectGroupEvent value)? selectGroup,
     TResult? Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult? Function(SelectDateEvent value)? selectDate,
@@ -5667,7 +5274,6 @@ class _$LoadProcessingTripsEventImpl implements LoadProcessingTripsEvent {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InitializeTripEvent value)? initialize,
-    TResult Function(LoadGroupsEvent value)? loadGroups,
     TResult Function(SelectGroupEvent value)? selectGroup,
     TResult Function(ChangeGroupTypeEvent value)? changeGroupType,
     TResult Function(SelectDateEvent value)? selectDate,

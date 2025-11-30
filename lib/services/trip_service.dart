@@ -2,6 +2,7 @@ import 'package:timos_customer_2025/base_api/base_repository.dart';
 import 'package:timos_customer_2025/enum/enum_request_method.dart';
 import 'package:timos_customer_2025/models/response/response.dart';
 import 'package:timos_customer_2025/models/network/request.dart';
+import 'package:timos_customer_2025/services/auth_service.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/cancel_ticket_request.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/cancel_ticket_response.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/id_chuyen_nha_xe_response.dart';
@@ -103,10 +104,15 @@ class TripService extends BaseRepository {
     int pageSize = 20,
   }) async {
     try {
+      // Kiểm tra chucVu để quyết định có truyền idNhanVien hay không
+      final user = AuthService.currentUser;
+      final chucVu = user?.chucVu ?? 0;
+      final shouldIncludeIdNhanVien = chucVu != 5 && chucVu != 6;
+      
       final request = CoachPaneTripRequest(
         idNhaXe: idNhaXe,
         idLoaiNhaXe: idLoaiNhaXe,
-        idNhanVien: idNhanVien,
+        idNhanVien: shouldIncludeIdNhanVien ? idNhanVien : null,
         ngayBatDau: ngayBatDau,
         ngayKetThuc: ngayKetThuc,
         // ngayBatDau: "2025-08-19",
@@ -114,11 +120,18 @@ class TripService extends BaseRepository {
         pageIndex: pageIndex,
         pageSize: pageSize,
       );
-      print("coach trip request: ${request.toJson()}");
+      
+      // Loại bỏ idNhanVien khỏi JSON nếu null
+      final requestJson = request.toJson();
+      if (requestJson['idNhanVien'] == null) {
+        requestJson.remove('idNhanVien');
+      }
+      
+      print("coach trip request: $requestJson");
       final response = await baseCallApi(
         '/api/v1/manage/chuyen-di/danh-sach-chuyen-di',
         EnumRequestMethod.post,
-        jsonMap: request.toJson(),
+        jsonMap: requestJson,
         isToken: true,
       );
       print("coach trip response: $response");

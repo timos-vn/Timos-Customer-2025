@@ -11,7 +11,7 @@ _$CoachPaneTripRequestImpl _$$CoachPaneTripRequestImplFromJson(
     _$CoachPaneTripRequestImpl(
       idNhaXe: (json['idNhaXe'] as num).toInt(),
       idLoaiNhaXe: (json['idLoaiNhaXe'] as num).toInt(),
-      idNhanVien: json['idNhanVien'] as String,
+      idNhanVien: json['idNhanVien'] as String?,
       ngayBatDau: json['ngayBatDau'] as String,
       ngayKetThuc: json['ngayKetThuc'] as String,
       pageIndex: (json['pageIndex'] as num).toInt(),

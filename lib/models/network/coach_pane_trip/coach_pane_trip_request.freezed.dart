@@ -22,7 +22,8 @@ CoachPaneTripRequest _$CoachPaneTripRequestFromJson(Map<String, dynamic> json) {
 mixin _$CoachPaneTripRequest {
   int get idNhaXe => throw _privateConstructorUsedError;
   int get idLoaiNhaXe => throw _privateConstructorUsedError;
-  String get idNhanVien => throw _privateConstructorUsedError;
+  String? get idNhanVien =>
+      throw _privateConstructorUsedError; // Optional: không truyền nếu chucVu = 5 hoặc 6
   String get ngayBatDau => throw _privateConstructorUsedError;
   String get ngayKetThuc => throw _privateConstructorUsedError;
   int get pageIndex => throw _privateConstructorUsedError;
@@ -47,7 +48,7 @@ abstract class $CoachPaneTripRequestCopyWith<$Res> {
   $Res call(
       {int idNhaXe,
       int idLoaiNhaXe,
-      String idNhanVien,
+      String? idNhanVien,
       String ngayBatDau,
       String ngayKetThuc,
       int pageIndex,
@@ -72,7 +73,7 @@ class _$CoachPaneTripRequestCopyWithImpl<$Res,
   $Res call({
     Object? idNhaXe = null,
     Object? idLoaiNhaXe = null,
-    Object? idNhanVien = null,
+    Object? idNhanVien = freezed,
     Object? ngayBatDau = null,
     Object? ngayKetThuc = null,
     Object? pageIndex = null,
@@ -87,10 +88,10 @@ class _$CoachPaneTripRequestCopyWithImpl<$Res,
           ? _value.idLoaiNhaXe
           : idLoaiNhaXe // ignore: cast_nullable_to_non_nullable
               as int,
-      idNhanVien: null == idNhanVien
+      idNhanVien: freezed == idNhanVien
           ? _value.idNhanVien
           : idNhanVien // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       ngayBatDau: null == ngayBatDau
           ? _value.ngayBatDau
           : ngayBatDau // ignore: cast_nullable_to_non_nullable
@@ -122,7 +123,7 @@ abstract class _$$CoachPaneTripRequestImplCopyWith<$Res>
   $Res call(
       {int idNhaXe,
       int idLoaiNhaXe,
-      String idNhanVien,
+      String? idNhanVien,
       String ngayBatDau,
       String ngayKetThuc,
       int pageIndex,
@@ -144,7 +145,7 @@ class __$$CoachPaneTripRequestImplCopyWithImpl<$Res>
   $Res call({
     Object? idNhaXe = null,
     Object? idLoaiNhaXe = null,
-    Object? idNhanVien = null,
+    Object? idNhanVien = freezed,
     Object? ngayBatDau = null,
     Object? ngayKetThuc = null,
     Object? pageIndex = null,
@@ -159,10 +160,10 @@ class __$$CoachPaneTripRequestImplCopyWithImpl<$Res>
           ? _value.idLoaiNhaXe
           : idLoaiNhaXe // ignore: cast_nullable_to_non_nullable
               as int,
-      idNhanVien: null == idNhanVien
+      idNhanVien: freezed == idNhanVien
           ? _value.idNhanVien
           : idNhanVien // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       ngayBatDau: null == ngayBatDau
           ? _value.ngayBatDau
           : ngayBatDau // ignore: cast_nullable_to_non_nullable
@@ -189,7 +190,7 @@ class _$CoachPaneTripRequestImpl implements _CoachPaneTripRequest {
   const _$CoachPaneTripRequestImpl(
       {required this.idNhaXe,
       required this.idLoaiNhaXe,
-      required this.idNhanVien,
+      this.idNhanVien,
       required this.ngayBatDau,
       required this.ngayKetThuc,
       required this.pageIndex,
@@ -203,7 +204,8 @@ class _$CoachPaneTripRequestImpl implements _CoachPaneTripRequest {
   @override
   final int idLoaiNhaXe;
   @override
-  final String idNhanVien;
+  final String? idNhanVien;
+// Optional: không truyền nếu chucVu = 5 hoặc 6
   @override
   final String ngayBatDau;
   @override
@@ -265,7 +267,7 @@ abstract class _CoachPaneTripRequest implements CoachPaneTripRequest {
   const factory _CoachPaneTripRequest(
       {required final int idNhaXe,
       required final int idLoaiNhaXe,
-      required final String idNhanVien,
+      final String? idNhanVien,
       required final String ngayBatDau,
       required final String ngayKetThuc,
       required final int pageIndex,
@@ -279,7 +281,7 @@ abstract class _CoachPaneTripRequest implements CoachPaneTripRequest {
   @override
   int get idLoaiNhaXe;
   @override
-  String get idNhanVien;
+  String? get idNhanVien; // Optional: không truyền nếu chucVu = 5 hoặc 6
   @override
   String get ngayBatDau;
   @override

@@ -1141,4 +1141,3 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
     return value;
   }
 }
-  
