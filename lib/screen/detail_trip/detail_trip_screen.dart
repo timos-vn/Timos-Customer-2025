@@ -752,6 +752,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                           );
                           // Reload dữ liệu nếu đặt vé thành công
                           if (result == true && mounted) {
+                            soDuocChon.clear();
                             context.read<DetailTripBloc>().add(
                               LoadDetailCoachPaneTripEvent(
                                 idLichXeLimousine: widget.idLichXeLimousine,
@@ -994,6 +995,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                 );
                 // Reload dữ liệu nếu đặt vé thành công
                 if (result == true && mounted) {
+                  soDuocChon.clear();
                   context.read<DetailTripBloc>().add(
                     LoadDetailCoachPaneTripEvent(
                       idLichXeLimousine: widget.idLichXeLimousine,
