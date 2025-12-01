@@ -15,7 +15,7 @@
 
 - Build release với shorebird:
     ```bash
-    shorebird release android --flutter-version=3.27.2
+    shorebird release android --flutter-version=3.32.0
     ```
 - Build apk cho firebase distribution:
     ```bash
@@ -31,7 +31,7 @@
 # Build iOS
 - Build release với shorebird:
     ```bash
-    shorebird release ios --flutter-version=3.27.2
+    shorebird release ios --flutter-version=3.32.0
     ``` 
 - Build ipa cho firebase distribution:
     ```bash
