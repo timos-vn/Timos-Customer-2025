@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:timos_customer_2025/bloc_base/app_bloc.dart';
+import 'package:timos_customer_2025/bloc_base/app_event.dart';
 import 'package:timos_customer_2025/screen/routers/router_generator.dart';
 import 'package:timos_customer_2025/themes/colors.dart';
 import 'package:timos_customer_2025/screen/login/bloc/bloc.dart';
@@ -102,6 +104,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     password: passwordController.text.trim(),
                   )
                 : AuthService.clearRememberMe();
+
+            context.read<AppBloc>().add(UpdateUserLoginEvent(user));
             
             saveFuture.then((_) {
               if (mounted) {

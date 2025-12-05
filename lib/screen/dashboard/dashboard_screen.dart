@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:timos_customer_2025/bloc_base/app_bloc.dart';
+import 'package:timos_customer_2025/bloc_base/app_event.dart';
 import 'package:timos_customer_2025/enum/enum_request_method.dart';
+import 'package:timos_customer_2025/screen/dashboard/bloc/dashboard_bloc.dart';
 import 'package:timos_customer_2025/screen/utils/widget/utils_widget.dart';
 import 'package:timos_customer_2025/themes/colors.dart';
 import 'package:timos_customer_2025/screen/trip/trip_screen.dart';
@@ -37,29 +41,56 @@ class _DashboardScreenState extends State<DashboardScreen> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       ShorebirdUtils.instance.checkUpdateAndRestart(context);
     });
+
+    context.read<AppBloc>().add(UpdateTongDiemEvent(
+          AuthService.currentUser?.idNhaXe ?? 0,
+        ));
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final List<Widget> tabs = buildTabs();
-    return Scaffold(
-      body: tabs[currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: currentIndex,
-        type: BottomNavigationBarType.fixed,
-        onTap: onTabSelected,
-        items: const [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.dashboard), label: 'Dashboard'),
-          // BottomNavigationBarItem(
-          //     icon: Icon(Icons.people), label: 'Khách hàng'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.directions_bus), label: 'Chuyến đi'),
-          BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'Menu'),
-        ],
+
+    return BlocProvider(
+      create: (_) => DashboardBloc(),
+      child: Scaffold(
+        body: tabs[currentIndex],
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: currentIndex,
+          type: BottomNavigationBarType.fixed,
+          onTap: onTabSelected,
+          items: const [
+            BottomNavigationBarItem(
+                icon: Icon(Icons.dashboard), label: 'Dashboard'),
+            // BottomNavigationBarItem(
+            //     icon: Icon(Icons.people), label: 'Khách hàng'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.directions_bus), label: 'Chuyến đi'),
+            BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'Menu'),
+          ],
+        ),
       ),
     );
+
+    // return Scaffold(
+    //   body: tabs[currentIndex],
+    //   bottomNavigationBar: BottomNavigationBar(
+    //     currentIndex: currentIndex,
+    //     type: BottomNavigationBarType.fixed,
+    //     onTap: onTabSelected,
+    //     items: const [
+    //       BottomNavigationBarItem(
+    //           icon: Icon(Icons.dashboard), label: 'Dashboard'),
+    //       // BottomNavigationBarItem(
+    //       //     icon: Icon(Icons.people), label: 'Khách hàng'),
+    //       BottomNavigationBarItem(
+    //           icon: Icon(Icons.directions_bus), label: 'Chuyến đi'),
+    //       BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'Menu'),
+    //     ],
+    //   ),
+    // );
   }
 }
 
@@ -68,6 +99,7 @@ class _DashboardTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tongDiem = context.select((AppBloc bloc) => bloc.state.tongDiem);
     return Scaffold(
       appBar: AppBar(title: const Text('Dashboard')),
       body: ListView(
@@ -79,6 +111,7 @@ class _DashboardTab extends StatelessWidget {
             spacing: 12,
             runSpacing: 12,
             children: [
+              _MetricCard(title: 'Tổng điểm: ', value: '$tongDiem Đ', trend: ''),
               const _MetricCard(
                   title: 'Doanh thu hôm nay', value: '12.5M', trend: '+8%'),
               const _MetricCard(
@@ -94,6 +127,7 @@ class _DashboardTab extends StatelessWidget {
 
 class _ProfileTab extends StatelessWidget {
   final void Function(UserRole role) onRolePicked;
+
   const _ProfileTab({required this.onRolePicked});
 
   @override
@@ -236,8 +270,10 @@ class _ProfileTab extends StatelessWidget {
                       ),
                     ),
                     onPressed: () => fuc(),
-                    child: UtilsWidget.buildText(text: "Đồng ý",
-                        textColor: white, fontWeight: FontWeight.w700),
+                    child: UtilsWidget.buildText(
+                        text: "Đồng ý",
+                        textColor: white,
+                        fontWeight: FontWeight.w700),
                   ),
                 ),
               ),
@@ -494,6 +530,7 @@ class _MetricCard extends StatelessWidget {
   final String title;
   final String value;
   final String trend;
+
   const _MetricCard(
       {required this.title, required this.value, this.trend = ''});
 
@@ -560,4 +597,3 @@ class _AnalyticsBanner extends StatelessWidget {
     );
   }
 }
-
