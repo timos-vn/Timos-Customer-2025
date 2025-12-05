@@ -17,6 +17,34 @@ class TicketDetailNowBloc
       : super(TicketDetailState(ticketDetailModel: TicketDetailModel())) {
     on<InitDataEvent>((event, emit) {
       emit(state.copyWith(ticketDetailModel: event.ticketDetailModel));
+      // Load danh sách trung chuyển khi khởi tạo
+      add(LoadTransferStationsEvent());
+    });
+
+    on<LoadTransferStationsEvent>((event, emit) async {
+      await loadTransferStations(emit);
+    });
+
+    on<ToggleTransferPickupEvent>((event, emit) {
+      emit(state.copyWith(
+        isTransferPickupEnabled: event.enabled,
+        selectedTransferPickup: event.enabled ? null : null, // Reset selection if disabled
+      ));
+    });
+
+    on<ToggleTransferDropoffEvent>((event, emit) {
+      emit(state.copyWith(
+        isTransferDropoffEnabled: event.enabled,
+        selectedTransferDropoff: event.enabled ? null : null, // Reset selection if disabled
+      ));
+    });
+
+    on<SelectTransferPickupEvent>((event, emit) {
+      emit(state.copyWith(selectedTransferPickup: event.item));
+    });
+
+    on<SelectTransferDropoffEvent>((event, emit) {
+      emit(state.copyWith(selectedTransferDropoff: event.item));
     });
 
     on<BookTicketEvent>((event, emit) async {
@@ -26,6 +54,22 @@ class TicketDetailNowBloc
     on<BookTicketUpdateEvent>((event, emit) async {
       await updateTicket(event, emit);
     });
+  }
+
+  Future<void> loadTransferStations(Emitter emit) async {
+    emit(state.copyWith(isLoadingTransferStations: true));
+    try {
+      final response = await ticketService.getTransferStations();
+      emit(state.copyWith(
+        transferStations: response.data,
+        isLoadingTransferStations: false,
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        isLoadingTransferStations: false,
+        errorMessage: e.toString(),
+      ));
+    }
   }
 
   // Future<void> bookingTicket(
@@ -105,10 +149,10 @@ class TicketDetailNowBloc
         diaChiKhachDi: event.diaChiDi,
         diaChiKhachDen: event.diaChiDen,
         tienCocVe: 0,
-        khachTcDon: false,
-        khachTcTra: false,
-        idNhaTcDon: null,
-        idNhaTcTra: null,
+        khachTcDon: event.isTransferPickupEnabled,
+        khachTcTra: event.isTransferDropoffEnabled,
+        idNhaTcDon: event.idNhaTcDon != null ? int.tryParse(event.idNhaTcDon!) : null,
+        idNhaTcTra: event.idNhaTcTra != null ? int.tryParse(event.idNhaTcTra!) : null,
         isVeTangCuong: false,
         idChang: event.idChang,
         idVanPhongDon: null,
@@ -161,10 +205,10 @@ class TicketDetailNowBloc
         diaChiKhachDi: event.diaChiDi,
         diaChiKhachDen: event.diaChiDen,
         tienCocVe: 0,
-        khachTcDon: false,
-        khachTcTra: false,
-        idNhaTcDon: null,
-        idNhaTcTra: null,
+        khachTcDon: event.isTransferPickupEnabled,
+        khachTcTra: event.isTransferDropoffEnabled,
+        idNhaTcDon: event.idNhaTcDon != null ? int.tryParse(event.idNhaTcDon!) : null,
+        idNhaTcTra: event.idNhaTcTra != null ? int.tryParse(event.idNhaTcTra!) : null,
         isVeTangCuong: false,
         idChang: event.idChang,
         idVanPhongDon: null,

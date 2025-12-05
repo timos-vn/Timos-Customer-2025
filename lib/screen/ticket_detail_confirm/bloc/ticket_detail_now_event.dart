@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:timos_customer_2025/models/response/transfer_station/transfer_station_response.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/booking/model/ticket_detail_model.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_request.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_update_rquest.dart';
@@ -47,6 +48,10 @@ class BookTicketEvent extends TicketDetailNowEvent {
   final int idChang;
   final int idLichChayXe;
   final int idNhaXe;
+  final bool isTransferPickupEnabled;
+  final bool isTransferDropoffEnabled;
+  final String? idNhaTcDon;
+  final String? idNhaTcTra;
 
   final Set<ChiTietGhe> chiTietGhe;
 
@@ -62,10 +67,14 @@ class BookTicketEvent extends TicketDetailNowEvent {
     required this.idLichChayXe,
     required this.idLichXe,
     required this.idNhaXe,
+    this.isTransferPickupEnabled = false,
+    this.isTransferDropoffEnabled = false,
+    this.idNhaTcDon,
+    this.idNhaTcTra,
   });
 
   @override
-  List<Object?> get props => [ticketDetailModel, nameCustomer, phoneCustomer, chiTietGhe, idDevice, diaChiDi, diaChiDen];
+  List<Object?> get props => [ticketDetailModel, nameCustomer, phoneCustomer, chiTietGhe, idDevice, diaChiDi, diaChiDen, isTransferPickupEnabled, isTransferDropoffEnabled, idNhaTcDon, idNhaTcTra];
 }
 
 
@@ -81,6 +90,10 @@ class BookTicketUpdateEvent extends TicketDetailNowEvent {
   final int idLichChayXe;
   final int idNhaXe;
   final int maDatCho;
+  final bool isTransferPickupEnabled;
+  final bool isTransferDropoffEnabled;
+  final String? idNhaTcDon;
+  final String? idNhaTcTra;
 
   final Set<ChiTietGheUpdate> chiTietGhe;
 
@@ -97,8 +110,55 @@ class BookTicketUpdateEvent extends TicketDetailNowEvent {
     required this.idLichXe,
     required this.idNhaXe,
     required this.maDatCho,
+    this.isTransferPickupEnabled = false,
+    this.isTransferDropoffEnabled = false,
+    this.idNhaTcDon,
+    this.idNhaTcTra,
   });
 
   @override
-  List<Object?> get props => [ticketDetailModel, nameCustomer, phoneCustomer, chiTietGhe, idDevice, diaChiDi, diaChiDen];
+  List<Object?> get props => [ticketDetailModel, nameCustomer, phoneCustomer, chiTietGhe, idDevice, diaChiDi, diaChiDen, isTransferPickupEnabled, isTransferDropoffEnabled, idNhaTcDon, idNhaTcTra];
+}
+
+class LoadTransferStationsEvent extends TicketDetailNowEvent {
+  LoadTransferStationsEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class ToggleTransferPickupEvent extends TicketDetailNowEvent {
+  final bool enabled;
+
+  ToggleTransferPickupEvent({required this.enabled});
+
+  @override
+  List<Object?> get props => [enabled];
+}
+
+class ToggleTransferDropoffEvent extends TicketDetailNowEvent {
+  final bool enabled;
+
+  ToggleTransferDropoffEvent({required this.enabled});
+
+  @override
+  List<Object?> get props => [enabled];
+}
+
+class SelectTransferPickupEvent extends TicketDetailNowEvent {
+  final TransferStationItem? item;
+
+  SelectTransferPickupEvent({this.item});
+
+  @override
+  List<Object?> get props => [item];
+}
+
+class SelectTransferDropoffEvent extends TicketDetailNowEvent {
+  final TransferStationItem? item;
+
+  SelectTransferDropoffEvent({this.item});
+
+  @override
+  List<Object?> get props => [item];
 }

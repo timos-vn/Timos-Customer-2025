@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:timos_customer_2025/const/const.dart';
@@ -14,6 +15,8 @@ import 'package:timos_customer_2025/themes/colors.dart';
 import 'package:timos_customer_2025/screen/utils/widget/utils_widget.dart';
 import 'package:timos_customer_2025/utils/date_utils.dart';
 import 'package:timos_customer_2025/utils/utils.dart';
+import 'package:timos_customer_2025/base_api/base_repository.dart';
+import 'package:timos_customer_2025/screen/detail_trip/airport_ticket_screen.dart';
 import '../booking_ticket/ticket_price/model/book_ticket_request.dart';
 import 'bloc/detail_trip_bloc.dart';
 import 'bloc/detail_trip_event.dart';
@@ -39,6 +42,233 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
   Set<DanhSachGhe> soDuocChon = {};
 
   final signalRService = SignalRService();
+  final BaseRepository _baseRepo = BaseRepository();
+
+  List<AirportTicket> airportTickets = [];
+  int airportTotal = 0;
+  bool loadingAirport = false;
+  String? airportError;
+  bool _airportInitialized = false;
+
+  Future<void> _showAirportBookingDialog(DanhSachGhe seat) async {
+    final priceCtrl = TextEditingController(text: Utils.formatTotalMoney(seat.giaVe));
+    DateTime? pickTime = widget.coachPaneTripItem.ngayChay ?? DateTime.now();
+    final pickupCtrl = TextEditingController(text: seat.diaChiKhachDi);
+    final dropCtrl = TextEditingController(text: seat.diaChiKhachDen);
+    final noteCtrl = TextEditingController(text: seat.ghiChu);
+    bool paid = false;
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return AlertDialog(
+              title: const Text("Đặt vé sân bay"),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("${seat.tenKhachHang} - ${seat.soDienThoaiKhachHang}"),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: priceCtrl,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            decoration: const InputDecoration(
+                              labelText: "Giá vé (VND)",
+                              hintText: "Nhập giá vé",
+                            ),
+                            onChanged: (v) {
+                              final raw = v.replaceAll('.', '').replaceAll(',', '');
+                              final numVal = int.tryParse(raw) ?? 0;
+                              final formatted = Utils.formatTotalMoney(numVal);
+                              priceCtrl.value = TextEditingValue(
+                                text: formatted,
+                                selection: TextSelection.collapsed(offset: formatted.length),
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            icon: const Icon(Icons.calendar_today, size: 16),
+                            label: Text(
+                              pickTime != null
+                                  ? convertDateToString(pickTime, pattern6)
+                                  : "Chọn thời gian",
+                              style: const TextStyle(fontSize: 13),
+                            ),
+                            onPressed: () async {
+                              final date = await showDatePicker(
+                                context: context,
+                                initialDate: pickTime ?? DateTime.now(),
+                                firstDate: DateTime.now().subtract(const Duration(days: 1)),
+                                lastDate: DateTime.now().add(const Duration(days: 365)),
+                              );
+                              if (date != null) {
+                                final time = await showTimePicker(
+                                  context: context,
+                                  initialTime: TimeOfDay.fromDateTime(
+                                      pickTime ?? DateTime.now()),
+                                );
+                                if (time != null) {
+                                  setStateDialog(() {
+                                    pickTime = DateTime(
+                                      date.year,
+                                      date.month,
+                                      date.day,
+                                      time.hour,
+                                      time.minute,
+                                    );
+                                  });
+                                }
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    if (pickTime != null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Text(
+                          "Thời gian đón: ${convertDateToString(pickTime, pattern6)}",
+                          style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                    TextField(
+                      controller: pickupCtrl,
+                      decoration: const InputDecoration(labelText: "Địa chỉ đón"),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: dropCtrl,
+                      decoration: const InputDecoration(labelText: "Địa chỉ trả"),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: noteCtrl,
+                      decoration: const InputDecoration(labelText: "Ghi chú"),
+                    ),
+                    const SizedBox(height: 8),
+                    CheckboxListTile(
+                      value: paid,
+                      onChanged: (v) {
+                        setStateDialog(() {
+                          paid = v ?? false;
+                        });
+                      },
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text("Đã thanh toán"),
+                      controlAffinity: ListTileControlAffinity.leading,
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text("Đóng"),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    final raw = priceCtrl.text.replaceAll('.', '').replaceAll(',', '');
+                    final giaVe = int.tryParse(raw) ?? 0;
+                    final success = await _bookAirportTicket(
+                      idVeNguon: seat.idDatVe,
+                      thoiGianDon: pickTime ?? DateTime.now(),
+                      diaChiDi: pickupCtrl.text.trim(),
+                      diaChiDen: dropCtrl.text.trim(),
+                      giaVe: giaVe,
+                      daThanhToan: paid,
+                      ghiChu: noteCtrl.text.trim(),
+                    );
+                    if (success && mounted) {
+                      Navigator.pop(context, true);
+                      // Mở màn danh sách vé sân bay để xem dữ liệu mới
+                      await _onOpenAirportTicketScreen();
+                    }
+                  },
+                  child: const Text("Lưu vé sân bay"),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    // Nếu lưu thành công, reload vé sân bay + chi tiết chuyến
+    if (result == true && mounted) {
+      await _fetchAirportTickets();
+      final currentState = context.read<DetailTripBloc>().state;
+      final idToLoad = currentState.idLichXeLimousineMoi?.isNotEmpty == true
+          ? currentState.idLichXeLimousineMoi!
+          : widget.idLichXeLimousine;
+      context.read<DetailTripBloc>().add(
+        LoadDetailCoachPaneTripEvent(
+          idLichXeLimousine: idToLoad,
+          tang: selectedFloor,
+        ),
+      );
+    }
+  }
+
+  Future<bool> _bookAirportTicket({
+    required String idVeNguon,
+    required DateTime thoiGianDon,
+    required String diaChiDi,
+    required String diaChiDen,
+    required int giaVe,
+    required bool daThanhToan,
+    required String ghiChu,
+  }) async {
+    try {
+      final box = GetStorage();
+      final userId = box.read(Const.USER_ID) ?? "";
+      final idNhaXe = widget.coachPaneTripItem.idNhaXe;
+      final body = {
+        "idVeNguon": idVeNguon,
+        "thoiGianDon": thoiGianDon.toIso8601String(),
+        "diaChiDi": diaChiDi,
+        "diaChiDen": diaChiDen,
+        "giaVe": giaVe,
+        "isKhachDiSanBay": true,
+        "daThanhToan": daThanhToan,
+        "idVanPhongDi": 0,
+        "idVanPhongDen": 0,
+        "ghiChu": ghiChu,
+        "nguoiTao": userId,
+        "idNhaXe": idNhaXe,
+      };
+      await _baseRepo.baseCallApi(
+        "/api/v1/manage/chuyen-di/di-san-bay",
+        "POST",
+        jsonMap: body,
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Lưu vé sân bay thành công")),
+        );
+      }
+      return true;
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Lưu vé sân bay thất bại: $e")),
+        );
+      }
+      return false;
+    }
+  }
 
   @override
   void initState() {
@@ -104,11 +334,13 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
           // Chỉ clear error, không reload data
           Future.delayed(const Duration(milliseconds: 300), () {
             if (mounted) {
-              // Emit state mới với error = null để clear error, giữ nguyên data
-              final currentState = context.read<DetailTripBloc>().state;
-              context.read<DetailTripBloc>().emit(
-                currentState.copyWith(tripError: null),
-              );
+              // Không dùng emit trực tiếp; trigger reload để clear error
+              context.read<DetailTripBloc>().add(
+                    LoadDetailCoachPaneTripEvent(
+                      idLichXeLimousine: widget.idLichXeLimousine,
+                      tang: selectedFloor,
+                    ),
+                  );
             }
           });
         }
@@ -120,6 +352,14 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
               tang: selectedFloor,
             ),
           );
+        }
+
+        // Khi load xong chi tiết chuyến, fetch vé sân bay (1 lần)
+        if (!_airportInitialized &&
+            state.detailCoachPaneTrip != null &&
+            !state.isLoadingTrips) {
+          _airportInitialized = true;
+          _fetchAirportTickets();
         }
       },
       child: BlocBuilder<DetailTripBloc, DetailTripState>(
@@ -378,11 +618,13 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
             const SizedBox(height: 16),
             _buildRevenueStats(currentFloor, data, state.gheTrong),
             const SizedBox(height: 16),
+            _buildAirportTicketRow(),
+            const SizedBox(height: 16),
             Text('Sơ đồ ghế', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
             if (data.danhSachTang.isNotEmpty)
               _buildTang(data),
-            const SizedBox(height: 12),
+            const SizedBox(height: 12),  
             Row(
               children: [
                 _buildLegendBox(
@@ -604,6 +846,310 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
     );
   }
 
+  Widget _buildAirportTicketRow() {
+    return InkWell(
+      onTap: _onOpenAirportTicketScreen,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade200),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.blue.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(Icons.flight_takeoff, color: Colors.blue, size: 18),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Vé đi sân bay",
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                        ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    loadingAirport
+                        ? "Đang tải..."
+                        : airportError != null
+                            ? airportError!
+                            : "Số lượng: $airportTotal",
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.grey.shade700,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, color: Colors.grey)
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _fetchAirportTickets() async {
+    setState(() {
+      loadingAirport = true;
+      airportError = null;
+    });
+    try {
+      final response = await _baseRepo.baseCallApi(
+        "/api/v1/manage/chuyen-di/danh-sach-ve-san-bay",
+        "GET",
+        isQueryParametersPost: true,
+        jsonMap: {
+          "idChuyenDi": widget.idLichXeLimousine,
+          "pageIndex": 1,
+          "pageSize": 50,
+        },
+      );
+      final List<dynamic> data = response["data"] ?? [];
+      airportTickets = data.map((e) => AirportTicket.fromJson(e)).toList().cast<AirportTicket>();
+      airportTotal = response["totalRecords"] ?? airportTickets.length;
+    } catch (e) {
+      airportError = "Tải danh sách vé sân bay thất bại";
+    } finally {
+      if (mounted) {
+        setState(() {
+          loadingAirport = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _onOpenAirportTicketScreen() async {
+    if (airportTickets.isEmpty && !loadingAirport) {
+      await _fetchAirportTickets();
+    }
+    if (!mounted) return;
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AirportTicketScreen(
+          idChuyenDi: widget.idLichXeLimousine,
+        ),
+      ),
+    );
+    if (!mounted) return;
+    // Reload lại danh sách vé sân bay và chi tiết chuyến sau khi quay lại
+    _fetchAirportTickets();
+    final currentState = context.read<DetailTripBloc>().state;
+    final idToLoad = currentState.idLichXeLimousineMoi?.isNotEmpty == true
+        ? currentState.idLichXeLimousineMoi!
+        : widget.idLichXeLimousine;
+    context.read<DetailTripBloc>().add(
+      LoadDetailCoachPaneTripEvent(
+        idLichXeLimousine: idToLoad,
+        tang: selectedFloor,
+      ),
+    );
+  }
+
+  Future<void> _showAirportTicketsBottomSheet() async {
+    final TextEditingController searchCtrl = TextEditingController();
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setStateBS) {
+            List<AirportTicket> filtered = airportTickets;
+            final keyword = searchCtrl.text.trim().toLowerCase();
+            if (keyword.isNotEmpty) {
+              filtered = airportTickets
+                  .where((t) =>
+                      t.tenKhachHang.toLowerCase().contains(keyword) ||
+                      t.soDienThoai.toLowerCase().contains(keyword) ||
+                      t.diaChiDi.toLowerCase().contains(keyword) ||
+                      t.diaChiDen.toLowerCase().contains(keyword))
+                  .toList();
+            }
+
+            return Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
+                ),
+              ),
+              padding: EdgeInsets.only(
+                left: 16,
+                right: 16,
+                top: 12,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+              ),
+              child: SafeArea(
+                top: false,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        const Icon(Icons.flight_takeoff, color: Colors.blue),
+                        const SizedBox(width: 8),
+                        Text(
+                          "Vé đi sân bay",
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+                        const Spacer(),
+                        Text(
+                          "Số lượng: $airportTotal",
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: searchCtrl,
+                      onChanged: (_) => setStateBS(() {}),
+                      decoration: InputDecoration(
+                        hintText: "Tìm tên / SĐT / địa chỉ...",
+                        prefixIcon: const Icon(Icons.search),
+                        isDense: true,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    if (loadingAirport)
+                      const Padding(
+                        padding: EdgeInsets.all(16),
+                        child: CircularProgressIndicator(),
+                      )
+                    else if (airportError != null)
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Text(
+                          airportError!,
+                          style: TextStyle(color: Colors.red.shade600),
+                        ),
+                      )
+                    else if (filtered.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Text("Không có dữ liệu"),
+                      )
+                    else
+                      Flexible(
+                        child: ListView.separated(
+                          shrinkWrap: true,
+                          itemCount: filtered.length,
+                          separatorBuilder: (_, __) => Divider(color: Colors.grey.shade200),
+                          itemBuilder: (context, index) {
+                            final item = filtered[index];
+                            return ListTile(
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                              leading: CircleAvatar(
+                                radius: 18,
+                                backgroundColor: Colors.blue.withOpacity(0.1),
+                                child: const Icon(Icons.flight, color: Colors.blue, size: 18),
+                              ),
+                              title: Text(
+                                item.tenKhachHang,
+                                style: const TextStyle(fontWeight: FontWeight.w600),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 2),
+                                  Text(item.soDienThoai, style: const TextStyle(fontSize: 12.5)),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    "${item.diaChiDi} → ${item.diaChiDen}",
+                                    style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.access_time, size: 14, color: Colors.grey),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        convertDateToString(item.thoiGianDon, pattern13),
+                                        style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                              trailing: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    Utils.formatTotalMoney(item.giaVe.toInt()),
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w700, color: Colors.black87),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: item.daThanhToan
+                                          ? Colors.green.withOpacity(0.1)
+                                          : Colors.orange.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text(
+                                      item.daThanhToan ? "Đã thanh toán" : "Chưa thanh toán",
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: item.daThanhToan ? Colors.green : Colors.orange,
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   Widget _buildModernInfoItem({
     required IconData icon,
     required String value,
@@ -817,9 +1363,9 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Row(
-                        mainAxisSize: MainAxisSize.min,
+                        mainAxisSize: MainAxisSize.max,
                         children: [
-                          Flexible(
+                          Expanded(
                             child: Text(
                               seat.tenGhe.toUpperCase(),
                               maxLines: 1,
@@ -833,6 +1379,23 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                           ),
                           if (seat.isTrungChuyen)
                             const Icon(Icons.swap_horiz, size: 14, color: Colors.green),
+                          if (seat.tenKhachHang.isNotEmpty)
+                            InkWell(
+                              onTap: () => _showAirportBookingDialog(seat),
+                              child: Container(
+                                margin: const EdgeInsets.only(left: 6),
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue.withOpacity(0.12),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.flight_takeoff,
+                                  size: 16,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                       const SizedBox(height: 3),

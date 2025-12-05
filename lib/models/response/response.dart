@@ -3,3 +3,4 @@ export './coach_pane_trip/coach_pane_trip_response.dart';
 export './group/group_response.dart';
 export './trip/trip_response.dart';
 export './detail_coach_pane_trip/detail_coach_pane_trip_response.dart';
+export './transfer_station/transfer_station_response.dart';

@@ -1,5 +1,6 @@
 
 import 'package:timos_customer_2025/base_api/base_repository.dart';
+import 'package:timos_customer_2025/models/response/transfer_station/transfer_station_response.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_model.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_request.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_response.dart';
@@ -44,6 +45,14 @@ class TicketService extends BaseRepository {
       jsonMap: seat.toJson(),
     );
     return SeatingModel.fromJson(response);
+  }
+
+  Future<TransferStationResponse> getTransferStations() async {
+    final response = await baseCallApi(
+      "/api/v1/manage/chuyen-di/nha-xe-trung-chuyen",
+      "GET",
+    );
+    return TransferStationResponse.fromJson(response);
   }
 
 }
