@@ -25,6 +25,11 @@
       <action android:name="android.intent.action.PROCESS_TEXT"/>
       <data android:mimeType="text/plain"/>
     </intent>
+    <!-- Cho phép mở ứng dụng gọi điện -->
+    <intent>
+      <action android:name="android.intent.action.DIAL"/>
+      <data android:scheme="tel"/>
+    </intent>
   </queries>
   <uses-permission android:name="android.permission.INTERNET"/>
 </manifest>

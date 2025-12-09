@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:timos_customer_2025/base_api/base_repository.dart';
+import 'package:timos_customer_2025/const/const.dart';
+import 'package:timos_customer_2025/screen/detail_trip/airport_ticket_form_dialog.dart';
 import 'package:timos_customer_2025/utils/date_utils.dart';
 import 'package:timos_customer_2025/utils/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -77,7 +80,37 @@ class _AirportTicketScreenState extends State<AirportTicketScreen> {
   final int pageSize = 20;
   bool loading = false;
   bool loadingMore = false;
+  bool deleting = false;
+  bool updating = false;
   String? error;
+
+  Future<VoidCallback> _showLoading(String message) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => WillPopScope(
+        onWillPop: () async => false,
+        child: AlertDialog(
+          content: Row(
+            children: [
+              const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+              const SizedBox(width: 12),
+              Expanded(child: Text(message)),
+            ],
+          ),
+        ),
+      ),
+    );
+    return () {
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+    };
+  }
 
   @override
   void initState() {
@@ -132,33 +165,237 @@ class _AirportTicketScreenState extends State<AirportTicketScreen> {
   }
 
   Future<void> _callPhone(String phone) async {
-    if (phone.isEmpty) {
+    if (phone.isEmpty || phone.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Không có số điện thoại")),
       );
       return;
     }
-    final uri = Uri.parse("tel:$phone");
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    } else {
+    
+    // Loại bỏ tất cả khoảng trắng và ký tự đặc biệt, chỉ giữ số và dấu +
+    String cleaned = phone.replaceAll(RegExp(r'[\s\-\(\)]'), '');
+    
+    // Sử dụng Uri constructor với scheme và path theo đúng tài liệu url_launcher
+    // Giữ nguyên số điện thoại như nhận được (0963004959 hoặc +84963004959 đều được)
+    final uri = Uri(scheme: 'tel', path: cleaned);
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        // Nếu không được, thử với format chỉ số thuần (loại bỏ tất cả ký tự không phải số)
+        final digitsOnly = phone.replaceAll(RegExp(r'[^\d]'), '');
+        if (digitsOnly.isNotEmpty) {
+          final simpleUri = Uri(scheme: 'tel', path: digitsOnly);
+          if (await canLaunchUrl(simpleUri)) {
+            await launchUrl(simpleUri, mode: LaunchMode.externalApplication);
+            return;
+          }
+        }
+        throw Exception("Cannot launch tel URI");
+      }
+    } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Không thể thực hiện cuộc gọi")),
+        SnackBar(content: Text("Không thể mở ứng dụng gọi điện: ${e.toString()}")),
       );
     }
   }
 
-  void _editTicket(AirportTicket item) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Chức năng chỉnh sửa vé đang cập nhật")),
+  Future<DateTime?> _pickDateTime(DateTime initial) async {
+    final date = await showDatePicker(
+      context: context,
+      initialDate: initial,
+      firstDate: DateTime.now().subtract(const Duration(days: 365)),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (date == null) return null;
+    final time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(initial),
+    );
+    if (time == null) return null;
+    return DateTime(
+      date.year,
+      date.month,
+      date.day,
+      time.hour,
+      time.minute,
     );
   }
 
-  void _cancelTicket(AirportTicket item) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Chức năng hủy vé đang cập nhật")),
+  Future<void> _editTicket(AirportTicket item) async {
+    if (updating) return;
+    final formResult = await AirportTicketFormDialog.show(
+      context,
+      mode: AirportTicketFormMode.edit,
+      initialTenKhach: item.tenKhachHang,
+      initialSdt: item.soDienThoai,
+      initialThoiGianDon: item.thoiGianDon ?? DateTime.now(),
+      initialDiaChiDi: item.diaChiDi,
+      initialDiaChiDen: item.diaChiDen,
+      initialGiaVe: item.giaVe.toInt(),
+      initialDaThanhToan: item.daThanhToan,
+      initialGhiChu: item.ghiChu,
     );
+
+    if (formResult == null) return;
+
+    final userId = GetStorage().read(Const.USER_ID) ?? "";
+
+    setState(() {
+      updating = true;
+    });
+    final closeLoading = await _showLoading("Đang lưu thay đổi...");
+
+    try {
+      await _repo.baseCallApi(
+        "/api/v1/manage/chuyen-di/sua-ve-san-bay",
+        "PUT",
+        jsonMap: {
+          "idVeSanBay": item.id,
+          "thoiGianDon": formResult.thoiGianDon.toIso8601String(),
+          "diaChiDi": formResult.diaChiDi,
+          "diaChiDen": formResult.diaChiDen,
+          "giaVe": formResult.giaVe,
+          "daThanhToan": formResult.daThanhToan,
+          "idVanPhongDi": 0,
+          "idVanPhongDen": 0,
+          "ghiChu": formResult.ghiChu,
+          "tenKhachHang": formResult.tenKhachHang,
+          "soDienThoai": formResult.soDienThoai,
+          "nguoiSua": userId,
+        },
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Sửa vé thành công"),
+          backgroundColor: Colors.green,
+        ),
+      );
+      await _fetch(reset: true);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Sửa vé thất bại: $e"),
+          backgroundColor: Colors.red.shade600,
+        ),
+      );
+    } finally {
+      closeLoading();
+      if (mounted) {
+        setState(() {
+          updating = false;
+        });
+      }
+    }
+  }
+
+  Future<String?> _askDeleteReason() async {
+    final controller = TextEditingController();
+    String? errorText;
+    return showDialog<String>(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setStateDialog) {
+            return AlertDialog(
+              title: const Text("Xoá vé sân bay"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text("Nhập lý do xoá vé"),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: controller,
+                    autofocus: true,
+                    maxLines: 3,
+                    decoration: InputDecoration(
+                      hintText: "Lý do xoá",
+                      errorText: errorText,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(null),
+                  child: const Text("Huỷ"),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    final reason = controller.text.trim();
+                    if (reason.isEmpty) {
+                      setStateDialog(() {
+                        errorText = "Vui lòng nhập lý do xoá";
+                      });
+                      return;
+                    }
+                    Navigator.of(ctx).pop(reason);
+                  },
+                  child: const Text("Xoá vé"),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _cancelTicket(AirportTicket item) async {
+    if (deleting) return;
+    final lyDo = await _askDeleteReason();
+    if (lyDo == null) return;
+    final box = GetStorage();
+    final userId = box.read(Const.USER_ID) ?? "";
+
+    setState(() {
+      deleting = true;
+    });
+    final closeLoading = await _showLoading("Đang xoá vé...");
+
+    try {
+      await _repo.baseCallApi(
+        "/api/v1/manage/chuyen-di/xoa-ve-san-bay",
+        "DELETE",
+        jsonMap: {
+          "idVeSanBay": item.id,
+          "lyDoXoa": lyDo,
+          "nguoiXoa": userId,
+        },
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Xoá vé thành công"),
+          backgroundColor: Colors.green,
+        ),
+      );
+      await _fetch(reset: true);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Xoá vé thất bại: $e"),
+          backgroundColor: Colors.red.shade600,
+        ),
+      );
+    } finally {
+      closeLoading();
+      if (mounted) {
+        setState(() {
+          deleting = false;
+        });
+      }
+    }
   }
 
   // _showActionChooser no longer used (slidable actions are inline)
@@ -259,8 +496,8 @@ class _AirportTicketScreenState extends State<AirportTicketScreen> {
                             onPressed: (_) => _cancelTicket(item),
                             backgroundColor: Colors.red.withOpacity(0.15),
                             foregroundColor: Colors.red.shade700,
-                            icon: Icons.cancel,
-                            label: 'Hủy vé',
+                            icon: Icons.delete_forever,
+                            label: 'Xoá vé',
                           ),
                         ],
                       ),
@@ -387,24 +624,34 @@ class _AirportTicketScreenState extends State<AirportTicketScreen> {
                               scrollDirection: Axis.horizontal,
                               child: Row(
                                 children: [
-                                  TextButton.icon(
-                                    onPressed: () => _callPhone(item.soDienThoai),
-                                    icon: const Icon(Icons.phone, size: 16, color: Colors.green),
-                                    label: const Text("Gọi khách"),
-                                    style: TextButton.styleFrom(
-                                      foregroundColor: Colors.green,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 4),
-                                  TextButton.icon(
-                                    onPressed: () => _callPhone(item.driverPhone),
-                                    icon: const Icon(Icons.phone_in_talk,
-                                        size: 16, color: Colors.blue),
-                                    label: const Text("Gọi tài xế"),
-                                    style: TextButton.styleFrom(
-                                      foregroundColor: Colors.blue,
-                                    ),
-                                  ),
+                          TextButton.icon(
+                            onPressed: () => _callPhone(item.soDienThoai),
+                            icon: const Icon(Icons.phone, size: 16, color: Colors.green),
+                            label: const Text("Gọi khách"),
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.green,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          TextButton.icon(
+                            onPressed: () => _callPhone(item.driverPhone),
+                            icon: const Icon(Icons.phone_in_talk,
+                                size: 16, color: Colors.blue),
+                            label: const Text("Gọi tài xế"),
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.blue,
+                            ),
+                          ),
+                          // const SizedBox(width: 4),
+                          // TextButton.icon(
+                          //   onPressed: () => _cancelTicket(item),
+                          //   icon: const Icon(Icons.delete_forever,
+                          //       size: 16, color: Colors.red),
+                          //   label: const Text("Xoá vé"),
+                          //   style: TextButton.styleFrom(
+                          //     foregroundColor: Colors.red,
+                          //   ),
+                          // ),
                                 ],
                               ),
                             ),

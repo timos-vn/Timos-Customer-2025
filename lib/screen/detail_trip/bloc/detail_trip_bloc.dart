@@ -44,7 +44,8 @@ class DetailTripBloc extends Bloc<DetailTripEvent, DetailTripState> {
           isLoadingTrips: false,
         ));
       }
-    } catch (e) {
+    }
+    catch (e) {
       emit(state.copyWith(
         tripError: 'Lỗi khi tải thông tin chuyến đi: $e',
         isLoadingTrips: false,

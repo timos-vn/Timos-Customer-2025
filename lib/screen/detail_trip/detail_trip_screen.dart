@@ -17,6 +17,7 @@ import 'package:timos_customer_2025/utils/date_utils.dart';
 import 'package:timos_customer_2025/utils/utils.dart';
 import 'package:timos_customer_2025/base_api/base_repository.dart';
 import 'package:timos_customer_2025/screen/detail_trip/airport_ticket_screen.dart';
+import 'airport_ticket_form_dialog.dart';
 import '../booking_ticket/ticket_price/model/book_ticket_request.dart';
 import 'bloc/detail_trip_bloc.dart';
 import 'bloc/detail_trip_event.dart';
@@ -51,163 +52,35 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
   bool _airportInitialized = false;
 
   Future<void> _showAirportBookingDialog(DanhSachGhe seat) async {
-    final priceCtrl = TextEditingController(text: Utils.formatTotalMoney(seat.giaVe));
-    DateTime? pickTime = widget.coachPaneTripItem.ngayChay ?? DateTime.now();
-    final pickupCtrl = TextEditingController(text: seat.diaChiKhachDi);
-    final dropCtrl = TextEditingController(text: seat.diaChiKhachDen);
-    final noteCtrl = TextEditingController(text: seat.ghiChu);
-    bool paid = false;
-
-    final result = await showDialog<bool>(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setStateDialog) {
-            return AlertDialog(
-              title: const Text("Đặt vé sân bay"),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("${seat.tenKhachHang} - ${seat.soDienThoaiKhachHang}"),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: priceCtrl,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                            decoration: const InputDecoration(
-                              labelText: "Giá vé (VND)",
-                              hintText: "Nhập giá vé",
-                            ),
-                            onChanged: (v) {
-                              final raw = v.replaceAll('.', '').replaceAll(',', '');
-                              final numVal = int.tryParse(raw) ?? 0;
-                              final formatted = Utils.formatTotalMoney(numVal);
-                              priceCtrl.value = TextEditingValue(
-                                text: formatted,
-                                selection: TextSelection.collapsed(offset: formatted.length),
-                              );
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            icon: const Icon(Icons.calendar_today, size: 16),
-                            label: Text(
-                              pickTime != null
-                                  ? convertDateToString(pickTime, pattern6)
-                                  : "Chọn thời gian",
-                              style: const TextStyle(fontSize: 13),
-                            ),
-                            onPressed: () async {
-                              final date = await showDatePicker(
-                                context: context,
-                                initialDate: pickTime ?? DateTime.now(),
-                                firstDate: DateTime.now().subtract(const Duration(days: 1)),
-                                lastDate: DateTime.now().add(const Duration(days: 365)),
-                              );
-                              if (date != null) {
-                                final time = await showTimePicker(
-                                  context: context,
-                                  initialTime: TimeOfDay.fromDateTime(
-                                      pickTime ?? DateTime.now()),
-                                );
-                                if (time != null) {
-                                  setStateDialog(() {
-                                    pickTime = DateTime(
-                                      date.year,
-                                      date.month,
-                                      date.day,
-                                      time.hour,
-                                      time.minute,
-                                    );
-                                  });
-                                }
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    if (pickTime != null)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Text(
-                          "Thời gian đón: ${convertDateToString(pickTime, pattern6)}",
-                          style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                    TextField(
-                      controller: pickupCtrl,
-                      decoration: const InputDecoration(labelText: "Địa chỉ đón"),
-                    ),
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: dropCtrl,
-                      decoration: const InputDecoration(labelText: "Địa chỉ trả"),
-                    ),
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: noteCtrl,
-                      decoration: const InputDecoration(labelText: "Ghi chú"),
-                    ),
-                    const SizedBox(height: 8),
-                    CheckboxListTile(
-                      value: paid,
-                      onChanged: (v) {
-                        setStateDialog(() {
-                          paid = v ?? false;
-                        });
-                      },
-                      dense: true,
-                      contentPadding: EdgeInsets.zero,
-                      title: const Text("Đã thanh toán"),
-                      controlAffinity: ListTileControlAffinity.leading,
-                    ),
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: const Text("Đóng"),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    final raw = priceCtrl.text.replaceAll('.', '').replaceAll(',', '');
-                    final giaVe = int.tryParse(raw) ?? 0;
-                    final success = await _bookAirportTicket(
-                      idVeNguon: seat.idDatVe,
-                      thoiGianDon: pickTime ?? DateTime.now(),
-                      diaChiDi: pickupCtrl.text.trim(),
-                      diaChiDen: dropCtrl.text.trim(),
-                      giaVe: giaVe,
-                      daThanhToan: paid,
-                      ghiChu: noteCtrl.text.trim(),
-                    );
-                    if (success && mounted) {
-                      Navigator.pop(context, true);
-                      // Mở màn danh sách vé sân bay để xem dữ liệu mới
-                      await _onOpenAirportTicketScreen();
-                    }
-                  },
-                  child: const Text("Lưu vé sân bay"),
-                ),
-              ],
-            );
-          },
-        );
-      },
+    final formResult = await AirportTicketFormDialog.show(
+      context,
+      mode: AirportTicketFormMode.add,
+      initialTenKhach: seat.tenKhachHang,
+      initialSdt: seat.soDienThoaiKhachHang,
+      initialThoiGianDon: widget.coachPaneTripItem.ngayChay ?? DateTime.now(),
+      initialDiaChiDi: seat.diaChiKhachDi,
+      initialDiaChiDen: seat.diaChiKhachDen,
+      initialGiaVe: seat.giaVe.toInt(),
+      initialDaThanhToan: false,
+      initialGhiChu: seat.ghiChu,
     );
 
-    // Nếu lưu thành công, reload vé sân bay + chi tiết chuyến
-    if (result == true && mounted) {
+    if (formResult == null) return;
+
+    final success = await _bookAirportTicket(
+      idVeNguon: seat.idDatVe,
+      tenKhach: formResult.tenKhachHang,
+      sdtKhach: formResult.soDienThoai,
+      thoiGianDon: formResult.thoiGianDon,
+      diaChiDi: formResult.diaChiDi,
+      diaChiDen: formResult.diaChiDen,
+      giaVe: formResult.giaVe,
+      daThanhToan: formResult.daThanhToan,
+      ghiChu: formResult.ghiChu,
+    );
+    if (success && mounted) {
+      // Mở màn danh sách vé sân bay để xem dữ liệu mới
+      await _onOpenAirportTicketScreen();
       await _fetchAirportTickets();
       final currentState = context.read<DetailTripBloc>().state;
       final idToLoad = currentState.idLichXeLimousineMoi?.isNotEmpty == true
@@ -224,6 +97,8 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
 
   Future<bool> _bookAirportTicket({
     required String idVeNguon,
+    required String tenKhach,
+    required String sdtKhach,
     required DateTime thoiGianDon,
     required String diaChiDi,
     required String diaChiDen,
@@ -243,6 +118,8 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
         "giaVe": giaVe,
         "isKhachDiSanBay": true,
         "daThanhToan": daThanhToan,
+        "tenKhachHang": tenKhach,
+        "soDienThoai": sdtKhach,
         "idVanPhongDi": 0,
         "idVanPhongDen": 0,
         "ghiChu": ghiChu,
