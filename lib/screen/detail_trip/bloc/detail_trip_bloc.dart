@@ -13,6 +13,7 @@ class DetailTripBloc extends Bloc<DetailTripEvent, DetailTripState> {
     on<CancelTripEvent>(cancelTrip);
     on<IdTripEvent>(taoLichNhaXe);
     on<TinhSoGheTrong>(capNhatGheTrong);
+    on<HuyGiuChoEvent>(huyDuCho);
   }
 
   // Load detail coach pane trip from API
@@ -125,5 +126,9 @@ class DetailTripBloc extends Bloc<DetailTripEvent, DetailTripState> {
     emit(state.copyWith(
       gheTrong: gheTrong,
     ));
+  }
+
+  Future<void> huyDuCho(HuyGiuChoEvent event, Emitter emit) async {
+    await _tripService.huyGiuChoVe(event.idLich, event.listGhe);
   }
 }

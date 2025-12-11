@@ -2,6 +2,7 @@ import 'package:timos_customer_2025/base_api/base_repository.dart';
 import 'package:timos_customer_2025/enum/enum_request_method.dart';
 import 'package:timos_customer_2025/models/response/response.dart';
 import 'package:timos_customer_2025/models/network/request.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_request.dart';
 import 'package:timos_customer_2025/services/auth_service.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/cancel_ticket_request.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/cancel_ticket_response.dart';
@@ -328,5 +329,17 @@ class TripService extends BaseRepository {
     } catch (e) {
       throw Exception('Lỗi khi xóa vé sân bay: $e');
     }
+  }
+
+  /// Huỷ giữ chỗ
+  Future<void> huyGiuChoVe(String idLich, List<GhesDatCho> listGhe) async {
+    await baseCallApi(
+        "/api/v2.0/khach-hang-dat-ve/huy-giu-cho",
+        "POST",
+        jsonMap: {
+          "IdLich": idLich,
+          "Ghes": listGhe.map((ghe) => ghe.toJson()).toList(),
+        }
+    );
   }
 }

@@ -54,6 +54,10 @@ class TicketDetailNowBloc
     on<BookTicketUpdateEvent>((event, emit) async {
       await updateTicket(event, emit);
     });
+
+    on<GiuChoEvent>((event, emit) async {
+      await datDuCho(event);
+    });
   }
 
   Future<void> loadTransferStations(Emitter emit) async {
@@ -71,6 +75,15 @@ class TicketDetailNowBloc
       ));
     }
   }
+
+  Future<void> datDuCho(GiuChoEvent event) async {
+    await giuChoDatVe(event.idLich, event.listGhe.cast<GhesDatCho>());
+  }
+
+  Future<void> giuChoDatVe(String idLich, List<GhesDatCho> listGhe) async {
+    await ticketService.giuChoVe(idLich, listGhe);
+  }
+
 
   // Future<void> bookingTicket(
   //     ConfirmTicketEvent event, Emitter<TicketDetailState> emit) async {

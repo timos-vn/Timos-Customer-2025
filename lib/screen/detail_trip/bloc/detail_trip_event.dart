@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_request.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/cancel_ticket_request.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/tao_lich_nha_xe_request.dart';
 
@@ -57,4 +58,17 @@ class TinhSoGheTrong extends DetailTripEvent {
 
   @override
   List<Object?> get props => [tang];
+}
+
+class HuyGiuChoEvent extends DetailTripEvent {
+  final String idLich;
+  final List<GhesDatCho> listGhe;
+
+  HuyGiuChoEvent({
+    required this.idLich,
+    required this.listGhe,
+  });
+
+  @override
+  List<Object?> get props => [idLich, listGhe];
 }
