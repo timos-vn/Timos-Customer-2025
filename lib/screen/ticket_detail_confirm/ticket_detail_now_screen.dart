@@ -354,7 +354,7 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
                             chiTietGhe: widget.chiTietGhe ?? {},
                             diaChiDi: diaChiKhachDi.text.trim(),
                             diaChiDen: diaChiKhachDen.text.trim(),
-                            idLichXe: widget.coachPaneTripItem.id,
+                            idLichXe: widget.detailCoachPaneTrip!.idLichXeLimousine.toString(),
                             idChang: ((widget.detailCoachPaneTrip?.danhSachChangDuong ?? []).isNotEmpty ? widget.detailCoachPaneTrip?.danhSachChangDuong.first.id : 0) ?? 0,
                             idLichChayXe: widget.detailCoachPaneTrip?.idLichChayXe ?? 0,
                             idNhaXe: widget.coachPaneTripItem.idNhaXe,

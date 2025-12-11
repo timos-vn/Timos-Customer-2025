@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:timos_customer_2025/base_api/base_repository.dart';
 import 'package:timos_customer_2025/const/const.dart';
 import 'package:timos_customer_2025/screen/detail_trip/airport_ticket_form_dialog.dart';
+import 'package:timos_customer_2025/services/trip_service.dart';
 import 'package:timos_customer_2025/utils/date_utils.dart';
 import 'package:timos_customer_2025/utils/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -71,7 +71,7 @@ class AirportTicketScreen extends StatefulWidget {
 }
 
 class _AirportTicketScreenState extends State<AirportTicketScreen> {
-  final BaseRepository _repo = BaseRepository();
+  final TripService _tripService = TripService();
   final TextEditingController _searchCtrl = TextEditingController();
 
   List<AirportTicket> tickets = [];
@@ -133,15 +133,10 @@ class _AirportTicketScreenState extends State<AirportTicketScreen> {
       error = null;
     });
     try {
-      final response = await _repo.baseCallApi(
-        "/api/v1/manage/chuyen-di/danh-sach-ve-san-bay",
-        "GET",
-        isQueryParametersPost: true,
-        jsonMap: {
-          "idChuyenDi": widget.idChuyenDi,
-          "pageIndex": pageIndex,
-          "pageSize": pageSize,
-        },
+      final response = await _tripService.getAirportTicketList(
+        idChuyenDi: widget.idChuyenDi,
+        pageIndex: pageIndex,
+        pageSize: pageSize,
       );
       final List<dynamic> data = response["data"] ?? [];
       final list = data.map((e) => AirportTicket.fromJson(e)).toList();
@@ -248,23 +243,17 @@ class _AirportTicketScreenState extends State<AirportTicketScreen> {
     final closeLoading = await _showLoading("Đang lưu thay đổi...");
 
     try {
-      await _repo.baseCallApi(
-        "/api/v1/manage/chuyen-di/sua-ve-san-bay",
-        "PUT",
-        jsonMap: {
-          "idVeSanBay": item.id,
-          "thoiGianDon": formResult.thoiGianDon.toIso8601String(),
-          "diaChiDi": formResult.diaChiDi,
-          "diaChiDen": formResult.diaChiDen,
-          "giaVe": formResult.giaVe,
-          "daThanhToan": formResult.daThanhToan,
-          "idVanPhongDi": 0,
-          "idVanPhongDen": 0,
-          "ghiChu": formResult.ghiChu,
-          "tenKhachHang": formResult.tenKhachHang,
-          "soDienThoai": formResult.soDienThoai,
-          "nguoiSua": userId,
-        },
+      await _tripService.updateAirportTicket(
+        idVeSanBay: item.id,
+        thoiGianDon: formResult.thoiGianDon.toIso8601String(),
+        diaChiDi: formResult.diaChiDi,
+        diaChiDen: formResult.diaChiDen,
+        giaVe: formResult.giaVe,
+        daThanhToan: formResult.daThanhToan,
+        ghiChu: formResult.ghiChu,
+        tenKhachHang: formResult.tenKhachHang,
+        soDienThoai: formResult.soDienThoai,
+        nguoiSua: userId,
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -363,14 +352,10 @@ class _AirportTicketScreenState extends State<AirportTicketScreen> {
     final closeLoading = await _showLoading("Đang xoá vé...");
 
     try {
-      await _repo.baseCallApi(
-        "/api/v1/manage/chuyen-di/xoa-ve-san-bay",
-        "DELETE",
-        jsonMap: {
-          "idVeSanBay": item.id,
-          "lyDoXoa": lyDo,
-          "nguoiXoa": userId,
-        },
+      await _tripService.deleteAirportTicket(
+        idVeSanBay: item.id,
+        lyDoXoa: lyDo,
+        nguoiXoa: userId,
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

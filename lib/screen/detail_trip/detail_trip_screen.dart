@@ -1194,8 +1194,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                                     // chiTietGhe: chiTietGhes,
                                     chiTietGheUpdate: chiTietGhes,
                                     coachPaneTripItem: widget.coachPaneTripItem,
-                                    detailCoachPaneTrip: state
-                                        .detailCoachPaneTrip,
+                                    detailCoachPaneTrip: state.detailCoachPaneTrip,
                                     isUpdate: true,
                                     danhSachGhe: seat,
                                   ),
@@ -1203,16 +1202,31 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                                   name: "TICKET_DETAIL_BOOK"),
                             ),
                           );
+                        print( "a check 2:  ${widget.idLichXeLimousine}");
+                        if (!mounted) return;
+                        soDuocChon.clear();
+                        // Reload lại danh sách vé sân bay và chi tiết chuyến sau khi quay lại
+                        _fetchAirportTickets();
+                        final currentState = context.read<DetailTripBloc>().state;
+                        final idToLoad = currentState.idLichXeLimousineMoi?.isNotEmpty == true
+                            ? currentState.idLichXeLimousineMoi!
+                            : widget.idLichXeLimousine;
+                        context.read<DetailTripBloc>().add(
+                          LoadDetailCoachPaneTripEvent(
+                            idLichXeLimousine: idToLoad,
+                            tang: selectedFloor,
+                          ),
+                        );
                           // Reload dữ liệu nếu đặt vé thành công
-                          if (result == true && mounted) {
-                            soDuocChon.clear();
-                            context.read<DetailTripBloc>().add(
-                              LoadDetailCoachPaneTripEvent(
-                                idLichXeLimousine: widget.idLichXeLimousine,
-                                tang: selectedFloor,
-                              ),
-                            );
-                          }
+                          // if (result == true && mounted) {
+                          //   soDuocChon.clear();
+                          //   context.read<DetailTripBloc>().add(
+                          //     LoadDetailCoachPaneTripEvent(
+                          //       idLichXeLimousine: widget.idLichXeLimousine,
+                          //       tang: selectedFloor,
+                          //     ),
+                          //   );
+                          // }
                         }
                     }
                   }
@@ -1463,16 +1477,31 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                     settings: RouteSettings(name: "TICKET_DETAIL_BOOK"),
                   ),
                 );
+                print( "a check:  ${widget.idLichXeLimousine}");
+                if (!mounted) return;
+                soDuocChon.clear();
+                // Reload lại danh sách vé sân bay và chi tiết chuyến sau khi quay lại
+                _fetchAirportTickets();
+                final currentState = context.read<DetailTripBloc>().state;
+                final idToLoad = currentState.idLichXeLimousineMoi?.isNotEmpty == true
+                    ? currentState.idLichXeLimousineMoi!
+                    : widget.idLichXeLimousine;
+                context.read<DetailTripBloc>().add(
+                  LoadDetailCoachPaneTripEvent(
+                    idLichXeLimousine: idToLoad,
+                    tang: selectedFloor,
+                  ),
+                );
                 // Reload dữ liệu nếu đặt vé thành công
-                if (result == true && mounted) {
-                  soDuocChon.clear();
-                  context.read<DetailTripBloc>().add(
-                    LoadDetailCoachPaneTripEvent(
-                      idLichXeLimousine: widget.idLichXeLimousine,
-                      tang: selectedFloor,
-                    ),
-                  );
-                }
+                // if (result == true && mounted) {
+                //   soDuocChon.clear();
+                //   context.read<DetailTripBloc>().add(
+                //     LoadDetailCoachPaneTripEvent(
+                //       idLichXeLimousine: widget.idLichXeLimousine,
+                //       tang: selectedFloor,
+                //     ),
+                //   );
+                // }
               } else {
                 Utils.showMyToast(context, "Vui lòng chọn ghế để đặt vé");
               }
