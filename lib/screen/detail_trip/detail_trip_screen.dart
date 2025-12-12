@@ -175,7 +175,10 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
     }
 
 
-    signalRService.startConnection();
+    signalRService.startConnection().then((_) {
+      signalRService.joinSeatTracking(idLichXe: widget.idLichXeLimousine);
+    });
+
 
   }
 
