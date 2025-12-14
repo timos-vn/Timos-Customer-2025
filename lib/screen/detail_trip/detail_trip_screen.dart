@@ -241,7 +241,10 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
     }
 
 
-    signalRService.startConnection();
+    signalRService.startConnection().then((_) {
+      signalRService.joinSeatTracking(idLichXe: widget.idLichXeLimousine);
+    });
+
 
   }
 
@@ -1556,6 +1559,22 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                   LoadDetailCoachPaneTripEvent(
                     idLichXeLimousine: idToLoad,
                     tang: selectedFloor,
+                  ),
+                );
+
+                List<GhesDatCho> gheDaChon = soDuocChon.map((seat) {
+                  return GhesDatCho(
+                    tang: seat.tang,
+                    hang: seat.hang,
+                    day: seat.day,
+                    tenGhe: seat.tenGhe,
+                  );
+                }).toList();
+
+                context.read<DetailTripBloc>().add(
+                  HuyGiuChoEvent(
+                    idLich: idToLoad,
+                    listGhe: gheDaChon,
                   ),
                 );
                 // Reload dữ liệu nếu đặt vé thành công

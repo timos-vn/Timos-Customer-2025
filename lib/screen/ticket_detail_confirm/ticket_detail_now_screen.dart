@@ -66,6 +66,21 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
       diaChiKhachDi.text = (widget.danhSachGhe?.diaChiKhachDi ?? "").trim();
       diaChiKhachDen.text = (widget.danhSachGhe?.diaChiKhachDen ?? "").trim();
     }
+
+    List<GhesDatCho> ghesDatCho = [];
+    widget.chiTietGhe?.forEach((ghe) {
+      ghesDatCho.add(GhesDatCho(
+        tenGhe: ghe.tenGhe,
+        hang: ghe.hang,
+        day: ghe.day,
+        tang: ghe.tang,
+      ));
+    });
+
+    _bloc.add(GiuChoEvent(
+      idLich: widget.detailCoachPaneTrip?.idLichXeLimousine ?? "",
+      listGhe: ghesDatCho,
+    ));
     super.initState();
   }
 

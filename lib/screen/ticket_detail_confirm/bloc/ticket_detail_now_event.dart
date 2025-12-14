@@ -162,3 +162,16 @@ class SelectTransferDropoffEvent extends TicketDetailNowEvent {
   @override
   List<Object?> get props => [item];
 }
+
+class GiuChoEvent extends TicketDetailNowEvent {
+  final String idLich;
+  final List<GhesDatCho> listGhe;
+
+  GiuChoEvent({
+    required this.idLich,
+    required this.listGhe,
+  });
+
+  @override
+  List<Object?> get props => [idLich, listGhe];
+}

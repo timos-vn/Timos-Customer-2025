@@ -55,6 +55,18 @@ class TicketService extends BaseRepository {
     return TransferStationResponse.fromJson(response);
   }
 
+  /// Giữ chỗ
+  Future<void> giuChoVe(String idLich, List<GhesDatCho> listGhe) async {
+    await baseCallApi(
+        "/api/v2.0/khach-hang-dat-ve/giu-cho",
+        "POST",
+        jsonMap: {
+          "IdLich": idLich.isEmpty ? null : idLich,
+          "Ghes": listGhe.map((ghe) => ghe.toJson()).toList(),
+        }
+    );
+  }
+
 }
 
 //

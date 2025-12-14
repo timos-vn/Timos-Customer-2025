@@ -10,7 +10,7 @@ class Const {
   static String HOST_URL = "https://dev.api.quanly.timos.vn";
 
 
-  static const String urlWebSocket = "https://devapicus.trungchuyenhn.com/hubs/ticket";
+  static const String urlWebSocket = "https://dev.api.quanly.timos.vn/hubs/ticket";
 
 
   // Lấy tỉnh thành từ file ra

@@ -171,3 +171,33 @@ class ChiTietGhe {
   };
 
 }
+
+class GhesDatCho {
+  GhesDatCho({
+    required this.tang,
+    required this.hang,
+    required this.day,
+    required this.tenGhe,
+  });
+
+  final int? tang;
+  final int? hang;
+  final int? day;
+  final String? tenGhe;
+
+  factory GhesDatCho.fromJson(Map<String, dynamic> json){
+    return GhesDatCho(
+      tang: json["Tang"],
+      hang: json["Hang"],
+      day: json["Day"],
+      tenGhe: json["TenGhe"],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    "Tang": tang,
+    "Hang": hang,
+    "Day": day,
+    "TenGhe": tenGhe,
+  };
+}
