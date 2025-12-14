@@ -13,10 +13,15 @@ import 'package:timos_customer_2025/screen/detail_trip/ticket_detail_bottom_shee
 import 'package:timos_customer_2025/screen/ticket_detail_confirm/ticket_detail_now_screen.dart';
 import 'package:timos_customer_2025/themes/colors.dart';
 import 'package:timos_customer_2025/screen/utils/widget/utils_widget.dart';
+import 'package:timos_customer_2025/screen/utils/widget/diem_warning_dialog.dart';
 import 'package:timos_customer_2025/utils/date_utils.dart';
 import 'package:timos_customer_2025/utils/utils.dart';
 import 'package:timos_customer_2025/base_api/base_repository.dart';
 import 'package:timos_customer_2025/screen/detail_trip/airport_ticket_screen.dart';
+import 'package:timos_customer_2025/bloc_base/app_bloc.dart';
+import 'package:timos_customer_2025/bloc_base/app_event.dart';
+import 'package:timos_customer_2025/bloc_base/service/app_service.dart';
+import 'package:timos_customer_2025/services/auth_service.dart';
 import 'airport_ticket_form_dialog.dart';
 import '../booking_ticket/ticket_price/model/book_ticket_request.dart';
 import 'bloc/detail_trip_bloc.dart';
@@ -51,13 +56,71 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
   String? airportError;
   bool _airportInitialized = false;
 
+  Future<bool> _checkDiemChuyen() async {
+    final idNhaXe = AuthService.currentUser?.idNhaXe ?? 0;
+    if (idNhaXe == 0) return false;
+    
+    final appService = AppService();
+    final tongDiemResponse = await appService.getTongDiem(idNhaXe);
+    
+    if (tongDiemResponse == null) return false;
+    
+    final diemThuong = tongDiemResponse.diemThuong ?? 0;
+    final diemChuyen = tongDiemResponse.diemChuyen ?? 0;
+    
+    if (diemChuyen > 0 && diemThuong < diemChuyen) {
+      if (mounted) {
+        await DiemWarningDialog.show(
+          context,
+          title: 'Không đủ điểm để đặt vé',
+          message: 'Bạn cần tối thiểu $diemChuyen điểm để đặt vé. '
+              'Hiện tại bạn có $diemThuong điểm. Vui lòng mua thêm điểm.',
+        );
+      }
+      return false;
+    }
+    
+    return true;
+  }
+
   Future<void> _showAirportBookingDialog(DanhSachGhe seat) async {
+    // Kiểm tra điểm trước khi show dialog
+    final hasEnoughDiem = await _checkDiemChuyen();
+    if (!hasEnoughDiem) return;
+    
+    // Kết hợp ngayChay và gioDi để tạo thời gian đón đầy đủ
+    DateTime initialThoiGianDon = DateTime.now();
+    if (widget.coachPaneTripItem.ngayChay != null) {
+      final ngayChay = widget.coachPaneTripItem.ngayChay!;
+      final gioDi = widget.coachPaneTripItem.gioDi ?? "";
+      
+      if (gioDi.isNotEmpty) {
+        // Parse giờ từ format "HH:mm" hoặc "HH:mm:ss"
+        final gioParts = gioDi.split(':');
+        if (gioParts.length >= 2) {
+          final hour = int.tryParse(gioParts[0]) ?? 0;
+          final minute = int.tryParse(gioParts[1]) ?? 0;
+          initialThoiGianDon = DateTime(
+            ngayChay.year,
+            ngayChay.month,
+            ngayChay.day,
+            hour,
+            minute,
+          );
+        } else {
+          initialThoiGianDon = ngayChay;
+        }
+      } else {
+        initialThoiGianDon = ngayChay;
+      }
+    }
+    
     final formResult = await AirportTicketFormDialog.show(
       context,
       mode: AirportTicketFormMode.add,
       initialTenKhach: seat.tenKhachHang,
       initialSdt: seat.soDienThoaiKhachHang,
-      initialThoiGianDon: widget.coachPaneTripItem.ngayChay ?? DateTime.now(),
+      initialThoiGianDon: initialThoiGianDon,
       initialDiaChiDi: seat.diaChiKhachDi,
       initialDiaChiDen: seat.diaChiKhachDen,
       initialGiaVe: seat.giaVe.toInt(),
@@ -75,6 +138,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
       diaChiDi: formResult.diaChiDi,
       diaChiDen: formResult.diaChiDen,
       giaVe: formResult.giaVe,
+      diemBanVe: formResult.diemBanVe,
       daThanhToan: formResult.daThanhToan,
       ghiChu: formResult.ghiChu,
     );
@@ -103,6 +167,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
     required String diaChiDi,
     required String diaChiDen,
     required int giaVe,
+    required int diemBanVe,
     required bool daThanhToan,
     required String ghiChu,
   }) async {
@@ -116,6 +181,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
         "diaChiDi": diaChiDi,
         "diaChiDen": diaChiDen,
         "giaVe": giaVe,
+        "DiemBanVe": diemBanVe,
         "isKhachDiSanBay": true,
         "daThanhToan": daThanhToan,
         "tenKhachHang": tenKhach,

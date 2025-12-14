@@ -159,65 +159,6 @@ class _AirportTicketScreenState extends State<AirportTicketScreen> {
     }
   }
 
-  Future<void> _callPhone(String phone) async {
-    if (phone.isEmpty || phone.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Không có số điện thoại")),
-      );
-      return;
-    }
-    
-    // Loại bỏ tất cả khoảng trắng và ký tự đặc biệt, chỉ giữ số và dấu +
-    String cleaned = phone.replaceAll(RegExp(r'[\s\-\(\)]'), '');
-    
-    // Sử dụng Uri constructor với scheme và path theo đúng tài liệu url_launcher
-    // Giữ nguyên số điện thoại như nhận được (0963004959 hoặc +84963004959 đều được)
-    final uri = Uri(scheme: 'tel', path: cleaned);
-    try {
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      } else {
-        // Nếu không được, thử với format chỉ số thuần (loại bỏ tất cả ký tự không phải số)
-        final digitsOnly = phone.replaceAll(RegExp(r'[^\d]'), '');
-        if (digitsOnly.isNotEmpty) {
-          final simpleUri = Uri(scheme: 'tel', path: digitsOnly);
-          if (await canLaunchUrl(simpleUri)) {
-            await launchUrl(simpleUri, mode: LaunchMode.externalApplication);
-            return;
-          }
-        }
-        throw Exception("Cannot launch tel URI");
-      }
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Không thể mở ứng dụng gọi điện: ${e.toString()}")),
-      );
-    }
-  }
-
-  Future<DateTime?> _pickDateTime(DateTime initial) async {
-    final date = await showDatePicker(
-      context: context,
-      initialDate: initial,
-      firstDate: DateTime.now().subtract(const Duration(days: 365)),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
-    );
-    if (date == null) return null;
-    final time = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.fromDateTime(initial),
-    );
-    if (time == null) return null;
-    return DateTime(
-      date.year,
-      date.month,
-      date.day,
-      time.hour,
-      time.minute,
-    );
-  }
-
   Future<void> _editTicket(AirportTicket item) async {
     if (updating) return;
     final formResult = await AirportTicketFormDialog.show(
@@ -249,6 +190,7 @@ class _AirportTicketScreenState extends State<AirportTicketScreen> {
         diaChiDi: formResult.diaChiDi,
         diaChiDen: formResult.diaChiDen,
         giaVe: formResult.giaVe,
+        diemBanVe: formResult.diemBanVe,
         daThanhToan: formResult.daThanhToan,
         ghiChu: formResult.ghiChu,
         tenKhachHang: formResult.tenKhachHang,
@@ -610,7 +552,7 @@ class _AirportTicketScreenState extends State<AirportTicketScreen> {
                               child: Row(
                                 children: [
                           TextButton.icon(
-                            onPressed: () => _callPhone(item.soDienThoai),
+                            onPressed: () => Utils.showCallDialog(context,item.soDienThoai),
                             icon: const Icon(Icons.phone, size: 16, color: Colors.green),
                             label: const Text("Gọi khách"),
                             style: TextButton.styleFrom(
@@ -619,7 +561,7 @@ class _AirportTicketScreenState extends State<AirportTicketScreen> {
                           ),
                           const SizedBox(width: 4),
                           TextButton.icon(
-                            onPressed: () => _callPhone(item.driverPhone),
+                            onPressed: () => Utils.showCallDialog(context,item.driverPhone),
                             icon: const Icon(Icons.phone_in_talk,
                                 size: 16, color: Colors.blue),
                             label: const Text("Gọi tài xế"),

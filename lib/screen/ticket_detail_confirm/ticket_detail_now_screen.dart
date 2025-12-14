@@ -19,10 +19,13 @@ import 'package:timos_customer_2025/screen/ticket_detail_confirm/bloc/ticket_det
 import 'package:timos_customer_2025/screen/ticket_detail_confirm/bloc/ticket_detail_now_state.dart';
 import 'package:timos_customer_2025/screen/ticket_detail_confirm/transfer_station_bottom_sheet.dart';
 import 'package:timos_customer_2025/screen/utils/widget/utils_widget.dart';
+import 'package:timos_customer_2025/screen/utils/widget/diem_warning_dialog.dart';
 import 'package:timos_customer_2025/themes/colors.dart';
 import 'package:timos_customer_2025/utils/date_utils.dart';
 import 'package:timos_customer_2025/utils/input_widget.dart';
 import 'package:timos_customer_2025/utils/utils.dart';
+import 'package:timos_customer_2025/bloc_base/service/app_service.dart';
+import 'package:timos_customer_2025/services/auth_service.dart';
 import 'package:timos_customer_2025/themes/colors.dart' show disableColor, borderColor;
 
 class TicketDetailNowScreen extends StatefulWidget {
@@ -71,6 +74,33 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
 
   final diaChiKhachDi = TextEditingController();
   final diaChiKhachDen = TextEditingController();
+
+  Future<bool> _checkDiemChuyen() async {
+    final idNhaXe = AuthService.currentUser?.idNhaXe ?? 0;
+    if (idNhaXe == 0) return false;
+    
+    final appService = AppService();
+    final tongDiemResponse = await appService.getTongDiem(idNhaXe);
+    
+    if (tongDiemResponse == null) return false;
+    
+    final diemThuong = tongDiemResponse.diemThuong ?? 0;
+    final diemChuyen = tongDiemResponse.diemChuyen ?? 0;
+    
+    if (diemChuyen > 0 && diemThuong < diemChuyen) {
+      if (mounted) {
+        await DiemWarningDialog.show(
+          context,
+          title: 'Không đủ điểm để đặt vé',
+          message: 'Bạn cần tối thiểu $diemChuyen điểm để đặt vé. '
+              'Hiện tại bạn có $diemThuong điểm. Vui lòng mua thêm điểm.',
+        );
+      }
+      return false;
+    }
+    
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -320,6 +350,9 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
                       ),
                   onPressed: state.isLoading ? null : () async {
                     if (_formKey.currentState?.validate() ?? false) {
+                      // Kiểm tra điểm trước khi đặt vé
+                      final hasEnoughDiem = await _checkDiemChuyen();
+                      if (!hasEnoughDiem) return;
 
                       if(widget.isUpdate ?? false) {
                         final idDevice = "";

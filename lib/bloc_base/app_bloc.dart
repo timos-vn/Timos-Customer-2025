@@ -24,8 +24,13 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   }
 
   Future<void> getTongDiem(UpdateTongDiemEvent event, Emitter emit) async {
-    int tongDiem = await appService.getTongDiem(event.idNhaXe);
-    emit(state.copyWith(tongDiem: tongDiem));
+    final result = await appService.getTongDiem(event.idNhaXe);
+    emit(
+      state.copyWith(
+        tongDiem: result?.diemThuong ?? 0,
+        tongDiemResponse: result,
+      ),
+    );
   }
 
 }

@@ -1,9 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:timos_customer_2025/utils/date_utils.dart';
 import 'package:timos_customer_2025/utils/utils.dart';
 
 enum AirportTicketFormMode { add, edit }
+
+class NumberInputFormatter extends TextInputFormatter {
+  final NumberFormat formatter = NumberFormat("#,###", "vi_VN");
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    // Nếu nhập rỗng thì trả về luôn
+    if (newValue.text.isEmpty) {
+      return newValue.copyWith(text: '');
+    }
+
+    // Xoá hết ký tự không phải số
+    String numericString = newValue.text.replaceAll(RegExp(r'[^\d]'), '');
+    
+    if (numericString.isEmpty) {
+      return newValue.copyWith(text: '');
+    }
+
+    // Parse ra số
+    int number = int.parse(numericString);
+
+    // Format theo phần nghìn
+    String newText = formatter.format(number);
+
+    // Đặt cursor ở cuối để tránh lỗi
+    return TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(offset: newText.length),
+    );
+  }
+}
 
 class AirportTicketFormResult {
   final String tenKhachHang;
@@ -12,6 +47,7 @@ class AirportTicketFormResult {
   final String diaChiDi;
   final String diaChiDen;
   final int giaVe;
+  final int diemBanVe;
   final bool daThanhToan;
   final String ghiChu;
 
@@ -22,6 +58,7 @@ class AirportTicketFormResult {
     required this.diaChiDi,
     required this.diaChiDen,
     required this.giaVe,
+    required this.diemBanVe,
     required this.daThanhToan,
     required this.ghiChu,
   });
@@ -42,7 +79,12 @@ class AirportTicketFormDialog {
   }) async {
     final nameCtrl = TextEditingController(text: initialTenKhach);
     final phoneCtrl = TextEditingController(text: initialSdt);
-    final priceCtrl = TextEditingController(text: Utils.formatTotalMoney(initialGiaVe));
+    // Tính ngược lại diemBanVe từ giaVe (giaVe / 1000)
+    final initialDiemBanVe = (initialGiaVe / 1000).round();
+    final numberFormat = NumberFormat("#,###", "vi_VN");
+    final priceCtrl = TextEditingController(
+      text: initialDiemBanVe > 0 ? numberFormat.format(initialDiemBanVe) : '',
+    );
     final pickupCtrl = TextEditingController(text: initialDiaChiDi);
     final dropCtrl = TextEditingController(text: initialDiaChiDen);
     final noteCtrl = TextEditingController(text: initialGhiChu);
@@ -71,27 +113,18 @@ class AirportTicketFormDialog {
                       keyboardType: TextInputType.phone,
                       decoration: const InputDecoration(labelText: "Số điện thoại"),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 12), 
                     Row(
                       children: [
                         Expanded(
                           child: TextField(
                             controller: priceCtrl,
                             keyboardType: TextInputType.number,
-                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            inputFormatters: [NumberInputFormatter()],
                             decoration: const InputDecoration(
-                              labelText: "Giá vé (VND)",
-                              hintText: "Nhập giá vé",
+                              labelText: "Điểm vé",
+                              hintText: "Nhập điểm vé",
                             ),
-                            onChanged: (v) {
-                              final raw = v.replaceAll('.', '').replaceAll(',', '');
-                              final numVal = int.tryParse(raw) ?? 0;
-                              final formatted = Utils.formatTotalMoney(numVal);
-                              priceCtrl.value = TextEditingValue(
-                                text: formatted,
-                                selection: TextSelection.collapsed(offset: formatted.length),
-                              );
-                            },
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -176,8 +209,10 @@ class AirportTicketFormDialog {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    final raw = priceCtrl.text.replaceAll('.', '').replaceAll(',', '');
-                    final giaVe = int.tryParse(raw) ?? 0;
+                    // Loại bỏ dấu phẩy/chấm để parse số
+                    final rawText = priceCtrl.text.replaceAll(RegExp(r'[^\d]'), '');
+                    final diemBanVe = int.tryParse(rawText) ?? 0;
+                    final giaVe = diemBanVe * 1000; // 1 điểm = 1000 đ
                     final name = nameCtrl.text.trim();
                     final phone = phoneCtrl.text.trim();
                     if (name.isEmpty || phone.isEmpty) {
@@ -195,6 +230,7 @@ class AirportTicketFormDialog {
                         diaChiDi: pickupCtrl.text.trim(),
                         diaChiDen: dropCtrl.text.trim(),
                         giaVe: giaVe,
+                        diemBanVe: diemBanVe,
                         daThanhToan: paid,
                         ghiChu: noteCtrl.text.trim(),
                       ),
