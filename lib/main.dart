@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:timos_customer_2025/bloc_base/app_bloc.dart';
 import 'package:timos_customer_2025/screen/routers/router_generator.dart';
 import 'package:timos_customer_2025/screen/splash/splash_screen.dart';
 import 'package:timos_customer_2025/themes/colors.dart';
@@ -16,7 +17,10 @@ void main() async {
   
   await AuthService.init();
   
-  runApp(const MyApp());
+  runApp(   BlocProvider(
+    create: (_) => AppBloc(),
+    child: MyApp(),
+  ),);
 }
 
 final navigatorKey = GlobalKey<NavigatorState>();

@@ -731,7 +731,8 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
     final picked = await showDatePicker(
       context: context,
       initialDate: _tempDate,
-      firstDate: DateTime.now().subtract(const Duration(days: 0)),
+      // firstDate: DateTime.now().subtract(const Duration(days: 0)),
+      firstDate: DateTime.now().add(const Duration(days: -10)),
       lastDate: DateTime.now().add(const Duration(days: 365)),
       builder: (context, child) {
         return Theme(

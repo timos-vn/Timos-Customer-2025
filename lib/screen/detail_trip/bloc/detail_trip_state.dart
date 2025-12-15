@@ -24,10 +24,12 @@ class DetailTripState {
     this.gheTrong = 0,
   });
 
+  // Using a sentinel lets us differentiate between "keep existing value" and
+  // "explicitly set to null", so passing tripError: null will now clear errors.
   DetailTripState copyWith({
     DetailCoachPaneTripData? detailCoachPaneTrip,
     bool? isLoadingTrips,
-    String? tripError,
+    Object? tripError = _sentinel,
     int? statusApp,
     String? idLichXeLimousineMoi,
     int? gheTrong,
@@ -35,10 +37,12 @@ class DetailTripState {
     return DetailTripState(
       detailCoachPaneTrip: detailCoachPaneTrip ?? this.detailCoachPaneTrip,
       isLoadingTrips: isLoadingTrips ?? this.isLoadingTrips,
-      tripError: tripError ?? this.tripError,
-        statusApp: statusApp ?? this.statusApp,
+      tripError: tripError == _sentinel ? this.tripError : tripError as String?,
+      statusApp: statusApp ?? this.statusApp,
       idLichXeLimousineMoi: idLichXeLimousineMoi ?? this.idLichXeLimousineMoi,
       gheTrong: gheTrong ?? this.gheTrong,
     );
   }
+
+  static const Object _sentinel = Object();
 }

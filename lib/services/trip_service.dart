@@ -2,6 +2,7 @@ import 'package:timos_customer_2025/base_api/base_repository.dart';
 import 'package:timos_customer_2025/enum/enum_request_method.dart';
 import 'package:timos_customer_2025/models/response/response.dart';
 import 'package:timos_customer_2025/models/network/request.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_request.dart';
 import 'package:timos_customer_2025/services/auth_service.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/cancel_ticket_request.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/cancel_ticket_response.dart';
@@ -226,5 +227,132 @@ class TripService extends BaseRepository {
     } catch (e) {
       throw Exception('Lỗi khi lấy chi tiết chuyến đi: $e');
     }
+  }
+
+  /// Lấy danh sách vé sân bay
+  Future<Map<String, dynamic>> getAirportTicketList({
+    required String idChuyenDi,
+    required int pageIndex,
+    required int pageSize,
+  }) async {
+    try {
+      final requestJson = {
+        "idChuyenDi": idChuyenDi,
+        "pageIndex": pageIndex,
+        "pageSize": pageSize,
+      };
+      print("airport ticket list request: $requestJson");
+      final response = await baseCallApi(
+        '/api/v1/manage/chuyen-di/danh-sach-ve-san-bay',
+        EnumRequestMethod.get,
+        isQueryParametersPost: true,
+        jsonMap: requestJson,
+        isToken: true,
+      );
+      print("airport ticket list response: $response");
+      if (response == null) {
+        throw Exception('Response is null');
+      }
+
+      if (response is! Map<String, dynamic>) {
+        throw Exception(
+            'Response is not a valid JSON object: ${response.runtimeType}');
+      }
+
+      return response;
+    } catch (e) {
+      throw Exception('Lỗi khi lấy danh sách vé sân bay: $e');
+    }
+  }
+
+  /// Sửa vé sân bay
+  Future<void> updateAirportTicket({
+    required String idVeSanBay,
+    required String thoiGianDon,
+    required String diaChiDi,
+    required String diaChiDen,
+    required int giaVe,
+    required int diemBanVe,
+    required bool daThanhToan,
+    required String ghiChu,
+    required String tenKhachHang,
+    required String soDienThoai,
+    required String nguoiSua,
+  }) async {
+    try {
+      final requestJson = {
+        "idVeSanBay": idVeSanBay,
+        "thoiGianDon": thoiGianDon,
+        "diaChiDi": diaChiDi,
+        "diaChiDen": diaChiDen,
+        "giaVe": giaVe,
+        "DiemBanVe": diemBanVe,
+        "daThanhToan": daThanhToan,
+        "idVanPhongDi": 0,
+        "idVanPhongDen": 0,
+        "ghiChu": ghiChu,
+        "tenKhachHang": tenKhachHang,
+        "soDienThoai": soDienThoai,
+        "nguoiSua": nguoiSua,
+      };
+      print("update airport ticket request: $requestJson");
+      final response = await baseCallApi(
+        '/api/v1/manage/chuyen-di/sua-ve-san-bay',
+        EnumRequestMethod.put,
+        jsonMap: requestJson,
+        isToken: true,
+      );
+      print("update airport ticket response: $response");
+    } catch (e) {
+      throw Exception('Lỗi khi sửa vé sân bay: $e');
+    }
+  }
+
+  /// Xóa vé sân bay
+  Future<void> deleteAirportTicket({
+    required String idVeSanBay,
+    required String lyDoXoa,
+    required String nguoiXoa,
+  }) async {
+    try {
+      final requestJson = {
+        "idVeSanBay": idVeSanBay,
+        "lyDoXoa": lyDoXoa,
+        "nguoiXoa": nguoiXoa,
+      };
+      print("delete airport ticket request: $requestJson");
+      final response = await baseCallApi(
+        '/api/v1/manage/chuyen-di/xoa-ve-san-bay',
+        EnumRequestMethod.delete,
+        jsonMap: requestJson,
+        isToken: true,
+      );
+      print("delete airport ticket response: $response");
+    } catch (e) {
+      throw Exception('Lỗi khi xóa vé sân bay: $e');
+    }
+  }
+
+  /// Huỷ giữ chỗ
+  Future<void> huyGiuChoVe(String idLich,
+      List<GhesDatCho> listGhe,
+      String agentId,
+      int idTuyenDuong,
+      int idNhaXe,
+      int idLichChayXe,
+      DateTime ngayChay) async {
+    await baseCallApi(
+        "/api/v1/manage/chuyen-di/huy-giu-cho",
+        "POST",
+        jsonMap: {
+          "IdLich": idLich,
+          "AgentId": agentId,
+          "Ghes": listGhe.map((ghe) => ghe.toJson()).toList(),
+          "IdTuyenDuong": idTuyenDuong,
+          "IdNhaXe": idNhaXe,
+          "IdLichChayXe": idLichChayXe,
+          "NgayChay": ngayChay.toIso8601String(),
+        }
+    );
   }
 }

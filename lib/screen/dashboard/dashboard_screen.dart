@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:timos_customer_2025/bloc_base/app_bloc.dart';
+import 'package:timos_customer_2025/bloc_base/app_event.dart';
+import 'package:timos_customer_2025/bloc_base/app_state.dart';
 import 'package:timos_customer_2025/enum/enum_request_method.dart';
+import 'package:timos_customer_2025/screen/dashboard/bloc/dashboard_bloc.dart';
 import 'package:timos_customer_2025/screen/utils/widget/utils_widget.dart';
+import 'package:timos_customer_2025/screen/utils/widget/diem_warning_dialog.dart';
 import 'package:timos_customer_2025/themes/colors.dart';
 import 'package:timos_customer_2025/screen/trip/trip_screen.dart';
 import 'package:timos_customer_2025/services/auth_service.dart';
@@ -9,6 +15,7 @@ import 'package:timos_customer_2025/models/response/auth/auth_response.dart';
 import 'package:timos_customer_2025/utils/dio_log.dart';
 import 'package:timos_customer_2025/utils/shorebird_utils.dart';
 import 'package:timos_customer_2025/utils/utils.dart';
+import 'package:intl/intl.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -16,10 +23,13 @@ class DashboardScreen extends StatefulWidget {
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
 }
-
+ 
 class _DashboardScreenState extends State<DashboardScreen> {
   int currentIndex = 0;
+  int? previousIndex; // Lưu index trước đó để detect khi chuyển tab
   UserRole? role;
+  bool _hasShownWarning = false; // Flag để tránh show dialog nhiều lần
+  bool _isLoadingDiem = false; // Flag để tránh gọi API trùng lặp
 
   List<Widget> buildTabs() {
     return [
@@ -30,36 +40,120 @@ class _DashboardScreenState extends State<DashboardScreen> {
     ];
   }
 
-  void onTabSelected(int index) => setState(() => currentIndex = index);
+  void _refreshTongDiem() {
+    if (!_isLoadingDiem) {
+      _isLoadingDiem = true;
+      context.read<AppBloc>().add(UpdateTongDiemEvent(
+            AuthService.currentUser?.idNhaXe ?? 0,
+          ));
+      // Reset flag sau 1 giây để cho phép gọi lại
+      Future.delayed(const Duration(seconds: 1), () {
+        if (mounted) {
+          _isLoadingDiem = false;
+        }
+      });
+    }
+  }
+
+  void onTabSelected(int index) {
+    setState(() {
+      previousIndex = currentIndex;
+      currentIndex = index;
+    });
+    
+    // Mỗi khi tab vào Dashboard (index 0), call lại API để cập nhật dữ liệu mới
+    if (index == 0) {
+      _refreshTongDiem();
+      // Reset flag để có thể show warning lại nếu cần
+      _hasShownWarning = false;
+    }
+  }
 
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       ShorebirdUtils.instance.checkUpdateAndRestart(context);
     });
+
+    _refreshTongDiem();
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final List<Widget> tabs = buildTabs();
-    return Scaffold(
-      body: tabs[currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: currentIndex,
-        type: BottomNavigationBarType.fixed,
-        onTap: onTabSelected,
-        items: const [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.dashboard), label: 'Dashboard'),
-          // BottomNavigationBarItem(
-          //     icon: Icon(Icons.people), label: 'Khách hàng'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.directions_bus), label: 'Chuyến đi'),
-          BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'Menu'),
-        ],
+
+    return BlocProvider(
+      create: (_) => DashboardBloc(),
+      child: BlocListener<AppBloc, AppState>(
+        listenWhen: (previous, current) {
+          // Chỉ listen khi tongDiemResponse thay đổi
+          return previous.tongDiemResponse != current.tongDiemResponse;
+        },
+        listener: (context, state) {
+          // Kiểm tra điểm cảnh báo sau khi lấy thông tin thành công
+          final tongDiemResponse = state.tongDiemResponse;
+          if (tongDiemResponse != null) {
+            final diemThuong = tongDiemResponse.diemThuong ?? 0;
+            final diemCanhBao = tongDiemResponse.diemCanhBao ?? 0;
+            
+            // Chỉ show warning khi đang ở tab Dashboard và chưa show
+            if (currentIndex == 0 && diemCanhBao > 0 && diemThuong <= diemCanhBao && !_hasShownWarning) {
+              // Đánh dấu đã show warning
+              _hasShownWarning = true;
+              
+              // Show dialog cảnh báo
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted && context.mounted) {
+                  DiemWarningDialog.show(
+                    context,
+                    title: 'Cảnh báo điểm thưởng',
+                    message: 'Điểm thưởng của bạn đang ở mức thấp (${diemThuong} điểm). '
+                        'Vui lòng mua thêm điểm để tiếp tục hoạt động.',
+                  );
+                }
+              });
+            }
+          }
+        },
+        child: Scaffold(
+          body: tabs[currentIndex],
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: currentIndex,
+            type: BottomNavigationBarType.fixed,
+            onTap: onTabSelected,
+            items: const [
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.dashboard), label: 'Dashboard'),
+              // BottomNavigationBarItem(
+              //     icon: Icon(Icons.people), label: 'Khách hàng'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.directions_bus), label: 'Chuyến đi'),
+              BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'Menu'),
+            ],
+          ),
+        ),
       ),
     );
+
+    // return Scaffold(
+    //   body: tabs[currentIndex],
+    //   bottomNavigationBar: BottomNavigationBar(
+    //     currentIndex: currentIndex,
+    //     type: BottomNavigationBarType.fixed,
+    //     onTap: onTabSelected,
+    //     items: const [
+    //       BottomNavigationBarItem(
+    //           icon: Icon(Icons.dashboard), label: 'Dashboard'),
+    //       // BottomNavigationBarItem(
+    //       //     icon: Icon(Icons.people), label: 'Khách hàng'),
+    //       BottomNavigationBarItem(
+    //           icon: Icon(Icons.directions_bus), label: 'Chuyến đi'),
+    //       BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'Menu'),
+    //     ],
+    //   ),
+    // );
   }
 }
 
@@ -68,8 +162,30 @@ class _DashboardTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tongDiem = context.select((AppBloc bloc) => bloc.state.tongDiem);
+    final tongHop = context
+        .select((AppBloc bloc) => bloc.state.tongDiemResponse?.tongHopResponse);
+    final tenNhaXe = context
+        .select((AppBloc bloc) => bloc.state.tongDiemResponse?.tenNhaXe);
+
+    String formatCurrency(num? value) {
+      final v = value ?? 0;
+      return NumberFormat.currency( 
+        locale: 'vi_VN',
+        symbol: 'vnđ',
+        decimalDigits: 0,
+      ).format(v);
+    }
+
+    String formatInt(num? value) => '${value ?? 0}';
+
+    final soVe = formatInt(tongHop?.soLuongVe);
+    final doanhThu = formatCurrency(tongHop?.tongDoanhThu);
+    final soChuyen = formatInt(tongHop?.soLuongChuyen);
+    final soKhachTC = formatInt(tongHop?.soLuongTC);
+    final soKhachSanBay = formatInt(tongHop?.soLuongSanBay);
     return Scaffold(
-      appBar: AppBar(title: const Text('Dashboard')),
+      appBar: AppBar(title: Text(tenNhaXe ?? 'Dashboard')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -79,21 +195,30 @@ class _DashboardTab extends StatelessWidget {
             spacing: 12,
             runSpacing: 12,
             children: [
-              const _MetricCard(
-                  title: 'Doanh thu hôm nay', value: '12.5M', trend: '+8%'),
-              const _MetricCard(
-                  title: 'Số khách / chuyến', value: '145 / 18', trend: '+3%'),
-              const _MetricCard(title: 'Chuyến trong ngày', value: '28'),
+              _MetricCard(title: 'Ví điểm: ', value: '$tongDiem Điểm', trend: ''),
+              _MetricCard(
+                  title: 'Doanh thu hôm nay',
+                  value: doanhThu,
+                  trend: '+8%'),
+              _MetricCard(
+                  title: 'Số khách / chuyến',
+                  value: '$soVe / $soChuyen',
+                  trend: '+3%'),
+              _MetricCard(
+                  title: 'Số lượng khách Trung chuyển', value: soKhachTC),
+              _MetricCard(
+                  title: 'Số lượng khách sân bay', value: soKhachSanBay),
             ],
           ),
         ],
       ),
     );
   }
-}
+} 
 
 class _ProfileTab extends StatelessWidget {
   final void Function(UserRole role) onRolePicked;
+
   const _ProfileTab({required this.onRolePicked});
 
   @override
@@ -236,8 +361,10 @@ class _ProfileTab extends StatelessWidget {
                       ),
                     ),
                     onPressed: () => fuc(),
-                    child: UtilsWidget.buildText(text: "Đồng ý",
-                        textColor: white, fontWeight: FontWeight.w700),
+                    child: UtilsWidget.buildText(
+                        text: "Đồng ý",
+                        textColor: white,
+                        fontWeight: FontWeight.w700),
                   ),
                 ),
               ),
@@ -494,6 +621,7 @@ class _MetricCard extends StatelessWidget {
   final String title;
   final String value;
   final String trend;
+
   const _MetricCard(
       {required this.title, required this.value, this.trend = ''});
 
@@ -560,4 +688,3 @@ class _AnalyticsBanner extends StatelessWidget {
     );
   }
 }
-

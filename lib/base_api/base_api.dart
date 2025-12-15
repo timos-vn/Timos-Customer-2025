@@ -177,12 +177,29 @@ class BaseApi {
           );
         }
       } else if (requestMethod == EnumRequestMethod.delete) {
+        // Đảm bảo DELETE request có thể gửi body payload
+        // Thêm Content-Type vào headers để đảm bảo body được gửi đi
+        final deleteHeaders = Map<String, String>.from(headers);
+        deleteHeaders['Content-Type'] = 'application/json';
+        
+        // Debug: Log để kiểm tra body có được gửi không
+        print("🔴 DELETE Request - URL: $url");
+        print("🔴 DELETE Request - Body: $jsonMap");
+        print("🔴 DELETE Request - Headers: $deleteHeaders");
+        
+        final deleteOptions = Options(
+          headers: deleteHeaders,
+          responseType: ResponseType.json,
+          contentType: 'application/json',
+        );
         response = await dio.delete(
           url,
           data: jsonMap,
-          options: options,
+          options: deleteOptions,
           cancelToken: cancelToken,
         );
+        
+        print("🔴 DELETE Response: $response");
       } else if (requestMethod == EnumRequestMethod.put) {
         response = await dio.put(
           url,

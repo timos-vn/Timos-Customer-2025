@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get_utils/src/platform/platform.dart';
 import 'package:timos_customer_2025/services/trip_service.dart';
 import 'detail_trip_event.dart';
 import 'detail_trip_state.dart';
@@ -13,6 +14,7 @@ class DetailTripBloc extends Bloc<DetailTripEvent, DetailTripState> {
     on<CancelTripEvent>(cancelTrip);
     on<IdTripEvent>(taoLichNhaXe);
     on<TinhSoGheTrong>(capNhatGheTrong);
+    on<HuyGiuChoEvent>(huyDuCho);
   }
 
   // Load detail coach pane trip from API
@@ -44,7 +46,8 @@ class DetailTripBloc extends Bloc<DetailTripEvent, DetailTripState> {
           isLoadingTrips: false,
         ));
       }
-    } catch (e) {
+    }
+    catch (e) {
       emit(state.copyWith(
         tripError: 'Lỗi khi tải thông tin chuyến đi: $e',
         isLoadingTrips: false,
@@ -125,4 +128,32 @@ class DetailTripBloc extends Bloc<DetailTripEvent, DetailTripState> {
       gheTrong: gheTrong,
     ));
   }
+
+  Future<void> huyDuCho(HuyGiuChoEvent event, Emitter emit) async {
+    String idDevice =  '';
+    await _tripService.huyGiuChoVe(event.idLich, event.listGhe, idDevice, event.idTuyenDuong, event.idNhaXe, event.idLichChayXe, event.ngayChay);
+  }
+
+  // Future<String?> getDeviceId() async {
+  //   final deviceInfo = DeviceInfoPlugin();
+  //
+  //   try {
+  //     if (GetPlatform.isAndroid) {
+  //       print("GetPlatform.isAndroid");
+  //       // Android
+  //       final androidInfo = await deviceInfo.androidInfo;
+  //       return androidInfo.id; // Android ID (không unique tuyệt đối)
+  //       // Hoặc dùng: androidInfo.serialNumber (API 29 trở xuống)
+  //     } else if (GetPlatform.isIOS) {
+  //       // iOS
+  //       print("GetPlatform.isIOS");
+  //       final iosInfo = await deviceInfo.iosInfo;
+  //       return iosInfo.identifierForVendor; // UUID unique cho mỗi app vendor
+  //     }
+  //   } catch (e) {
+  //     print("Lỗi lấy device id: $e");
+  //   }
+  //
+  //   return null;
+  // }
 }

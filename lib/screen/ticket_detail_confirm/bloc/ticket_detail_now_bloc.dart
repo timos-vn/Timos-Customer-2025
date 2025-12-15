@@ -1,4 +1,6 @@
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get_utils/src/platform/platform.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:timos_customer_2025/const/const.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/booking/model/ticket_detail_model.dart';
@@ -17,6 +19,36 @@ class TicketDetailNowBloc
       : super(TicketDetailState(ticketDetailModel: TicketDetailModel())) {
     on<InitDataEvent>((event, emit) {
       emit(state.copyWith(ticketDetailModel: event.ticketDetailModel));
+      // Load danh sách trung chuyển khi khởi tạo
+      add(LoadTransferStationsEvent());
+    });
+
+    on<LoadTransferStationsEvent>((event, emit) async {
+      await loadTransferStations(emit);
+    });
+
+    on<ToggleTransferPickupEvent>((event, emit) {
+      emit(state.copyWith(
+        isTransferPickupEnabled: event.enabled,
+        selectedTransferPickup:
+            event.enabled ? null : null, // Reset selection if disabled
+      ));
+    });
+
+    on<ToggleTransferDropoffEvent>((event, emit) {
+      emit(state.copyWith(
+        isTransferDropoffEnabled: event.enabled,
+        selectedTransferDropoff:
+            event.enabled ? null : null, // Reset selection if disabled
+      ));
+    });
+
+    on<SelectTransferPickupEvent>((event, emit) {
+      emit(state.copyWith(selectedTransferPickup: event.item));
+    });
+
+    on<SelectTransferDropoffEvent>((event, emit) {
+      emit(state.copyWith(selectedTransferDropoff: event.item));
     });
 
     on<BookTicketEvent>((event, emit) async {
@@ -26,6 +58,66 @@ class TicketDetailNowBloc
     on<BookTicketUpdateEvent>((event, emit) async {
       await updateTicket(event, emit);
     });
+
+    on<GiuChoEvent>((event, emit) async {
+      await datDuCho(event);
+    });
+  }
+
+  Future<void> loadTransferStations(Emitter emit) async {
+    emit(state.copyWith(isLoadingTransferStations: true));
+    try {
+      final response = await ticketService.getTransferStations();
+      emit(state.copyWith(
+        transferStations: response.data,
+        isLoadingTransferStations: false,
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        isLoadingTransferStations: false,
+        errorMessage: e.toString(),
+      ));
+    }
+  }
+
+  Future<void> datDuCho(GiuChoEvent event) async {
+    await giuChoDatVe(event.idLich, event.listGhe.cast<GhesDatCho>(),
+        event.idTuyenDuong, event.idNhaXe, event.idLichChayXe, event.ngayChay);
+  }
+
+  // Future<String?> getDeviceId() async {
+  //   final deviceInfo = DeviceInfoPlugin();
+  //
+  //   try {
+  //     if (GetPlatform.isAndroid) {
+  //       print("GetPlatform.isAndroid");
+  //       // Android
+  //       final androidInfo = await deviceInfo.androidInfo;
+  //       return androidInfo.id; // Android ID (không unique tuyệt đối)
+  //       // Hoặc dùng: androidInfo.serialNumber (API 29 trở xuống)
+  //     } else if (GetPlatform.isIOS) {
+  //       // iOS
+  //       print("GetPlatform.isIOS");
+  //       final iosInfo = await deviceInfo.iosInfo;
+  //       return iosInfo.identifierForVendor; // UUID unique cho mỗi app vendor
+  //     }
+  //   } catch (e) {
+  //     print("Lỗi lấy device id: $e");
+  //   }
+  //
+  //   return null;
+  // }
+
+  Future<void> giuChoDatVe(
+      String idLich,
+      List<GhesDatCho> listGhe,
+      int idTuyenDuong,
+      int idNhaXe,
+      int idLichChayXe,
+      DateTime ngayChay) async {
+
+    String idDevice = '';
+    await ticketService.giuChoVe(idLich, listGhe, idDevice, idTuyenDuong, idNhaXe, idLichChayXe, ngayChay);
   }
 
   // Future<void> bookingTicket(
@@ -105,10 +197,12 @@ class TicketDetailNowBloc
         diaChiKhachDi: event.diaChiDi,
         diaChiKhachDen: event.diaChiDen,
         tienCocVe: 0,
-        khachTcDon: false,
-        khachTcTra: false,
-        idNhaTcDon: null,
-        idNhaTcTra: null,
+        khachTcDon: event.isTransferPickupEnabled,
+        khachTcTra: event.isTransferDropoffEnabled,
+        idNhaTcDon:
+            event.idNhaTcDon != null ? int.tryParse(event.idNhaTcDon!) : null,
+        idNhaTcTra:
+            event.idNhaTcTra != null ? int.tryParse(event.idNhaTcTra!) : null,
         isVeTangCuong: false,
         idChang: event.idChang,
         idVanPhongDon: null,
@@ -118,26 +212,25 @@ class TicketDetailNowBloc
         chiTietGhes: event.chiTietGhe.toList(),
         nguoiTao: userId,
         loaiDatVe: 1,
-        idNhanVienPhucVu: "",
+        idNhanVienPhucVu: null,
         thoiGianDatVe: DateTime.now(),
         yeuCauXuatHoaDon: false,
         thongTinHoaDon: null,
         ngayChay: event.ticketDetailModel.departureDate,
         idLichChayXe: event.idLichChayXe,
-        doman: "",
+        domain: "",
         ip: "",
         deVice: event.idDevice,
         idLichXe: event.idLichXe,
         ipClient: '',
       );
-      response =  await ticketService.bookTicket(bookTicketModel);
+      response = await ticketService.bookTicket(bookTicketModel);
       emit(state.copyWith(
         isLoading: false,
         errorMessage: null,
         bookTicketResponse: response,
         codeScreen: 1,
       ));
-
     } catch (e) {
       emit(state.copyWith(
         isLoading: false,
@@ -161,10 +254,12 @@ class TicketDetailNowBloc
         diaChiKhachDi: event.diaChiDi,
         diaChiKhachDen: event.diaChiDen,
         tienCocVe: 0,
-        khachTcDon: false,
-        khachTcTra: false,
-        idNhaTcDon: null,
-        idNhaTcTra: null,
+        khachTcDon: event.isTransferPickupEnabled,
+        khachTcTra: event.isTransferDropoffEnabled,
+        idNhaTcDon:
+            event.idNhaTcDon != null ? int.tryParse(event.idNhaTcDon!) : null,
+        idNhaTcTra:
+            event.idNhaTcTra != null ? int.tryParse(event.idNhaTcTra!) : null,
         isVeTangCuong: false,
         idChang: event.idChang,
         idVanPhongDon: null,
@@ -187,7 +282,7 @@ class TicketDetailNowBloc
         ipClient: '',
         maDatCho: event.maDatCho,
       );
-      response =  await ticketService.updateTicket(bookTicketModel);
+      response = await ticketService.updateTicket(bookTicketModel);
       emit(state.copyWith(
         isLoading: false,
         errorMessage: null,

@@ -26,7 +26,7 @@ class BookTicketRequest {
     required this.thongTinHoaDon,
     required this.ngayChay,
     required this.idLichChayXe,
-    required this.doman,
+    required this.domain,
     required this.ip,
     required this.deVice,
     required this.ipClient,
@@ -58,7 +58,7 @@ class BookTicketRequest {
   final dynamic thongTinHoaDon;
   final DateTime? ngayChay;
   final int? idLichChayXe;
-  final String? doman;
+  final String? domain;
   final String? ip;
   final String? deVice;
   final String? ipClient;
@@ -91,9 +91,9 @@ class BookTicketRequest {
       thongTinHoaDon: json["thongTinHoaDon"],
       ngayChay: DateTime.tryParse(json["ngayChay"] ?? ""),
       idLichChayXe: json["idLichChayXe"],
-      doman: json["doman"],
+      domain: json["domain"],
       ip: json["ip"],
-      deVice: json["deVice"],
+      deVice: json["device"],
       ipClient: json["ipClient"],
     );
   }
@@ -125,9 +125,9 @@ class BookTicketRequest {
     "thongTinHoaDon": thongTinHoaDon,
     "ngayChay": ngayChay?.toIso8601String(),
     "idLichChayXe": idLichChayXe,
-    "doman": doman,
+    "domain": domain,
     "ip": ip,
-    "deVice": deVice,
+    "device": deVice,
     "ipClient": ipClient,
   };
 
@@ -170,4 +170,34 @@ class ChiTietGhe {
     "tenGhe": tenGhe,
   };
 
+}
+
+class GhesDatCho {
+  GhesDatCho({
+    required this.tang,
+    required this.hang,
+    required this.day,
+    required this.tenGhe,
+  });
+
+  final int? tang;
+  final int? hang;
+  final int? day;
+  final String? tenGhe;
+
+  factory GhesDatCho.fromJson(Map<String, dynamic> json){
+    return GhesDatCho(
+      tang: json["Tang"],
+      hang: json["Hang"],
+      day: json["Day"],
+      tenGhe: json["TenGhe"],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    "Tang": tang,
+    "Hang": hang,
+    "Day": day,
+    "TenGhe": tenGhe,
+  };
 }

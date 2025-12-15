@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_request.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/seating_request_model.dart';
 import 'package:timos_customer_2025/screen/seat_selection/bloc/seat_event.dart';
 import 'package:timos_customer_2025/screen/seat_selection/bloc/seat_state.dart';
@@ -46,9 +47,7 @@ class SeatBloc extends Bloc<SeatEvent, SeatState> {
     } finally {
       emit(state.copyWith(isLoading: false));
     }
-
-
-
-
   }
+
+
 }
