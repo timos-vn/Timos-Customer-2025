@@ -64,12 +64,12 @@ class TicketService extends BaseRepository {
       int idLichChayXe,
       DateTime ngayChay) async {
     await baseCallApi(
-        "/api/v2.0/khach-hang-dat-ve/giu-cho",
+        "/api/v1/manage/chuyen-di/giu-cho",
         "POST",
         jsonMap: {
           "IdLich": idLich.isEmpty ? null : idLich,
           "Ghes": listGhe.map((ghe) => ghe.toJson()).toList(),
-          "AgentId": "agentId",
+          "AgentId": agentId,
           "IdTuyenDuong": idTuyenDuong,
           "IdNhaXe": idNhaXe,
           "IdLichChayXe": idLichChayXe,

@@ -1561,25 +1561,25 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                   ),
                 );
 
-                List<GhesDatCho> gheDaChon = soDuocChon.map((seat) {
-                  return GhesDatCho(
-                    tang: seat.tang,
-                    hang: seat.hang,
-                    day: seat.day,
-                    tenGhe: seat.tenGhe,
-                  );
-                }).toList();
-
-                context.read<DetailTripBloc>().add(
-                  HuyGiuChoEvent(
-                    idLich: idToLoad,
-                    listGhe: gheDaChon,
-                    idLichChayXe: widget.coachPaneTripItem.idLichChayXe,
-                      idTuyenDuong: widget.coachPaneTripItem.idTuyenDuong,
-                      idNhaXe: widget.coachPaneTripItem.idNhaXe,
-                      ngayChay: state.detailCoachPaneTrip?.ngayChay ?? DateTime.now(),
-                  ),
-                );
+                // List<GhesDatCho> gheDaChon = chiTietGhes.map((seat) {
+                //   return GhesDatCho(
+                //     tang: seat.tang,
+                //     hang: seat.hang,
+                //     day: seat.day,
+                //     tenGhe: seat.tenGhe,
+                //   );
+                // }).toList();
+                //
+                // context.read<DetailTripBloc>().add(
+                //   HuyGiuChoEvent(
+                //     idLich: idToLoad,
+                //     listGhe: gheDaChon,
+                //     idLichChayXe: widget.coachPaneTripItem.idLichChayXe,
+                //       idTuyenDuong: widget.coachPaneTripItem.idTuyenDuong,
+                //       idNhaXe: widget.coachPaneTripItem.idNhaXe,
+                //       ngayChay: state.detailCoachPaneTrip?.ngayChay ?? DateTime.now(),
+                //   ),
+                // );
                 // Reload dữ liệu nếu đặt vé thành công
                 // if (result == true && mounted) {
                 //   soDuocChon.clear();

@@ -342,7 +342,7 @@ class TripService extends BaseRepository {
       int idLichChayXe,
       DateTime ngayChay) async {
     await baseCallApi(
-        "/api/v2.0/khach-hang-dat-ve/huy-giu-cho",
+        "/api/v1/manage/chuyen-di/huy-giu-cho",
         "POST",
         jsonMap: {
           "IdLich": idLich,

@@ -78,14 +78,14 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
       ));
     });
 
-    _bloc.add(GiuChoEvent(
-      idLich: widget.detailCoachPaneTrip?.idLichXeLimousine ?? "",
-      listGhe: ghesDatCho,
-      idTuyenDuong: widget.coachPaneTripItem.idTuyenDuong,
-      idNhaXe: widget.coachPaneTripItem.idNhaXe,
-      idLichChayXe: widget.detailCoachPaneTrip?.idLichChayXe ?? 0,
-      ngayChay: widget.detailCoachPaneTrip?.ngayChay ?? DateTime.now(),
-    ));
+    // _bloc.add(GiuChoEvent(
+    //   idLich: widget.detailCoachPaneTrip?.idLichXeLimousine ?? "",
+    //   listGhe: ghesDatCho,
+    //   idTuyenDuong: widget.coachPaneTripItem.idTuyenDuong,
+    //   idNhaXe: widget.coachPaneTripItem.idNhaXe,
+    //   idLichChayXe: widget.detailCoachPaneTrip?.idLichChayXe ?? 0,
+    //   ngayChay: widget.detailCoachPaneTrip?.ngayChay ?? DateTime.now(),
+    // ));
     super.initState();
   }
 
