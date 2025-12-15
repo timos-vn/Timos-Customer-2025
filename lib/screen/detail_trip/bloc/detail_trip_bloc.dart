@@ -1,4 +1,6 @@
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get_utils/src/platform/platform.dart';
 import 'package:timos_customer_2025/services/trip_service.dart';
 import 'detail_trip_event.dart';
 import 'detail_trip_state.dart';
@@ -129,6 +131,30 @@ class DetailTripBloc extends Bloc<DetailTripEvent, DetailTripState> {
   }
 
   Future<void> huyDuCho(HuyGiuChoEvent event, Emitter emit) async {
-    await _tripService.huyGiuChoVe(event.idLich, event.listGhe);
+    String idDevice = await getDeviceId() ?? '';
+    await _tripService.huyGiuChoVe(event.idLich, event.listGhe, idDevice, event.idTuyenDuong, event.idNhaXe, event.idLichChayXe, event.ngayChay);
+  }
+
+  Future<String?> getDeviceId() async {
+    final deviceInfo = DeviceInfoPlugin();
+
+    try {
+      if (GetPlatform.isAndroid) {
+        print("GetPlatform.isAndroid");
+        // Android
+        final androidInfo = await deviceInfo.androidInfo;
+        return androidInfo.id; // Android ID (không unique tuyệt đối)
+        // Hoặc dùng: androidInfo.serialNumber (API 29 trở xuống)
+      } else if (GetPlatform.isIOS) {
+        // iOS
+        print("GetPlatform.isIOS");
+        final iosInfo = await deviceInfo.iosInfo;
+        return iosInfo.identifierForVendor; // UUID unique cho mỗi app vendor
+      }
+    } catch (e) {
+      print("Lỗi lấy device id: $e");
+    }
+
+    return null;
   }
 }

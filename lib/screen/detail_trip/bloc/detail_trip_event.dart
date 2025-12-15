@@ -20,7 +20,8 @@ class LoadDetailCoachPaneTripEvent extends DetailTripEvent {
 
   final int tang;
 
-  LoadDetailCoachPaneTripEvent({required this.idLichXeLimousine, required this.tang});
+  LoadDetailCoachPaneTripEvent(
+      {required this.idLichXeLimousine, required this.tang});
 
   @override
   List<Object?> get props => [idLichXeLimousine, tang];
@@ -34,11 +35,8 @@ class CancelTripEvent extends DetailTripEvent {
   });
 
   @override
-  List<Object?> get props => [
-    cancelTicketRequest
-      ];
+  List<Object?> get props => [cancelTicketRequest];
 }
-
 
 class IdTripEvent extends DetailTripEvent {
   final TaoLichNhaXeRequest taoLichNhaXeRequest;
@@ -50,9 +48,7 @@ class IdTripEvent extends DetailTripEvent {
 }
 
 class TinhSoGheTrong extends DetailTripEvent {
-
   final int tang;
-
 
   TinhSoGheTrong({required this.tang});
 
@@ -63,12 +59,21 @@ class TinhSoGheTrong extends DetailTripEvent {
 class HuyGiuChoEvent extends DetailTripEvent {
   final String idLich;
   final List<GhesDatCho> listGhe;
+  final int idTuyenDuong;
+  final int idNhaXe;
+  final int idLichChayXe;
+  final DateTime ngayChay;
 
   HuyGiuChoEvent({
     required this.idLich,
     required this.listGhe,
+    required this.idTuyenDuong,
+    required this.idNhaXe,
+    required this.idLichChayXe,
+    required this.ngayChay,
   });
 
   @override
-  List<Object?> get props => [idLich, listGhe];
+  List<Object?> get props =>
+      [idLich, listGhe, idTuyenDuong, idNhaXe, idLichChayXe, ngayChay];
 }

@@ -1,4 +1,6 @@
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get_utils/src/platform/platform.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:timos_customer_2025/const/const.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/booking/model/ticket_detail_model.dart';
@@ -28,14 +30,16 @@ class TicketDetailNowBloc
     on<ToggleTransferPickupEvent>((event, emit) {
       emit(state.copyWith(
         isTransferPickupEnabled: event.enabled,
-        selectedTransferPickup: event.enabled ? null : null, // Reset selection if disabled
+        selectedTransferPickup:
+            event.enabled ? null : null, // Reset selection if disabled
       ));
     });
 
     on<ToggleTransferDropoffEvent>((event, emit) {
       emit(state.copyWith(
         isTransferDropoffEnabled: event.enabled,
-        selectedTransferDropoff: event.enabled ? null : null, // Reset selection if disabled
+        selectedTransferDropoff:
+            event.enabled ? null : null, // Reset selection if disabled
       ));
     });
 
@@ -77,13 +81,44 @@ class TicketDetailNowBloc
   }
 
   Future<void> datDuCho(GiuChoEvent event) async {
-    await giuChoDatVe(event.idLich, event.listGhe.cast<GhesDatCho>());
+    await giuChoDatVe(event.idLich, event.listGhe.cast<GhesDatCho>(),
+        event.idTuyenDuong, event.idNhaXe, event.idLichChayXe, event.ngayChay);
   }
 
-  Future<void> giuChoDatVe(String idLich, List<GhesDatCho> listGhe) async {
-    await ticketService.giuChoVe(idLich, listGhe);
+  Future<String?> getDeviceId() async {
+    final deviceInfo = DeviceInfoPlugin();
+
+    try {
+      if (GetPlatform.isAndroid) {
+        print("GetPlatform.isAndroid");
+        // Android
+        final androidInfo = await deviceInfo.androidInfo;
+        return androidInfo.id; // Android ID (không unique tuyệt đối)
+        // Hoặc dùng: androidInfo.serialNumber (API 29 trở xuống)
+      } else if (GetPlatform.isIOS) {
+        // iOS
+        print("GetPlatform.isIOS");
+        final iosInfo = await deviceInfo.iosInfo;
+        return iosInfo.identifierForVendor; // UUID unique cho mỗi app vendor
+      }
+    } catch (e) {
+      print("Lỗi lấy device id: $e");
+    }
+
+    return null;
   }
 
+  Future<void> giuChoDatVe(
+      String idLich,
+      List<GhesDatCho> listGhe,
+      int idTuyenDuong,
+      int idNhaXe,
+      int idLichChayXe,
+      DateTime ngayChay) async {
+
+    String idDevice = await getDeviceId() ?? '';
+    await ticketService.giuChoVe(idLich, listGhe, idDevice, idTuyenDuong, idNhaXe, idLichChayXe, ngayChay);
+  }
 
   // Future<void> bookingTicket(
   //     ConfirmTicketEvent event, Emitter<TicketDetailState> emit) async {
@@ -164,8 +199,10 @@ class TicketDetailNowBloc
         tienCocVe: 0,
         khachTcDon: event.isTransferPickupEnabled,
         khachTcTra: event.isTransferDropoffEnabled,
-        idNhaTcDon: event.idNhaTcDon != null ? int.tryParse(event.idNhaTcDon!) : null,
-        idNhaTcTra: event.idNhaTcTra != null ? int.tryParse(event.idNhaTcTra!) : null,
+        idNhaTcDon:
+            event.idNhaTcDon != null ? int.tryParse(event.idNhaTcDon!) : null,
+        idNhaTcTra:
+            event.idNhaTcTra != null ? int.tryParse(event.idNhaTcTra!) : null,
         isVeTangCuong: false,
         idChang: event.idChang,
         idVanPhongDon: null,
@@ -187,14 +224,13 @@ class TicketDetailNowBloc
         idLichXe: event.idLichXe,
         ipClient: '',
       );
-      response =  await ticketService.bookTicket(bookTicketModel);
+      response = await ticketService.bookTicket(bookTicketModel);
       emit(state.copyWith(
         isLoading: false,
         errorMessage: null,
         bookTicketResponse: response,
         codeScreen: 1,
       ));
-
     } catch (e) {
       emit(state.copyWith(
         isLoading: false,
@@ -220,8 +256,10 @@ class TicketDetailNowBloc
         tienCocVe: 0,
         khachTcDon: event.isTransferPickupEnabled,
         khachTcTra: event.isTransferDropoffEnabled,
-        idNhaTcDon: event.idNhaTcDon != null ? int.tryParse(event.idNhaTcDon!) : null,
-        idNhaTcTra: event.idNhaTcTra != null ? int.tryParse(event.idNhaTcTra!) : null,
+        idNhaTcDon:
+            event.idNhaTcDon != null ? int.tryParse(event.idNhaTcDon!) : null,
+        idNhaTcTra:
+            event.idNhaTcTra != null ? int.tryParse(event.idNhaTcTra!) : null,
         isVeTangCuong: false,
         idChang: event.idChang,
         idVanPhongDon: null,
@@ -244,7 +282,7 @@ class TicketDetailNowBloc
         ipClient: '',
         maDatCho: event.maDatCho,
       );
-      response =  await ticketService.updateTicket(bookTicketModel);
+      response = await ticketService.updateTicket(bookTicketModel);
       emit(state.copyWith(
         isLoading: false,
         errorMessage: null,

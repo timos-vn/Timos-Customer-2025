@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -80,6 +81,10 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
     _bloc.add(GiuChoEvent(
       idLich: widget.detailCoachPaneTrip?.idLichXeLimousine ?? "",
       listGhe: ghesDatCho,
+      idTuyenDuong: widget.coachPaneTripItem.idTuyenDuong,
+      idNhaXe: widget.coachPaneTripItem.idNhaXe,
+      idLichChayXe: widget.detailCoachPaneTrip?.idLichChayXe ?? 0,
+      ngayChay: widget.detailCoachPaneTrip?.ngayChay ?? DateTime.now(),
     ));
     super.initState();
   }

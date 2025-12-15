@@ -18,8 +18,6 @@ import 'package:timos_customer_2025/utils/date_utils.dart';
 import 'package:timos_customer_2025/utils/utils.dart';
 import 'package:timos_customer_2025/base_api/base_repository.dart';
 import 'package:timos_customer_2025/screen/detail_trip/airport_ticket_screen.dart';
-import 'package:timos_customer_2025/bloc_base/app_bloc.dart';
-import 'package:timos_customer_2025/bloc_base/app_event.dart';
 import 'package:timos_customer_2025/bloc_base/service/app_service.dart';
 import 'package:timos_customer_2025/services/auth_service.dart';
 import 'airport_ticket_form_dialog.dart';
@@ -241,6 +239,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
     }
 
 
+    print("Lich xe line ${widget.idLichXeLimousine}");
     signalRService.startConnection().then((_) {
       signalRService.joinSeatTracking(idLichXe: widget.idLichXeLimousine);
     });
@@ -1575,6 +1574,10 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                   HuyGiuChoEvent(
                     idLich: idToLoad,
                     listGhe: gheDaChon,
+                    idLichChayXe: widget.coachPaneTripItem.idLichChayXe,
+                      idTuyenDuong: widget.coachPaneTripItem.idTuyenDuong,
+                      idNhaXe: widget.coachPaneTripItem.idNhaXe,
+                      ngayChay: state.detailCoachPaneTrip?.ngayChay ?? DateTime.now(),
                   ),
                 );
                 // Reload dữ liệu nếu đặt vé thành công

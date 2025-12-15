@@ -203,9 +203,13 @@ class SignalRService {
       return;
     }
 
-    // Lưu ID hiện tại và gọi Join
-    _currentTripIdLichXe = idLichXe;
-    await _joinTripGroup(idLichXe);
+    if(idLichXe.isNotEmpty) {
+      // Lưu ID hiện tại và gọi Join
+      _currentTripIdLichXe = idLichXe;
+      await _joinTripGroup(idLichXe);
+    }
+
+
   }
 
   /// PUBLIC: Gửi dữ liệu lên server

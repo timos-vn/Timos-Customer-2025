@@ -334,13 +334,24 @@ class TripService extends BaseRepository {
   }
 
   /// Huỷ giữ chỗ
-  Future<void> huyGiuChoVe(String idLich, List<GhesDatCho> listGhe) async {
+  Future<void> huyGiuChoVe(String idLich,
+      List<GhesDatCho> listGhe,
+      String agentId,
+      int idTuyenDuong,
+      int idNhaXe,
+      int idLichChayXe,
+      DateTime ngayChay) async {
     await baseCallApi(
         "/api/v2.0/khach-hang-dat-ve/huy-giu-cho",
         "POST",
         jsonMap: {
           "IdLich": idLich,
+          "AgentId": agentId,
           "Ghes": listGhe.map((ghe) => ghe.toJson()).toList(),
+          "IdTuyenDuong": idTuyenDuong,
+          "IdNhaXe": idNhaXe,
+          "IdLichChayXe": idLichChayXe,
+          "NgayChay": ngayChay.toIso8601String(),
         }
     );
   }

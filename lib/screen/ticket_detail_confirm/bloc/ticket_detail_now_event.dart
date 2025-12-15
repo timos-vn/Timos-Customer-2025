@@ -165,13 +165,21 @@ class SelectTransferDropoffEvent extends TicketDetailNowEvent {
 
 class GiuChoEvent extends TicketDetailNowEvent {
   final String idLich;
+  final int idTuyenDuong;
+  final int idNhaXe;
+  final int idLichChayXe;
+  final DateTime ngayChay;
   final List<GhesDatCho> listGhe;
 
   GiuChoEvent({
     required this.idLich,
     required this.listGhe,
+    required this.idTuyenDuong,
+    required this.idNhaXe,
+    required this.idLichChayXe,
+    required this.ngayChay,
   });
 
   @override
-  List<Object?> get props => [idLich, listGhe];
+  List<Object?> get props => [idLich, listGhe, idTuyenDuong, idNhaXe, idLichChayXe, ngayChay];
 }

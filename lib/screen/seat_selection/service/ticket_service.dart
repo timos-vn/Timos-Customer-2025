@@ -56,13 +56,24 @@ class TicketService extends BaseRepository {
   }
 
   /// Giữ chỗ
-  Future<void> giuChoVe(String idLich, List<GhesDatCho> listGhe) async {
+  Future<void> giuChoVe(String idLich,
+      List<GhesDatCho> listGhe,
+      String agentId,
+      int idTuyenDuong,
+      int idNhaXe,
+      int idLichChayXe,
+      DateTime ngayChay) async {
     await baseCallApi(
         "/api/v2.0/khach-hang-dat-ve/giu-cho",
         "POST",
         jsonMap: {
           "IdLich": idLich.isEmpty ? null : idLich,
           "Ghes": listGhe.map((ghe) => ghe.toJson()).toList(),
+          "AgentId": "agentId",
+          "IdTuyenDuong": idTuyenDuong,
+          "IdNhaXe": idNhaXe,
+          "IdLichChayXe": idLichChayXe,
+          "NgayChay": ngayChay.toIso8601String(),
         }
     );
   }

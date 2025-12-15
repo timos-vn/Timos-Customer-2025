@@ -61,6 +61,7 @@ dependencies:
   oktoast: ^3.4.0
   google_fonts: ^6.2.1
   url_launcher: ^6.2.5
+  device_info_plus: ^10.1.0
 
   # BLoC
   flutter_bloc: ^8.1.6
