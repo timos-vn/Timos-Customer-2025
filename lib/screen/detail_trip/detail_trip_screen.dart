@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -53,6 +55,9 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
   bool loadingAirport = false;
   String? airportError;
   bool _airportInitialized = false;
+
+  late StreamSubscription _seatSub;
+
 
   Future<bool> _checkDiemChuyen() async {
     final idNhaXe = AuthService.currentUser?.idNhaXe ?? 0;
@@ -212,6 +217,12 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
   }
 
   @override
+  void dispose() {
+    _seatSub.cancel();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
 
@@ -239,10 +250,48 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
     }
 
 
-    print("Lich xe line ${widget.idLichXeLimousine}");
-    signalRService.startConnection().then((_) {
-      signalRService.joinSeatTracking(idLichXe: widget.idLichXeLimousine);
+    // print("Lich xe line ${widget.idLichXeLimousine}");
+    // signalRService.startConnection().then((_) {
+    //   signalRService.joinSeatTracking(idLichXe: widget.idLichXeLimousine);
+    //   signalRService
+    //       .onSeatsSelected
+    //       .listen((data) {
+    //     print("📥 UI nhận SeatsSelected: $data");
+    //     context.read<DetailTripBloc>().add(
+    //       LoadDetailCoachPaneTripEvent(
+    //         idLichXeLimousine: widget.idLichXeLimousine,
+    //         tang: selectedFloor,
+    //       ),
+    //     );
+    //     // TODO: xử lý update ghế
+    //     // ví dụ:
+    //     // setState(() { ... });
+    //   });
+    // });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // 1️⃣ Đảm bảo SignalR connect
+      await signalRService.startConnection();
+
+      // 2️⃣ Join group đúng chuyến
+      await signalRService.joinSeatTracking(
+        idLichXe: widget.idLichXeLimousine,
+      );
+
+      // 3️⃣ LẮNG NGHE SAU KHI JOIN
+      _seatSub = signalRService.onSeatsSelected.listen((data) {
+        print("📥 UI nhận SeatsSelected: $data");
+
+        context.read<DetailTripBloc>().add(
+          LoadDetailCoachPaneTripEvent(
+            idLichXeLimousine: widget.idLichXeLimousine,
+            tang: selectedFloor,
+          ),
+        );
+      });
     });
+
+
 
 
   }
@@ -1554,12 +1603,22 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                 final idToLoad = currentState.idLichXeLimousineMoi?.isNotEmpty == true
                     ? currentState.idLichXeLimousineMoi!
                     : widget.idLichXeLimousine;
-                context.read<DetailTripBloc>().add(
-                  LoadDetailCoachPaneTripEvent(
-                    idLichXeLimousine: idToLoad,
-                    tang: selectedFloor,
-                  ),
-                );
+
+                List<GhesDatCho> gheDaChon = chiTietGhes.map((seat) {
+                  return GhesDatCho(
+                    tang: seat.tang,
+                    hang: seat.hang,
+                    day: seat.day,
+                    tenGhe: seat.tenGhe,
+                  );
+                }).toList();
+
+                // context.read<DetailTripBloc>().add(
+                //   LoadDetailCoachPaneTripEvent(
+                //     idLichXeLimousine: idToLoad,
+                //     tang: selectedFloor,
+                //   ),
+                // );
 
                 // List<GhesDatCho> gheDaChon = chiTietGhes.map((seat) {
                 //   return GhesDatCho(
@@ -1570,16 +1629,17 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                 //   );
                 // }).toList();
                 //
-                // context.read<DetailTripBloc>().add(
-                //   HuyGiuChoEvent(
-                //     idLich: idToLoad,
-                //     listGhe: gheDaChon,
-                //     idLichChayXe: widget.coachPaneTripItem.idLichChayXe,
-                //       idTuyenDuong: widget.coachPaneTripItem.idTuyenDuong,
-                //       idNhaXe: widget.coachPaneTripItem.idNhaXe,
-                //       ngayChay: state.detailCoachPaneTrip?.ngayChay ?? DateTime.now(),
-                //   ),
-                // );
+                context.read<DetailTripBloc>().add(
+                  HuyGiuChoEvent(
+                    idLich: idToLoad,
+                    listGhe: gheDaChon,
+                    idLichChayXe: widget.coachPaneTripItem.idLichChayXe,
+                      idTuyenDuong: widget.coachPaneTripItem.idTuyenDuong,
+                      idNhaXe: widget.coachPaneTripItem.idNhaXe,
+                      ngayChay: state.detailCoachPaneTrip?.ngayChay ?? DateTime.now(),
+                    tang: selectedFloor,
+                  ),
+                );
                 // Reload dữ liệu nếu đặt vé thành công
                 // if (result == true && mounted) {
                 //   soDuocChon.clear();

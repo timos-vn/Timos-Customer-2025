@@ -183,3 +183,17 @@ class GiuChoEvent extends TicketDetailNowEvent {
   @override
   List<Object?> get props => [idLich, listGhe, idTuyenDuong, idNhaXe, idLichChayXe, ngayChay];
 }
+
+class HuyGiuChoEvent extends TicketDetailNowEvent {
+  final String idLich;
+  final List<GhesDatCho> listGhe;
+
+  HuyGiuChoEvent({
+    required this.idLich,
+    required this.listGhe,
+  });
+
+  @override
+  List<Object?> get props =>
+      [idLich, listGhe];
+}

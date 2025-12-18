@@ -8,7 +8,7 @@ class DetailTripState {
 
   /// 1: huỷ vé
   /// 2: Lấy id thành công
-  /// 3: Lâ
+  /// 3: Huỷ dữ chỗ
   int statusApp;
 
   String? idLichXeLimousineMoi;

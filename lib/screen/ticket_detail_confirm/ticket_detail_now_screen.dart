@@ -52,13 +52,15 @@ class TicketDetailNowScreen extends StatefulWidget {
   State<TicketDetailNowScreen> createState() => _TicketDetailNowScreenState();
 }
 
-class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
+class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> with WidgetsBindingObserver{
   late final TicketDetailNowBloc _bloc = TicketDetailNowBloc();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  List<GhesDatCho> ghesDatCho = [];
 
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
     _bloc.add(InitDataEvent(ticketDetailModel: widget.ticketDetail));
     if(widget.isUpdate ?? false) {
       // Trim khoảng trắng khi fill dữ liệu trong mode sửa vé
@@ -68,7 +70,7 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
       diaChiKhachDen.text = (widget.danhSachGhe?.diaChiKhachDen ?? "").trim();
     }
 
-    List<GhesDatCho> ghesDatCho = [];
+
     widget.chiTietGhe?.forEach((ghe) {
       ghesDatCho.add(GhesDatCho(
         tenGhe: ghe.tenGhe,
@@ -78,14 +80,14 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
       ));
     });
 
-    // _bloc.add(GiuChoEvent(
-    //   idLich: widget.detailCoachPaneTrip?.idLichXeLimousine ?? "",
-    //   listGhe: ghesDatCho,
-    //   idTuyenDuong: widget.coachPaneTripItem.idTuyenDuong,
-    //   idNhaXe: widget.coachPaneTripItem.idNhaXe,
-    //   idLichChayXe: widget.detailCoachPaneTrip?.idLichChayXe ?? 0,
-    //   ngayChay: widget.detailCoachPaneTrip?.ngayChay ?? DateTime.now(),
-    // ));
+    _bloc.add(GiuChoEvent(
+      idLich: widget.detailCoachPaneTrip?.idLichXeLimousine ?? "",
+      listGhe: ghesDatCho,
+      idTuyenDuong: widget.coachPaneTripItem.idTuyenDuong,
+      idNhaXe: widget.coachPaneTripItem.idNhaXe,
+      idLichChayXe: widget.detailCoachPaneTrip?.idLichChayXe ?? 0,
+      ngayChay: widget.detailCoachPaneTrip?.ngayChay ?? DateTime.now(),
+    ));
     super.initState();
   }
 
@@ -121,6 +123,47 @@ class _TicketDetailNowScreenState extends State<TicketDetailNowScreen> {
     
     return true;
   }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.paused:
+      // 👉 App vào background
+        print('📴 App vào background');
+        _bloc.add(HuyGiuChoEvent(
+          idLich: widget.detailCoachPaneTrip?.idLichXeLimousine ?? "",
+          listGhe: ghesDatCho,
+        ));
+        break;
+
+      case AppLifecycleState.resumed:
+      // 👉 App quay lại foreground
+        print('▶️ App quay lại foreground');
+        _bloc.add(GiuChoEvent(
+          idLich: widget.detailCoachPaneTrip?.idLichXeLimousine ?? "",
+          listGhe: ghesDatCho,
+          idTuyenDuong: widget.coachPaneTripItem.idTuyenDuong,
+          idNhaXe: widget.coachPaneTripItem.idNhaXe,
+          idLichChayXe: widget.detailCoachPaneTrip?.idLichChayXe ?? 0,
+          ngayChay: widget.detailCoachPaneTrip?.ngayChay ?? DateTime.now(),
+        ));
+        break;
+
+      case AppLifecycleState.inactive:
+      // 👉 Có thể do call, notification, lock screen
+        print('⏸ App inactive');
+        break;
+
+      case AppLifecycleState.detached:
+      // 👉 App bị terminate (hiếm dùng)
+        print('❌ App detached');
+        break;
+      case AppLifecycleState.hidden:
+        print('❌ hidden');
+        break;
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {

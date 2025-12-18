@@ -78,6 +78,21 @@ class TicketService extends BaseRepository {
     );
   }
 
+  /// Huỷ giữ chỗ
+  Future<void> huyGiuChoVe(String idLich,
+      List<GhesDatCho> listGhe,
+      String agentId) async {
+    await baseCallApi(
+        "/api/v1/manage/chuyen-di/huy-giu-cho",
+        "POST",
+        jsonMap: {
+          "IdLich": idLich,
+          "AgentId": agentId,
+          "ThongTinGhes": listGhe.map((ghe) => ghe.toJson()).toList(),
+        }
+    );
+  }
+
 }
 
 //
