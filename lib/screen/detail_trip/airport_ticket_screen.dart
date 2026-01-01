@@ -22,6 +22,7 @@ class AirportTicket {
   final String driverPhone;
   final String driverPlate;
   final String driverColor;
+  final String gioDi;
 
   AirportTicket({
     required this.id,
@@ -37,6 +38,7 @@ class AirportTicket {
     required this.driverPhone,
     required this.driverPlate,
     required this.driverColor,
+    required this.gioDi,
   });
 
   factory AirportTicket.fromJson(Map<String, dynamic> json) {
@@ -54,6 +56,7 @@ class AirportTicket {
       driverPhone: json["soDienThoaiTaiXeNhanVe"] ?? "",
       driverPlate: json["bienSoXeNhanVe"] ?? "",
       driverColor: json["mauXeNhanVe"] ?? "",
+      gioDi: json["gioDi"] ?? "",
     );
   }
 }
@@ -341,7 +344,7 @@ class _AirportTicketScreenState extends State<AirportTicketScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Vé đi sân bay"),
+        title: const Text("Vé đi sân bay i"),
       ),
       body: RefreshIndicator(
         onRefresh: () => _fetch(reset: true),
@@ -475,7 +478,13 @@ class _AirportTicketScreenState extends State<AirportTicketScreen> {
                                                 size: 14, color: Colors.grey),
                                             const SizedBox(width: 4),
                                             Text(
-                                              convertDateToString(item.thoiGianDon, pattern13),
+                                              "${item.gioDi} ",
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey.shade700),
+                                            ),
+                                            Text(
+                                              convertDateToString(item.thoiGianDon, pattern1),
                                               style: TextStyle(
                                                   fontSize: 12,
                                                   color: Colors.grey.shade700),

@@ -7,7 +7,8 @@ import 'package:get_storage/get_storage.dart';
 import 'package:timos_customer_2025/const/const.dart';
 import 'package:timos_customer_2025/models/response/response.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/booking/model/ticket_detail_model.dart';
-import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_update_rquest.dart' show ChiTietGheUpdate;
+import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_update_rquest.dart'
+    show ChiTietGheUpdate;
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/cancel_ticket_request.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/tao_lich_nha_xe_request.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/service/signalr_service.dart';
@@ -58,19 +59,18 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
 
   late StreamSubscription _seatSub;
 
-
   Future<bool> _checkDiemChuyen() async {
     final idNhaXe = AuthService.currentUser?.idNhaXe ?? 0;
     if (idNhaXe == 0) return false;
-    
+
     final appService = AppService();
     final tongDiemResponse = await appService.getTongDiem(idNhaXe);
-    
+
     if (tongDiemResponse == null) return false;
-    
+
     final diemThuong = tongDiemResponse.diemThuong ?? 0;
     final diemChuyen = tongDiemResponse.diemChuyen ?? 0;
-    
+
     if (diemChuyen > 0 && diemThuong < diemChuyen) {
       if (mounted) {
         await DiemWarningDialog.show(
@@ -82,7 +82,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
       }
       return false;
     }
-    
+
     return true;
   }
 
@@ -90,13 +90,13 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
     // Kiểm tra điểm trước khi show dialog
     final hasEnoughDiem = await _checkDiemChuyen();
     if (!hasEnoughDiem) return;
-    
+
     // Kết hợp ngayChay và gioDi để tạo thời gian đón đầy đủ
     DateTime initialThoiGianDon = DateTime.now();
     if (widget.coachPaneTripItem.ngayChay != null) {
       final ngayChay = widget.coachPaneTripItem.ngayChay!;
       final gioDi = widget.coachPaneTripItem.gioDi ?? "";
-      
+
       if (gioDi.isNotEmpty) {
         // Parse giờ từ format "HH:mm" hoặc "HH:mm:ss"
         final gioParts = gioDi.split(':');
@@ -117,7 +117,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
         initialThoiGianDon = ngayChay;
       }
     }
-    
+
     final formResult = await AirportTicketFormDialog.show(
       context,
       mode: AirportTicketFormMode.add,
@@ -154,11 +154,11 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
           ? currentState.idLichXeLimousineMoi!
           : widget.idLichXeLimousine;
       context.read<DetailTripBloc>().add(
-        LoadDetailCoachPaneTripEvent(
-          idLichXeLimousine: idToLoad,
-          tang: selectedFloor,
-        ),
-      );
+            LoadDetailCoachPaneTripEvent(
+              idLichXeLimousine: idToLoad,
+              tang: selectedFloor,
+            ),
+          );
     }
   }
 
@@ -226,29 +226,28 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
   void initState() {
     super.initState();
 
-    if(widget.idLichXeLimousine.isEmpty || widget.idLichXeLimousine == ""){
+    if (widget.idLichXeLimousine.isEmpty || widget.idLichXeLimousine == "") {
       context.read<DetailTripBloc>().add(
-        IdTripEvent(
-         taoLichNhaXeRequest: TaoLichNhaXeRequest(
-           idNhaXe: widget.coachPaneTripItem.idNhaXe,
-           ngayChay: widget.coachPaneTripItem.ngayChay,
-           idTuyenDuong: widget.coachPaneTripItem.idTuyenDuong,
-           idLoaiXe: widget.coachPaneTripItem.idLoaiXe,
-           ghiChu: "Lịch xe limousine mới",
-           gioDi: widget.coachPaneTripItem.gioDi ?? "",
-           idLichChayXe: widget.coachPaneTripItem.idLichChayXe,
-          ),
-        ),
-      );
+            IdTripEvent(
+              taoLichNhaXeRequest: TaoLichNhaXeRequest(
+                idNhaXe: widget.coachPaneTripItem.idNhaXe,
+                ngayChay: widget.coachPaneTripItem.ngayChay,
+                idTuyenDuong: widget.coachPaneTripItem.idTuyenDuong,
+                idLoaiXe: widget.coachPaneTripItem.idLoaiXe,
+                ghiChu: "Lịch xe limousine mới",
+                gioDi: widget.coachPaneTripItem.gioDi ?? "",
+                idLichChayXe: widget.coachPaneTripItem.idLichChayXe,
+              ),
+            ),
+          );
     } else {
       context.read<DetailTripBloc>().add(
-        LoadDetailCoachPaneTripEvent(
-          idLichXeLimousine: widget.idLichXeLimousine,
-          tang: selectedFloor,
-        ),
-      );
+            LoadDetailCoachPaneTripEvent(
+              idLichXeLimousine: widget.idLichXeLimousine,
+              tang: selectedFloor,
+            ),
+          );
     }
-
 
     // print("Lich xe line ${widget.idLichXeLimousine}");
     // signalRService.startConnection().then((_) {
@@ -283,17 +282,13 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
         print("📥 UI nhận SeatsSelected: $data");
 
         context.read<DetailTripBloc>().add(
-          LoadDetailCoachPaneTripEvent(
-            idLichXeLimousine: widget.idLichXeLimousine,
-            tang: selectedFloor,
-          ),
-        );
+              LoadDetailCoachPaneTripEvent(
+                idLichXeLimousine: widget.idLichXeLimousine,
+                tang: selectedFloor,
+              ),
+            );
       });
     });
-
-
-
-
   }
 
   @override
@@ -302,7 +297,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
       listenWhen: (prev, next) =>
           prev.isLoadingTrips != next.isLoadingTrips ||
           prev.tripError != next.tripError ||
-              prev.statusApp != next.statusApp,
+          prev.statusApp != next.statusApp,
       listener: (context, state) {
         if (state.statusApp == 1) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -313,11 +308,11 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
           );
           // Reload lại chi tiết chuyến
           context.read<DetailTripBloc>().add(
-            LoadDetailCoachPaneTripEvent(
-              idLichXeLimousine: widget.idLichXeLimousine,
-              tang: selectedFloor,
-            ),
-          );
+                LoadDetailCoachPaneTripEvent(
+                  idLichXeLimousine: widget.idLichXeLimousine,
+                  tang: selectedFloor,
+                ),
+              );
         }
         // Xử lý lỗi - hiển thị toast và giữ nguyên dialog
         if (state.tripError != null && !state.isLoadingTrips) {
@@ -339,13 +334,13 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
           });
         }
 
-        if(state.statusApp == 2) {
+        if (state.statusApp == 2) {
           context.read<DetailTripBloc>().add(
-            LoadDetailCoachPaneTripEvent(
-              idLichXeLimousine: state.idLichXeLimousineMoi ?? "",
-              tang: selectedFloor,
-            ),
-          );
+                LoadDetailCoachPaneTripEvent(
+                  idLichXeLimousine: state.idLichXeLimousineMoi ?? "",
+                  tang: selectedFloor,
+                ),
+              );
         }
 
         // Khi load xong chi tiết chuyến, fetch vé sân bay (1 lần)
@@ -366,134 +361,136 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
           return Stack(
             children: [
               Scaffold(
-            appBar: AppBar(
-              elevation: 0,
-              backgroundColor: Colors.white,
-              iconTheme: const IconThemeData(color: Colors.black87),
-              title: data != null
-                  ? Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                data.maLimo,
-                                style: const TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.black87,
-                                  letterSpacing: -0.5,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 4),
-                              Row(
+                appBar: AppBar(
+                  elevation: 0,
+                  backgroundColor: Colors.white,
+                  iconTheme: const IconThemeData(color: Colors.black87),
+                  title: data != null
+                      ? Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(3),
-                                    decoration: BoxDecoration(
-                                      color: mainColor.withValues(alpha: 0.15),
-                                      borderRadius: BorderRadius.circular(4),
+                                  Text(
+                                    data.maLimo,
+                                    style: const TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.black87,
+                                      letterSpacing: -0.5,
                                     ),
-                                    child: Icon(
-                                      Icons.directions_bus,
-                                      size: 12,
-                                      color: mainColor,
-                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(3),
+                                        decoration: BoxDecoration(
+                                          color:
+                                              mainColor.withValues(alpha: 0.15),
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                        child: Icon(
+                                          Icons.directions_bus,
+                                          size: 12,
+                                          color: mainColor,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Flexible(
+                                        child: Text(
+                                          data.bienSoXe,
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.grey.shade700,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    mainColor.withValues(alpha: 0.15),
+                                    mainColor.withValues(alpha: 0.08),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: mainColor.withValues(alpha: 0.25),
+                                  width: 1.5,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.event_seat,
+                                    size: 16,
+                                    color: mainColor,
                                   ),
                                   const SizedBox(width: 6),
-                                  Flexible(
-                                    child: Text(
-                                      data.bienSoXe,
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.grey.shade700,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
+                                  Text(
+                                    '${data.soGheDaDat}/${data.tongSoGhe}',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: mainColor,
                                     ),
                                   ),
                                 ],
                               ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                mainColor.withValues(alpha: 0.15),
-                                mainColor.withValues(alpha: 0.08),
-                              ],
                             ),
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: mainColor.withValues(alpha: 0.25),
-                              width: 1.5,
+                          ],
+                        )
+                      : const Text(
+                          'Chi tiết chuyến',
+                          style: TextStyle(color: Colors.black87),
+                        ),
+                ),
+                body: _buildBody(context, state, data),
+                bottomNavigationBar: data != null
+                    ? AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        transitionBuilder:
+                            (Widget child, Animation<double> animation) {
+                          return SlideTransition(
+                            position: Tween<Offset>(
+                              begin: const Offset(0.0, 1.0),
+                              end: Offset.zero,
+                            ).animate(
+                              CurvedAnimation(
+                                parent: animation,
+                                curve: Curves.easeOutCubic,
+                              ),
                             ),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.event_seat,
-                                size: 16,
-                                color: mainColor,
-                              ),
-                              const SizedBox(width: 6),
-                              Text(
-                                '${data.soGheDaDat}/${data.tongSoGhe}',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  color: mainColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    )
-                  : const Text(
-                      'Chi tiết chuyến',
-                      style: TextStyle(color: Colors.black87),
-                    ),
-            ),
-            body: _buildBody(context, state, data),
-            bottomNavigationBar: data != null
-                ? AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    transitionBuilder:
-                        (Widget child, Animation<double> animation) {
-                      return SlideTransition(
-                        position: Tween<Offset>(
-                          begin: const Offset(0.0, 1.0),
-                          end: Offset.zero,
-                        ).animate(
-                          CurvedAnimation(
-                            parent: animation,
-                            curve: Curves.easeOutCubic,
-                          ),
-                        ),
-                        child: FadeTransition(
-                          opacity: animation,
-                          child: child,
-                        ),
-                      );
-                    },
-                    child: soDuocChon.isNotEmpty
-                        ? _buildBottom(key: const ValueKey('bottom-nav'))
-                        : const SizedBox.shrink(key: ValueKey('empty')),
-                  )
-                : null,
+                            child: FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            ),
+                          );
+                        },
+                        child: soDuocChon.isNotEmpty
+                            ? _buildBottom(key: const ValueKey('bottom-nav'))
+                            : const SizedBox.shrink(key: ValueKey('empty')),
+                      )
+                    : null,
               ),
               // Loading overlay khi đang xử lý (hủy vé hoặc reload)
               if (isLoading && data != null)
@@ -549,10 +546,9 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
             ElevatedButton(
               onPressed: () {
                 context.read<DetailTripBloc>().add(
-                  LoadDetailCoachPaneTripEvent(
-                        idLichXeLimousine:
-                            widget.idLichXeLimousine.toString(),
-                    tang: selectedFloor,
+                      LoadDetailCoachPaneTripEvent(
+                        idLichXeLimousine: widget.idLichXeLimousine.toString(),
+                        tang: selectedFloor,
                       ),
                     );
               },
@@ -588,22 +584,23 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
             : (widget.idLichXeLimousine.isNotEmpty
                 ? widget.idLichXeLimousine
                 : null);
-        
+
         if (idToLoad != null) {
           // Reload chi tiết chuyến đi
           context.read<DetailTripBloc>().add(
-            LoadDetailCoachPaneTripEvent(
-              idLichXeLimousine: idToLoad,
-              tang: selectedFloor,
-            ),
-          );
+                LoadDetailCoachPaneTripEvent(
+                  idLichXeLimousine: idToLoad,
+                  tang: selectedFloor,
+                ),
+              );
           // Đợi một chút để đảm bảo bloc xử lý xong
           await Future.delayed(const Duration(milliseconds: 500));
         }
       },
       color: mainColor,
       child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(), // Cho phép scroll ngay cả khi nội dung ngắn
+        physics: const AlwaysScrollableScrollPhysics(),
+        // Cho phép scroll ngay cả khi nội dung ngắn
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -616,9 +613,8 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
             const SizedBox(height: 16),
             Text('Sơ đồ ghế', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
-            if (data.danhSachTang.isNotEmpty)
-              _buildTang(data),
-            const SizedBox(height: 12),  
+            if (data.danhSachTang.isNotEmpty) _buildTang(data),
+            const SizedBox(height: 12),
             Row(
               children: [
                 _buildLegendBox(
@@ -695,9 +691,8 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
     );
   }
 
-
   Widget _buildTang(DetailCoachPaneTripData data) {
-    return  SizedBox(
+    return SizedBox(
       height: 50,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
@@ -716,10 +711,10 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                   selectedFloor = floor.tang;
                 });
                 context.read<DetailTripBloc>().add(
-                  TinhSoGheTrong(
-                    tang: selectedFloor,
-                  ),
-                );
+                      TinhSoGheTrong(
+                        tang: selectedFloor,
+                      ),
+                    );
               },
               selectedColor: mainColor.withValues(alpha: 0.2),
               checkmarkColor: mainColor,
@@ -825,14 +820,13 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
           const SizedBox(height: 10),
           Row(
             children: [
-              _buildStatItem(
-                  "Đã đặt", currentFloor?.soGheDaDat ?? 0, Colors.green.shade100),
+              _buildStatItem("Đã đặt", currentFloor?.soGheDaDat ?? 0,
+                  Colors.green.shade100),
               const SizedBox(width: 12),
-              _buildStatItem(
-                  "Giữ chỗ", currentFloor?.soGheGiuCho ?? 0, Colors.orange.shade100),
+              _buildStatItem("Giữ chỗ", currentFloor?.soGheGiuCho ?? 0,
+                  Colors.orange.shade100),
               const SizedBox(width: 12),
-              _buildStatItem(
-                  "Trống", gheTrong, Colors.grey.shade100),
+              _buildStatItem("Trống", gheTrong, Colors.grey.shade100),
             ],
           ),
         ],
@@ -866,7 +860,8 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                 color: Colors.blue.withOpacity(0.08),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(Icons.flight_takeoff, color: Colors.blue, size: 18),
+              child: const Icon(Icons.flight_takeoff,
+                  color: Colors.blue, size: 18),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -918,7 +913,10 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
         },
       );
       final List<dynamic> data = response["data"] ?? [];
-      airportTickets = data.map((e) => AirportTicket.fromJson(e)).toList().cast<AirportTicket>();
+      airportTickets = data
+          .map((e) => AirportTicket.fromJson(e))
+          .toList()
+          .cast<AirportTicket>();
       airportTotal = response["totalRecords"] ?? airportTickets.length;
     } catch (e) {
       airportError = "Tải danh sách vé sân bay thất bại";
@@ -952,11 +950,11 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
         ? currentState.idLichXeLimousineMoi!
         : widget.idLichXeLimousine;
     context.read<DetailTripBloc>().add(
-      LoadDetailCoachPaneTripEvent(
-        idLichXeLimousine: idToLoad,
-        tang: selectedFloor,
-      ),
-    );
+          LoadDetailCoachPaneTripEvent(
+            idLichXeLimousine: idToLoad,
+            tang: selectedFloor,
+          ),
+        );
   }
 
   Future<void> _showAirportTicketsBottomSheet() async {
@@ -1014,9 +1012,10 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                         const SizedBox(width: 8),
                         Text(
                           "Vé đi sân bay",
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w600,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
                         ),
                         const Spacer(),
                         Text(
@@ -1062,7 +1061,8 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                         child: ListView.separated(
                           shrinkWrap: true,
                           itemCount: filtered.length,
-                          separatorBuilder: (_, __) => Divider(color: Colors.grey.shade200),
+                          separatorBuilder: (_, __) =>
+                              Divider(color: Colors.grey.shade200),
                           itemBuilder: (context, index) {
                             final item = filtered[index];
                             return ListTile(
@@ -1071,32 +1071,47 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                               leading: CircleAvatar(
                                 radius: 18,
                                 backgroundColor: Colors.blue.withOpacity(0.1),
-                                child: const Icon(Icons.flight, color: Colors.blue, size: 18),
+                                child: const Icon(Icons.flight,
+                                    color: Colors.blue, size: 18),
                               ),
                               title: Text(
                                 item.tenKhachHang,
-                                style: const TextStyle(fontWeight: FontWeight.w600),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w600),
                               ),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const SizedBox(height: 2),
-                                  Text(item.soDienThoai, style: const TextStyle(fontSize: 12.5)),
+                                  Text(item.soDienThoai,
+                                      style: const TextStyle(fontSize: 12.5)),
                                   const SizedBox(height: 2),
                                   Text(
                                     "${item.diaChiDi} → ${item.diaChiDen}",
-                                    style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey.shade700),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                   const SizedBox(height: 2),
                                   Row(
                                     children: [
-                                      const Icon(Icons.access_time, size: 14, color: Colors.grey),
+                                      const Icon(Icons.access_time,
+                                          size: 14, color: Colors.grey),
                                       const SizedBox(width: 4),
                                       Text(
-                                        convertDateToString(item.thoiGianDon, pattern13),
-                                        style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+                                        "${item.gioDi} ",
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey.shade700),
+                                      ),
+                                      Text(
+                                        convertDateToString(
+                                            item.thoiGianDon, pattern1),
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey.shade700),
                                       ),
                                     ],
                                   )
@@ -1109,11 +1124,13 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                                   Text(
                                     Utils.formatTotalMoney(item.giaVe.toInt()),
                                     style: const TextStyle(
-                                        fontWeight: FontWeight.w700, color: Colors.black87),
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.black87),
                                   ),
                                   const SizedBox(height: 2),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 6, vertical: 2),
                                     decoration: BoxDecoration(
                                       color: item.daThanhToan
                                           ? Colors.green.withOpacity(0.1)
@@ -1121,10 +1138,14 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                                       borderRadius: BorderRadius.circular(6),
                                     ),
                                     child: Text(
-                                      item.daThanhToan ? "Đã thanh toán" : "Chưa thanh toán",
+                                      item.daThanhToan
+                                          ? "Đã thanh toán"
+                                          : "Chưa thanh toán",
                                       style: TextStyle(
                                         fontSize: 11,
-                                        color: item.daThanhToan ? Colors.green : Colors.orange,
+                                        color: item.daThanhToan
+                                            ? Colors.green
+                                            : Colors.orange,
                                       ),
                                     ),
                                   )
@@ -1207,7 +1228,10 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
     );
   }
 
-  Widget _buildSeat(TangHienTai? currentFloor, DetailTripState state,) {
+  Widget _buildSeat(
+    TangHienTai? currentFloor,
+    DetailTripState state,
+  ) {
     final rows = (currentFloor?.danhSachGhe ?? [])
         .map((e) => e.hang)
         .toSet()
@@ -1241,233 +1265,235 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
               break;
           }
 
-          if ((seat.day == 0 && seat.tang == 0 && seat.hang == 0) || seat.isGheAo) {
+          if ((seat.day == 0 && seat.tang == 0 && seat.hang == 0) ||
+              seat.isGheAo) {
             return const SizedBox();
           }
 
-          return Builder(
-            builder: (context) {
-              return InkWell(
-                onTap: () async {
-                  if (seat.trangThaiGhe == 1) {
-                    if (soDuocChon.contains(seat)) {
-                      soDuocChon.remove(seat);
-                    } else {
-                      soDuocChon.add(seat);
-                    }
-                    setState(() {});
+          return Builder(builder: (context) {
+            return InkWell(
+              onTap: () async {
+                if (seat.trangThaiGhe == 1) {
+                  if (soDuocChon.contains(seat)) {
+                    soDuocChon.remove(seat);
                   } else {
-                    final value = await TicketDetailBottomSheet.show(
-                      context,
-                      seat,
-                      ngayChay: state.detailCoachPaneTrip?.ngayChay,
-                      gioDi: state.detailCoachPaneTrip?.gioDi,
-                    );
+                    soDuocChon.add(seat);
+                  }
+                  setState(() {});
+                } else if (seat.trangThaiGhe != 3) {
+                  final value = await TicketDetailBottomSheet.show(
+                    context,
+                    seat,
+                    ngayChay: state.detailCoachPaneTrip?.ngayChay,
+                    gioDi: state.detailCoachPaneTrip?.gioDi,
+                  );
 
-                    if(value != null) {
-                      if (value == 'cancel_ticket') {
-                        // Hiển thị loading và gọi API hủy vé
-                        final box = GetStorage();
-                        String userId = box.read(Const.USER_ID);
-                        context.read<DetailTripBloc>().add(
-                          CancelTripEvent(
-                            cancelTicketRequest: CancelTicketRequest(
-                              idLichXe: widget.idLichXeLimousine,
-                              // idKhachHang: "",
-                              maDatCho: seat.maDatCho.toInt(),
-                              ngayChay: state.detailCoachPaneTrip?.ngayChay,
-                              nguoiHuy: userId,
-                              lyDoHuy: "Hành khách yêu cầu hủy vé",
-                              thoiGianHuy: DateTime.now(),
-                            ),
-                          ),
-                        );
-                      } else if (value == 'edit_ticket') {
-                        Set<ChiTietGheUpdate> chiTietGhes = {};
-                        chiTietGhes.add(
-                          ChiTietGheUpdate(
-                            tang: seat.tang,
-                            hang: seat.hang,
-                            day: seat.day,
-                            giaVe: seat.giaVe.toInt(),
-                            diemBan: 1,
-                            tenGhe: seat.tenGhe,
-                          ),
-                        );
-
-                          TicketDetailModel ticket = TicketDetailModel(
-                            dropoff: seat.diaChiKhachDen,
-                            pickup: widget.coachPaneTripItem.tenTuyenDuong,
-                            departureDate: state.detailCoachPaneTrip?.ngayChay,
-                            numCustomers: 1,
-                            price: seat.giaVe.toInt(),
-                          );
-                          final result = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  TicketDetailNowScreen(
-                                    ticketDetail: ticket,
-                                    // chiTietGhe: chiTietGhes,
-                                    chiTietGheUpdate: chiTietGhes,
-                                    coachPaneTripItem: widget.coachPaneTripItem,
-                                    detailCoachPaneTrip: state.detailCoachPaneTrip,
-                                    isUpdate: true,
-                                    danhSachGhe: seat,
-                                  ),
-                              settings: RouteSettings(
-                                  name: "TICKET_DETAIL_BOOK"),
+                  if (value != null) {
+                    if (value == 'cancel_ticket') {
+                      // Hiển thị loading và gọi API hủy vé
+                      final box = GetStorage();
+                      String userId = box.read(Const.USER_ID);
+                      context.read<DetailTripBloc>().add(
+                            CancelTripEvent(
+                              cancelTicketRequest: CancelTicketRequest(
+                                idLichXe: widget.idLichXeLimousine,
+                                // idKhachHang: "",
+                                maDatCho: seat.maDatCho.toInt(),
+                                ngayChay: state.detailCoachPaneTrip?.ngayChay,
+                                nguoiHuy: userId,
+                                lyDoHuy: "Hành khách yêu cầu hủy vé",
+                                thoiGianHuy: DateTime.now(),
+                              ),
                             ),
                           );
-                        print( "a check 2:  ${widget.idLichXeLimousine}");
-                        if (!mounted) return;
-                        soDuocChon.clear();
-                        // Reload lại danh sách vé sân bay và chi tiết chuyến sau khi quay lại
-                        _fetchAirportTickets();
-                        final currentState = context.read<DetailTripBloc>().state;
-                        final idToLoad = currentState.idLichXeLimousineMoi?.isNotEmpty == true
-                            ? currentState.idLichXeLimousineMoi!
-                            : widget.idLichXeLimousine;
-                        context.read<DetailTripBloc>().add(
-                          LoadDetailCoachPaneTripEvent(
-                            idLichXeLimousine: idToLoad,
-                            tang: selectedFloor,
+                    } else if (value == 'edit_ticket') {
+                      Set<ChiTietGheUpdate> chiTietGhes = {};
+                      chiTietGhes.add(
+                        ChiTietGheUpdate(
+                          tang: seat.tang,
+                          hang: seat.hang,
+                          day: seat.day,
+                          giaVe: seat.giaVe.toInt(),
+                          diemBan: 1,
+                          tenGhe: seat.tenGhe,
+                        ),
+                      );
+
+                      TicketDetailModel ticket = TicketDetailModel(
+                        dropoff: seat.diaChiKhachDen,
+                        pickup: widget.coachPaneTripItem.tenTuyenDuong,
+                        departureDate: state.detailCoachPaneTrip?.ngayChay,
+                        numCustomers: 1,
+                        price: seat.giaVe.toInt(),
+                      );
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TicketDetailNowScreen(
+                            ticketDetail: ticket,
+                            // chiTietGhe: chiTietGhes,
+                            chiTietGheUpdate: chiTietGhes,
+                            coachPaneTripItem: widget.coachPaneTripItem,
+                            detailCoachPaneTrip: state.detailCoachPaneTrip,
+                            isUpdate: true,
+                            danhSachGhe: seat,
                           ),
-                        );
-                          // Reload dữ liệu nếu đặt vé thành công
-                          // if (result == true && mounted) {
-                          //   soDuocChon.clear();
-                          //   context.read<DetailTripBloc>().add(
-                          //     LoadDetailCoachPaneTripEvent(
-                          //       idLichXeLimousine: widget.idLichXeLimousine,
-                          //       tang: selectedFloor,
-                          //     ),
-                          //   );
-                          // }
-                        }
+                          settings: RouteSettings(name: "TICKET_DETAIL_BOOK"),
+                        ),
+                      );
+                      print("a check 2:  ${widget.idLichXeLimousine}");
+                      if (!mounted) return;
+                      soDuocChon.clear();
+                      // Reload lại danh sách vé sân bay và chi tiết chuyến sau khi quay lại
+                      _fetchAirportTickets();
+                      final currentState = context.read<DetailTripBloc>().state;
+                      final idToLoad =
+                          currentState.idLichXeLimousineMoi?.isNotEmpty == true
+                              ? currentState.idLichXeLimousineMoi!
+                              : widget.idLichXeLimousine;
+                      context.read<DetailTripBloc>().add(
+                            LoadDetailCoachPaneTripEvent(
+                              idLichXeLimousine: idToLoad,
+                              tang: selectedFloor,
+                            ),
+                          );
+                      // Reload dữ liệu nếu đặt vé thành công
+                      // if (result == true && mounted) {
+                      //   soDuocChon.clear();
+                      //   context.read<DetailTripBloc>().add(
+                      //     LoadDetailCoachPaneTripEvent(
+                      //       idLichXeLimousine: widget.idLichXeLimousine,
+                      //       tang: selectedFloor,
+                      //     ),
+                      //   );
+                      // }
                     }
                   }
-                },
-                child: Container(
-                  width: width,
-                  height: width + 12,
-                  margin: EdgeInsets.only(right: gap),
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: seat.isTrungChuyen
-                          ? Colors.green
-                          : (soDuocChon.contains(seat)
-                              ? Colors.orange
-                              : borderColor),
-                      width: 2,
-                    ),
-                    color: seat.isTrungChuyen ? Colors.green.shade50 : seatColor,
+                }
+              },
+              child: Container(
+                width: width,
+                height: width + 12,
+                margin: EdgeInsets.only(right: gap),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: seat.isTrungChuyen
+                        ? Colors.green
+                        : (soDuocChon.contains(seat)
+                            ? Colors.orange
+                            : borderColor),
+                    width: 2,
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              seat.tenGhe.toUpperCase(),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                color: seat.isTrungChuyen ? Colors.green : textColor,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 13,
+                  color: seat.isTrungChuyen ? Colors.green.shade50 : seatColor,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            seat.tenGhe.toUpperCase(),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color:
+                                  seat.isTrungChuyen ? Colors.green : textColor,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                        if (seat.isTrungChuyen)
+                          const Icon(Icons.swap_horiz,
+                              size: 14, color: Colors.green),
+                        if (seat.tenKhachHang.isNotEmpty)
+                          InkWell(
+                            onTap: () => _showAirportBookingDialog(seat),
+                            child: Container(
+                              margin: const EdgeInsets.only(left: 6),
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: Colors.blue.withOpacity(0.12),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.flight_takeoff,
+                                size: 16,
+                                color: Colors.blue,
                               ),
                             ),
                           ),
-                          if (seat.isTrungChuyen)
-                            const Icon(Icons.swap_horiz, size: 14, color: Colors.green),
-                          if (seat.tenKhachHang.isNotEmpty)
-                            InkWell(
-                              onTap: () => _showAirportBookingDialog(seat),
-                              child: Container(
-                                margin: const EdgeInsets.only(left: 6),
-                                padding: const EdgeInsets.all(6),
-                                decoration: BoxDecoration(
-                                  color: Colors.blue.withOpacity(0.12),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.flight_takeoff,
-                                  size: 16,
-                                  color: Colors.blue,
-                                ),
-                              ),
-                            ),
-                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      Utils.formatTotalMoney(seat.giaVe),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: seat.isTrungChuyen ? Colors.green : textColor,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 11,
                       ),
+                    ),
+                    if (seat.tenKhachHang.isNotEmpty) ...[
                       const SizedBox(height: 3),
                       Text(
-                        Utils.formatTotalMoney(seat.giaVe),
+                        seat.tenKhachHang,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: seat.isTrungChuyen ? Colors.green : textColor,
+                          fontSize: 11,
                           fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                    if (seat.soDienThoaiKhachHang.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        seat.soDienThoaiKhachHang,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: seat.isTrungChuyen ? Colors.green : textColor,
                           fontSize: 11,
                         ),
                       ),
-                      if (seat.tenKhachHang.isNotEmpty) ...[
-                        const SizedBox(height: 3),
-                        Text(
-                          seat.tenKhachHang,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: seat.isTrungChuyen ? Colors.green : textColor,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                      if (seat.soDienThoaiKhachHang.isNotEmpty) ...[
-                        const SizedBox(height: 2),
-                        Text(
-                          seat.soDienThoaiKhachHang,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: seat.isTrungChuyen ? Colors.green : textColor,
-                            fontSize: 11,
-                          ),
-                        ),
-                      ],
-                      const Spacer(),
-                      if (seat.ghiChu.isNotEmpty)
-                        Container(
-                          padding:
-                              const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: (seat.isTrungChuyen ? Colors.green : textColor)
-                                .withValues(alpha: 0.08),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            seat.ghiChu,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: seat.isTrungChuyen ? Colors.green : textColor,
-                              fontSize: 10,
-                            ),
-                          ),
-                        ),
                     ],
-                  ),
+                    const Spacer(),
+                    if (seat.ghiChu.isNotEmpty)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: (seat.isTrungChuyen ? Colors.green : textColor)
+                              .withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          seat.ghiChu,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color:
+                                seat.isTrungChuyen ? Colors.green : textColor,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
-              );
-            }
-          );
+              ),
+            );
+          });
         }
 
         final firstRow = rows.isNotEmpty ? rows.first : null;
@@ -1515,7 +1541,8 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
             );
           }
 
-          children.addAll(rowSeats.map((seat) => buildSeatTile(seat, seatWidth)));
+          children
+              .addAll(rowSeats.map((seat) => buildSeatTile(seat, seatWidth)));
 
           rowWidgets.add(
             Padding(
@@ -1535,6 +1562,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
       },
     );
   }
+
   Widget _buildBottom({Key? key}) {
     return Container(
       key: key,
@@ -1594,15 +1622,16 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                     settings: RouteSettings(name: "TICKET_DETAIL_BOOK"),
                   ),
                 );
-                print( "a check:  ${widget.idLichXeLimousine}");
+                print("a check:  ${widget.idLichXeLimousine}");
                 if (!mounted) return;
                 soDuocChon.clear();
                 // Reload lại danh sách vé sân bay và chi tiết chuyến sau khi quay lại
                 _fetchAirportTickets();
                 final currentState = context.read<DetailTripBloc>().state;
-                final idToLoad = currentState.idLichXeLimousineMoi?.isNotEmpty == true
-                    ? currentState.idLichXeLimousineMoi!
-                    : widget.idLichXeLimousine;
+                final idToLoad =
+                    currentState.idLichXeLimousineMoi?.isNotEmpty == true
+                        ? currentState.idLichXeLimousineMoi!
+                        : widget.idLichXeLimousine;
 
                 List<GhesDatCho> gheDaChon = chiTietGhes.map((seat) {
                   return GhesDatCho(
@@ -1630,16 +1659,17 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                 // }).toList();
                 //
                 context.read<DetailTripBloc>().add(
-                  HuyGiuChoEvent(
-                    idLich: idToLoad,
-                    listGhe: gheDaChon,
-                    idLichChayXe: widget.coachPaneTripItem.idLichChayXe,
-                      idTuyenDuong: widget.coachPaneTripItem.idTuyenDuong,
-                      idNhaXe: widget.coachPaneTripItem.idNhaXe,
-                      ngayChay: state.detailCoachPaneTrip?.ngayChay ?? DateTime.now(),
-                    tang: selectedFloor,
-                  ),
-                );
+                      HuyGiuChoEvent(
+                        idLich: idToLoad,
+                        listGhe: gheDaChon,
+                        idLichChayXe: widget.coachPaneTripItem.idLichChayXe,
+                        idTuyenDuong: widget.coachPaneTripItem.idTuyenDuong,
+                        idNhaXe: widget.coachPaneTripItem.idNhaXe,
+                        ngayChay: state.detailCoachPaneTrip?.ngayChay ??
+                            DateTime.now(),
+                        tang: selectedFloor,
+                      ),
+                    );
                 // Reload dữ liệu nếu đặt vé thành công
                 // if (result == true && mounted) {
                 //   soDuocChon.clear();
@@ -1667,9 +1697,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
             child: Ink(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [
-                    mainColor, mainColor.withValues(alpha: 0.8)
-                  ],
+                  colors: [mainColor, mainColor.withValues(alpha: 0.8)],
                 ),
                 borderRadius: BorderRadius.all(Radius.circular(14)),
               ),
@@ -1749,7 +1777,8 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
   String _formatTime(String? raw) {
     if (raw == null || raw.trim().isEmpty) return '--:--';
     final value = raw.trim();
-    final match = RegExp(r'^(\d{1,2}):(\d{1,2})(?::\d{1,2})?$').firstMatch(value);
+    final match =
+        RegExp(r'^(\d{1,2}):(\d{1,2})(?::\d{1,2})?$').firstMatch(value);
     if (match != null) {
       final hour = match.group(1)!.padLeft(2, '0');
       final minute = match.group(2)!.padLeft(2, '0');
