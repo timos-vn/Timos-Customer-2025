@@ -163,9 +163,16 @@ class SignalRService {
     // Khi người khác bỏ chọn ghế
     _hubConnection.on('CancelKeepSlot', (args) {
       if (args != null && args.isNotEmpty) {
-        final data = args[0];
-        log("🪑 CancelKeepSlot event: $data");
-        // TODO: Xử lý hoặc đưa qua Stream nếu cần
+        final data = args[0] as Map<String, dynamic>?;
+
+        final connectionId =
+            data?['ConnectionId'] ?? data?['connectionId'] ?? '';
+
+        log("SeatsSelected from another agent: $connectionId");
+        // Gửi dữ liệu qua Stream để các Controller/Widget lắng nghe
+        if (data != null) {
+          _seatsSelectedController.add(data);
+        }
       }
     });
   }
