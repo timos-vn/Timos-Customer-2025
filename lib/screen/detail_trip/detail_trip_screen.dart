@@ -652,15 +652,11 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                   ?.copyWith(fontStyle: FontStyle.italic),
             ),
             const SizedBox(height: 16),
-            SizedBox(
-              height: 1000,
-              width: double.infinity,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSeat(currentFloor, state),
-                ],
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSeat(currentFloor, state),
+              ],
             ),
             // const SizedBox(height: 16),
             // Container(
