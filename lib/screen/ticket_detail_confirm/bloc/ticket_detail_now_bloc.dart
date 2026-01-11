@@ -7,6 +7,7 @@ import 'package:timos_customer_2025/screen/booking_ticket/booking/model/ticket_d
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_request.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_response.dart';
 import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_update_rquest.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/service/signalr_service.dart';
 import 'package:timos_customer_2025/screen/seat_selection/service/ticket_service.dart';
 import 'package:timos_customer_2025/screen/ticket_detail_confirm/bloc/ticket_detail_now_event.dart';
 import 'package:timos_customer_2025/screen/ticket_detail_confirm/bloc/ticket_detail_now_state.dart';
@@ -14,6 +15,8 @@ import 'package:timos_customer_2025/screen/ticket_detail_confirm/bloc/ticket_det
 class TicketDetailNowBloc
     extends Bloc<TicketDetailNowEvent, TicketDetailState> {
   TicketService ticketService = TicketService();
+
+  final signalRService = SignalRService();
 
   TicketDetailNowBloc()
       : super(TicketDetailState(ticketDetailModel: TicketDetailModel())) {
@@ -62,6 +65,16 @@ class TicketDetailNowBloc
     on<GiuChoEvent>((event, emit) async {
       await datDuCho(event);
     });
+
+    on<HuyGiuChoEvent>((event, emit) async {
+      await huyDuCho(event, emit);
+    });
+  }
+
+  Future<void> huyDuCho(HuyGiuChoEvent event, Emitter emit) async {
+    String idDevice = await getDeviceId() ?? '';
+    await ticketService.huyGiuChoVe(event.idLich, event.listGhe, idDevice);
+    signalRService.huyGiuCho(event.idLich, event.listGhe, idDevice);
   }
 
   Future<void> loadTransferStations(Emitter emit) async {
@@ -83,6 +96,14 @@ class TicketDetailNowBloc
   Future<void> datDuCho(GiuChoEvent event) async {
     await giuChoDatVe(event.idLich, event.listGhe.cast<GhesDatCho>(),
         event.idTuyenDuong, event.idNhaXe, event.idLichChayXe, event.ngayChay);
+    signalRService.goiDuCho(
+        idLich: event.idLich,
+        listGhe: event.listGhe,
+        agentId: '',
+        idTuyenDuong: event.idTuyenDuong,
+        idNhaXe: event.idNhaXe,
+        idLichChayXe: event.idLichChayXe,
+        ngayChay: event.ngayChay);
   }
 
   // Future<String?> getDeviceId() async {

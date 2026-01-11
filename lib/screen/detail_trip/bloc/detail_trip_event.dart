@@ -63,6 +63,7 @@ class HuyGiuChoEvent extends DetailTripEvent {
   final int idNhaXe;
   final int idLichChayXe;
   final DateTime ngayChay;
+  final int tang;
 
   HuyGiuChoEvent({
     required this.idLich,
@@ -71,9 +72,10 @@ class HuyGiuChoEvent extends DetailTripEvent {
     required this.idNhaXe,
     required this.idLichChayXe,
     required this.ngayChay,
+    required this.tang,
   });
 
   @override
   List<Object?> get props =>
-      [idLich, listGhe, idTuyenDuong, idNhaXe, idLichChayXe, ngayChay];
+      [idLich, listGhe, idTuyenDuong, idNhaXe, idLichChayXe, ngayChay, tang];
 }

@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:get_storage/get_storage.dart';
 import 'package:signalr_netcore/signalr_client.dart';
 import 'package:timos_customer_2025/const/const.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/model/book_ticket_request.dart';
 
 class SignalRService {
   static final SignalRService _instance = SignalRService._internal();
@@ -14,8 +15,11 @@ class SignalRService {
   final box = GetStorage();
 
   // Stream Controller để thông báo sự kiện đến UI/Controller khác
-  final StreamController<Map<String, dynamic>> _seatsSelectedController = StreamController<Map<String, dynamic>>.broadcast();
-  Stream<Map<String, dynamic>> get onSeatsSelected => _seatsSelectedController.stream;
+  final StreamController<Map<String, dynamic>> _seatsSelectedController =
+      StreamController<Map<String, dynamic>>.broadcast();
+
+  Stream<Map<String, dynamic>> get onSeatsSelected =>
+      _seatsSelectedController.stream;
 
   factory SignalRService() => _instance;
 
@@ -29,18 +33,19 @@ class SignalRService {
     log("🔗 Tạo kết nối SignalR với URL: ${Const.urlWebSocket}");
 
     _hubConnection = HubConnectionBuilder()
-        .withUrl(Const.urlWebSocket,
-      options: HttpConnectionOptions(
-        transport: HttpTransportType.WebSockets,
+        .withUrl(
+          Const.urlWebSocket,
+          options: HttpConnectionOptions(
+            transport: HttpTransportType.WebSockets,
 
-        // QUAN TRỌNG: Đảm bảo đọc token MỚI NHẤT cho mỗi lần kết nối/reconnect
-        accessTokenFactory: () async {
-          final accessToken = box.read(Const.ACCESS_TOKEN);
-          return accessToken ?? '';
-        },
-        skipNegotiation: true,
-      ),
-    )
+            // QUAN TRỌNG: Đảm bảo đọc token MỚI NHẤT cho mỗi lần kết nối/reconnect
+            accessTokenFactory: () async {
+              final accessToken = box.read(Const.ACCESS_TOKEN);
+              return accessToken ?? '';
+            },
+            skipNegotiation: true,
+          ),
+        )
         .withAutomaticReconnect()
         .build();
 
@@ -99,7 +104,6 @@ class SignalRService {
         log("🔄 Auto-joining group sau khi Start: $_currentTripIdLichXe");
         await _joinTripGroup(_currentTripIdLichXe!);
       }
-
     } catch (e) {
       log("🚨 Lỗi khi kết nối SignalR: $e");
     }
@@ -136,7 +140,7 @@ class SignalRService {
 
     // 🛑 QUAN TRỌNG: Gỡ bỏ listeners cũ để tránh nhân bản (Duplicate)
     _hubConnection.off('SeatsSelected');
-    _hubConnection.off('SeatsDeselected');
+    _hubConnection.off('CancelKeepSlot');
 
     // Khi người khác chọn ghế
     _hubConnection.on('SeatsSelected', (args) {
@@ -145,26 +149,30 @@ class SignalRService {
       if (args != null && args.isNotEmpty) {
         final data = args[0] as Map<String, dynamic>?;
 
-        final connectionId = data?['ConnectionId'] ?? data?['connectionId'] ?? '';
+        final connectionId =
+            data?['ConnectionId'] ?? data?['connectionId'] ?? '';
 
-        if (connectionId.isNotEmpty && connectionId != currentConnectionId) {
-          log("SeatsSelected from another agent: $connectionId");
-          // Gửi dữ liệu qua Stream để các Controller/Widget lắng nghe
-          if (data != null) {
-            _seatsSelectedController.add(data);
-          }
-        } else {
-          log("SeatsSelected from self, ignoring");
+        log("SeatsSelected from another agent: $connectionId");
+        // Gửi dữ liệu qua Stream để các Controller/Widget lắng nghe
+        if (data != null) {
+          _seatsSelectedController.add(data);
         }
       }
     });
 
     // Khi người khác bỏ chọn ghế
-    _hubConnection.on('SeatsDeselected', (args) {
+    _hubConnection.on('CancelKeepSlot', (args) {
       if (args != null && args.isNotEmpty) {
-        final data = args[0];
-        log("🪑 SeatsDeselected event: $data");
-        // TODO: Xử lý hoặc đưa qua Stream nếu cần
+        final data = args[0] as Map<String, dynamic>?;
+
+        final connectionId =
+            data?['ConnectionId'] ?? data?['connectionId'] ?? '';
+
+        log("SeatsSelected from another agent: $connectionId");
+        // Gửi dữ liệu qua Stream để các Controller/Widget lắng nghe
+        if (data != null) {
+          _seatsSelectedController.add(data);
+        }
       }
     });
   }
@@ -189,6 +197,62 @@ class SignalRService {
     }
   }
 
+  /// Phương thức nội bộ để gửi lệnh giu cho
+  Future<void> _giuCho(
+      String idLich,
+      List<GhesDatCho> listGhe,
+      String agentId,
+      int idTuyenDuong,
+      int idNhaXe,
+      int idLichChayXe,
+      DateTime ngayChay) async {
+    if (_hubConnection.state != HubConnectionState.Connected) {
+      log('🚫 Không thể JoinTripGroup vì SignalR chưa kết nối.');
+      return;
+    }
+
+    try {
+      final mapData = {
+        "IdLich": idLich.isEmpty ? null : idLich,
+        "Ghes": listGhe.map((ghe) => ghe.toJson()).toList(),
+        "AgentId": agentId,
+        "IdTuyenDuong": idTuyenDuong,
+        "IdNhaXe": idNhaXe,
+        "IdLichChayXe": idLichChayXe,
+        "NgayChay": ngayChay.toIso8601String(),
+      };
+      await _hubConnection.invoke('SeatsSelected', args: [mapData]);
+
+      log('su kien giu cho ');
+    } catch (error) {
+      log('❌ Loi du cho: $error');
+    }
+  }
+
+  /// Phương thức nội bộ để gửi huỷ giu cho
+  Future<void> _huyGiuCho(
+      String idLich,
+      List<GhesDatCho> listGhe,
+      String agentId) async {
+    if (_hubConnection.state != HubConnectionState.Connected) {
+      log('🚫 Không thể JoinTripGroup vì SignalR chưa kết nối.');
+      return;
+    }
+
+    try {
+      final jsonMap = {
+        "IdLich": idLich,
+        "AgentId": agentId,
+        "ThongTinGhes": listGhe.map((ghe) => ghe.toJson()).toList(),
+      };
+      await _hubConnection.invoke('CancelKeepSlot', args: [jsonMap]);
+
+      log('su kien huy giu cho ');
+    } catch (error) {
+      log('❌ Loi  huy du cho: $error');
+    }
+  }
+
   /// PUBLIC: Tham gia nhóm theo dõi ghế
   Future<void> joinSeatTracking({
     required String idLichXe,
@@ -203,13 +267,51 @@ class SignalRService {
       return;
     }
 
-    if(idLichXe.isNotEmpty) {
+    if (idLichXe.isNotEmpty) {
       // Lưu ID hiện tại và gọi Join
       _currentTripIdLichXe = idLichXe;
       await _joinTripGroup(idLichXe);
     }
+  }
 
+  /// PUBLIC: Tham gia nhóm theo dõi ghế
+  Future<void> goiDuCho(
+      {required String idLich,
+      required List<GhesDatCho> listGhe,
+      required String agentId,
+      required int idTuyenDuong,
+      required int idNhaXe,
+      required int idLichChayXe,
+      required DateTime ngayChay}) async {
+    if (_hubConnection.state != HubConnectionState.Connected) {
+      log('⚠️ SignalR chưa kết nối. Cố gắng khởi tạo kết nối...');
+      await startConnection();
+    }
 
+    if (_hubConnection.state != HubConnectionState.Connected) {
+      log('🚫 Không thể JoinTripGroup vì SignalR không thể kết nối.');
+      return;
+    }
+
+    await _giuCho(idLich, listGhe, agentId, idTuyenDuong, idNhaXe, idLichChayXe,
+        ngayChay);
+  }
+
+  Future<void> huyGiuCho(
+      String idLich,
+      List<GhesDatCho> listGhe,
+      String agentId) async {
+    if (_hubConnection.state != HubConnectionState.Connected) {
+      log('⚠️ SignalR chưa kết nối. Cố gắng khởi tạo kết nối...');
+      await startConnection();
+    }
+
+    if (_hubConnection.state != HubConnectionState.Connected) {
+      log('🚫 Không thể JoinTripGroup vì SignalR không thể kết nối.');
+      return;
+    }
+
+    await _huyGiuCho(idLich, listGhe, agentId);
   }
 
   /// PUBLIC: Gửi dữ liệu lên server

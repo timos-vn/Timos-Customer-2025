@@ -1,11 +1,14 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get_utils/src/platform/platform.dart';
+import 'package:timos_customer_2025/screen/booking_ticket/ticket_price/service/signalr_service.dart';
 import 'package:timos_customer_2025/services/trip_service.dart';
 import 'detail_trip_event.dart';
 import 'detail_trip_state.dart';
 
 class DetailTripBloc extends Bloc<DetailTripEvent, DetailTripState> {
   final TripService _tripService;
+
+  final signalRService = SignalRService();
   DetailTripBloc({
     TripService? tripService,
   })  : _tripService = tripService ?? TripService(),
@@ -130,8 +133,13 @@ class DetailTripBloc extends Bloc<DetailTripEvent, DetailTripState> {
   }
 
   Future<void> huyDuCho(HuyGiuChoEvent event, Emitter emit) async {
-    String idDevice =  '';
-    await _tripService.huyGiuChoVe(event.idLich, event.listGhe, idDevice, event.idTuyenDuong, event.idNhaXe, event.idLichChayXe, event.ngayChay);
+    String idDevice = await getDeviceId() ?? '';
+    try {
+      await _tripService.huyGiuChoVe(event.idLich, event.listGhe, idDevice);
+      signalRService.huyGiuCho(event.idLich, event.listGhe, "");
+    } finally {
+      add(LoadDetailCoachPaneTripEvent(idLichXeLimousine: event.idLich, tang: event.tang));
+    }
   }
 
   // Future<String?> getDeviceId() async {
