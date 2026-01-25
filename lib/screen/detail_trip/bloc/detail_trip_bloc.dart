@@ -133,7 +133,7 @@ class DetailTripBloc extends Bloc<DetailTripEvent, DetailTripState> {
   }
 
   Future<void> huyDuCho(HuyGiuChoEvent event, Emitter emit) async {
-    String idDevice = await getDeviceId() ?? '';
+    String idDevice = '';
     try {
       await _tripService.huyGiuChoVe(event.idLich, event.listGhe, idDevice);
       signalRService.huyGiuCho(event.idLich, event.listGhe, "");
